@@ -91,6 +91,35 @@
 #    define FFTW_WISDOM_FILENAME ""
 #endif
 
+// FFT on the GPU
+
+#ifdef WITH_CLFFT
+#   ifndef HAVE_CLFFT
+#       define HAVE_CLFFT
+#   endif
+#   ifndef CLFFT_IMPL
+#       define CLFFT_IMPL(x)         clfft##x
+#   endif
+#   include <clFFT.h>
+#endif
+
+#ifdef WITH_CLAMDFFT
+#   ifndef HAVE_CLFFT
+#       define HAVE_CLFFT
+#   endif
+#   ifndef CLFFT_IMPL
+#       define CLFFT_IMPL(x)         clAmdFft##x
+#   endif
+#   include <clAmdFft.h>
+#endif
+
+#ifdef WITH_CUFFT
+#   ifndef HAVE_CUFFT
+#       define HAVE_CUFFT
+#   endif
+#   include <cufft.h>
+#endif
+
 #include <playground/cxxdft/direction.h>
 #include <playground/cxxdft/single.h>
 #include <playground/cxxdft/multiple.h>

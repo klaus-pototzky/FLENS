@@ -33,8 +33,15 @@
 #ifndef PLAYGROUND_CXXBLAS_CXXBLAS_TCC
 #define PLAYGROUND_CXXBLAS_CXXBLAS_TCC 1
 
+#include <playground/cxxblas/drivers/drivers.tcc>
+
+#include <playground/cxxblas/auxiliary/auxiliary.tcc>
+#include <playground/cxxblas/level1/level1.tcc>
 #include <playground/cxxblas/level1extensions/level1extensions.tcc>
+#include <playground/cxxblas/level2/level2.tcc>
+
 #include <playground/cxxblas/intrinsics/intrinsics.tcc>
 #include <playground/cxxblas/level3extensions/level3extensions.tcc>
+#include <playground/cxxblas/level3/level3.tcc>
 
 #endif // CXXBLAS_CXXBLAS_TCC

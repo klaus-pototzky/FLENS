@@ -35,6 +35,8 @@
 
 #include <cmath>
 #include <string.h>
+#include <cxxblas/typedefs.h>
+#include <cxxblas/drivers/drivers.h>
 #include <flens/auxiliary/auxiliary.h>
 #include <playground/cxxdft/direction.h>
 
@@ -49,7 +51,7 @@ isPowerOfTwo (T x)
 };
 
 template<typename IndexType, typename VIN, typename VOUT>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 fft_single_generic(IndexType N, 
                    const VIN *x, IndexType incX, 
                    VOUT *y, IndexType incY, 
@@ -96,7 +98,7 @@ fft_single_generic(IndexType N,
 }
 
 template<typename IndexType, typename VIN, typename VOUT>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 dft_single_generic(IndexType N, 
                    const VIN *x, IndexType incX,
                    VOUT *y, IndexType incY,
@@ -130,7 +132,7 @@ dft_single_generic(IndexType N,
 }
 
 template <typename IndexType, typename VIN, typename VOUT>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 dft_single(IndexType n, 
            const VIN *x, IndexType incX,
            VOUT *y, IndexType incY,
@@ -149,10 +151,10 @@ dft_single(IndexType n,
 
 #ifdef HAVE_FFTW_FLOAT
 template <typename IndexType>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 dft_single(IndexType n, 
-           std::complex<float> *x, IndexType incX,
-           std::complex<float> *y, IndexType incY,
+           cxxblas::ComplexFloat *x, IndexType incX,
+           cxxblas::ComplexFloat *y, IndexType incY,
            DFTDirection direction)
 {
     CXXBLAS_DEBUG_OUT("dft_single [FFTW interface, float]");
@@ -164,7 +166,7 @@ dft_single(IndexType n,
         fftwf_import_wisdom_from_filename(FFTW_WISDOM_FILENAME);
 #   endif
 
-    if ( incX==1 && incX==1 ) {
+    if ( incX==1 && incY==1 ) {
         p = fftwf_plan_dft_1d(n,
                               reinterpret_cast<fftwf_complex*>(x),
                               reinterpret_cast<fftwf_complex*>(y),
@@ -190,10 +192,10 @@ dft_single(IndexType n,
 
 #ifdef HAVE_FFTW_DOUBLE
 template <typename IndexType>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 dft_single(IndexType n, 
-           std::complex<double> *x, IndexType incX,
-           std::complex<double> *y, IndexType incY,
+           cxxblas::ComplexDouble *x, IndexType incX,
+           cxxblas::ComplexDouble *y, IndexType incY,
            DFTDirection direction)
 {
     CXXBLAS_DEBUG_OUT("dft_single [FFTW interface, double]");
@@ -205,7 +207,7 @@ dft_single(IndexType n,
         fftw_import_wisdom_from_filename(FFTW_WISDOM_FILENAME);
 #   endif
 
-    if ( incX==1 && incX==1 ) {
+    if ( incX==1 && incY==1 ) {
         p = fftw_plan_dft_1d(n,
                              reinterpret_cast<fftw_complex*>(x),
                              reinterpret_cast<fftw_complex*>(y),
@@ -231,7 +233,7 @@ dft_single(IndexType n,
 
 #ifdef HAVE_FFTW_LONGDOUBLE
 template <typename IndexType>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 dft_single(IndexType n, 
            std::complex<long double> *x, IndexType incX,
            std::complex<long double> *y, IndexType incY,
@@ -246,7 +248,7 @@ dft_single(IndexType n,
         fftwl_import_wisdom_from_filename(FFTW_WISDOM_FILENAME);
 #   endif
 
-    if ( incX==1 && incX==1 ) {
+    if ( incX==1 && incY==1 ) {
         p = fftwl_plan_dft_1d(n,
                               reinterpret_cast<fftwl_complex*>(x),
                               reinterpret_cast<fftwl_complex*>(y),
@@ -273,7 +275,7 @@ dft_single(IndexType n,
 
 #ifdef HAVE_FFTW_QUAD
 template <typename IndexType>
-void
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
 dft_single(IndexType n, 
            std::complex<__float128> *x, IndexType incX,
            std::complex<__float128> *y, IndexType incY,
@@ -288,7 +290,7 @@ dft_single(IndexType n,
         fftwq_import_wisdom_from_filename(FFTW_WISDOM_FILENAME);
 #   endif
 
-    if ( incX==1 && incX==1 ) {
+    if ( incX==1 && incY==1 ) {
         p = fftwq_plan_dft_1d(n,
                               reinterpret_cast<fftwq_complex*>(x),
                               reinterpret_cast<fftwq_complex*>(y),
@@ -315,6 +317,254 @@ dft_single(IndexType n,
 
 #endif
 
+
+#ifdef HAVE_CLFFT
+    
+template <typename IndexType>
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+dft_single(IndexType n, 
+           flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX, 
+           flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY,
+           DFTDirection direction)
+{
+    CXXBLAS_DEBUG_OUT("dft_single [CLFFT interface, complex float]");
+    
+    cl_int err;
+    CLFFT_IMPL(PlanHandle) planHandle;
+    CLFFT_IMPL(Dim) dim = CLFFT_1D;
+    size_t clLengths = n;
+    size_t strideX   = incX;
+    size_t strideY   = incY;
+    // Create a default plan for a complex FFT. 
+    err = CLFFT_IMPL(CreateDefaultPlan) (&planHandle, flens::OpenCLEnv::getContext(), dim, &clLengths);
+    flens::checkStatus(err); 
+    
+    // Set plan parameters.
+    err = CLFFT_IMPL(SetPlanPrecision) (planHandle, CLFFT_SINGLE);
+    flens::checkStatus(err);
+    err = CLFFT_IMPL(SetLayout) (planHandle, CLFFT_COMPLEX_INTERLEAVED, CLFFT_COMPLEX_INTERLEAVED);
+    flens::checkStatus(err);
+    err = CLFFT_IMPL(SetResultLocation) (planHandle, CLFFT_OUTOFPLACE);
+    flens::checkStatus(err);
+    
+    // Set strides
+    err = CLFFT_IMPL(SetPlanInStride) (planHandle, CLFFT_1D, &strideX);
+    flens::checkStatus(err);
+    err = CLFFT_IMPL(SetPlanOutStride) (planHandle, CLFFT_1D, &strideY);
+    flens::checkStatus(err);
+    
+    // Bake the plan. 
+    err = CLFFT_IMPL(BakePlan) (planHandle, 1, flens::OpenCLEnv::getQueuePtr(), NULL, NULL);
+    flens::checkStatus(err);
+
+    if (direction==DFTDirection::Forward) {
+     
+        err = CLFFT_IMPL(EnqueueTransform) (planHandle, CLFFT_FORWARD, 1, 
+                                            flens::OpenCLEnv::getQueuePtr(), 
+                                            0, NULL, NULL, 
+                                            &(x.get()), &(y.get()), NULL);
+        
+    } else {
+      
+        err = CLFFT_IMPL(SetPlanScale) (planHandle, CLFFT_BACKWARD, cl_float(1));
+        flens::checkStatus(err); 
+        err = CLFFT_IMPL(EnqueueTransform) (planHandle, CLFFT_BACKWARD, 1, 
+                                            flens::OpenCLEnv::getQueuePtr(), 
+                                            0, NULL, NULL, 
+                                            &(x.get()), &(y.get()), NULL);
+        
+    }
+    flens::checkStatus(err);
+
+    err = CLFFT_IMPL(DestroyPlan) ( &planHandle );
+    flens::checkStatus(err);
+}
+
+template <typename IndexType>
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+dft_single(IndexType n, 
+           flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX, 
+           flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY,
+           DFTDirection direction)
+{
+  
+    CXXBLAS_DEBUG_OUT("dft_single [CLFFT interface, complex double]");
+      
+    cl_int err;
+    CLFFT_IMPL(PlanHandle) planHandle;
+    CLFFT_IMPL(Dim) dim = CLFFT_1D;
+    size_t clLengths = n;
+    size_t strideX   = incX;
+    size_t strideY   = incY;
+    // Create a default plan for a complex FFT. 
+    err = CLFFT_IMPL(CreateDefaultPlan) (&planHandle, 
+                                         flens::OpenCLEnv::getContext(), 
+                                         dim, &clLengths);
+    flens::checkStatus(err); 
+    
+    // Set plan parameters.
+    err = CLFFT_IMPL(SetPlanPrecision) (planHandle, CLFFT_DOUBLE);
+    flens::checkStatus(err);
+    err = CLFFT_IMPL(SetLayout) (planHandle, 
+                                 CLFFT_COMPLEX_INTERLEAVED, 
+                                 CLFFT_COMPLEX_INTERLEAVED);
+    flens::checkStatus(err);
+    err = CLFFT_IMPL(SetResultLocation) (planHandle, CLFFT_OUTOFPLACE);
+    flens::checkStatus(err);
+    
+    // Set strides
+    err = CLFFT_IMPL(SetPlanInStride) (planHandle, CLFFT_1D, &strideX);
+    flens::checkStatus(err);
+    err = CLFFT_IMPL(SetPlanOutStride) (planHandle, CLFFT_1D, &strideY);
+    flens::checkStatus(err);
+    
+    // Bake the plan. 
+    err = CLFFT_IMPL(BakePlan) (planHandle, 1, flens::OpenCLEnv::getQueuePtr(), NULL, NULL);
+    flens::checkStatus(err);
+
+    if (direction==DFTDirection::Forward) {
+      
+        err = CLFFT_IMPL(EnqueueTransform) (planHandle, CLFFT_FORWARD, 1, 
+                                            flens::OpenCLEnv::getQueuePtr(), 
+                                            0, NULL, NULL, 
+                                            &(x.get()), &(y.get()), NULL);
+        
+    } else {
+      
+        err = CLFFT_IMPL(SetPlanScale) (planHandle, CLFFT_BACKWARD, cl_double(1));
+        flens::checkStatus(err); 
+        err = CLFFT_IMPL(EnqueueTransform) (planHandle, CLFFT_BACKWARD, 1, 
+                                            flens::OpenCLEnv::getQueuePtr(), 
+                                            0, NULL, NULL, 
+                                            &(x.get()), &(y.get()), NULL);
+        
+    }
+    flens::checkStatus(err);
+
+    err = CLFFT_IMPL(DestroyPlan) ( &planHandle );
+    flens::checkStatus(err);
+}
+    
+#endif
+    
+#ifdef HAVE_CUFFT
+    
+template <typename IndexType>
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+dft_single(IndexType n, 
+            flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::CUDA> x, IndexType incX, 
+            flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::CUDA> y, IndexType incY,
+            DFTDirection direction)
+{
+    CXXBLAS_DEBUG_OUT("dft_single [CUFFT interface, complex float]");
+    
+    cufftHandle plan;
+    cufftResult status;
+    
+    if ( incX==1 && incY==1 ) {
+      
+        status = cufftPlan1d(&plan, n, CUFFT_C2C, 1);
+        flens::checkStatus(status);
+ 
+        status = cufftSetStream(plan, flens::CudaEnv::getStream());
+        flens::checkStatus(status);
+
+        if (direction==DFTDirection::Forward) {
+            status = cufftExecC2C(plan, 
+                                  reinterpret_cast<cufftComplex *>(x.get()), 
+                                  reinterpret_cast<cufftComplex *>(y.get()), CUFFT_FORWARD);
+        } else {
+            status = cufftExecC2C(plan, 
+                                  reinterpret_cast<cufftComplex *>(x.get()), 
+                                  reinterpret_cast<cufftComplex *>(y.get()), CUFFT_INVERSE);  
+        }
+        flens::checkStatus(status);
+    } else {
+        IndexType inembed = 1+(n-1)*incX;
+        IndexType onembed = 1+(n-1)*incY;
+        status = cufftPlanMany(&plan, 1, &n,
+                               &inembed, incX, 1, 
+                               &onembed, incY, 1,
+                               CUFFT_C2C, 1);
+        flens::checkStatus(status);
+
+        status = cufftSetStream(plan, flens::CudaEnv::getStream());
+        flens::checkStatus(status);
+
+        if (direction==DFTDirection::Forward) {
+            status = cufftExecC2C(plan, 
+                                  reinterpret_cast<cufftComplex *>(x.get()), 
+                                  reinterpret_cast<cufftComplex *>(y.get()), CUFFT_FORWARD);
+        } else {
+            status = cufftExecC2C(plan, 
+                                  reinterpret_cast<cufftComplex *>(x.get()), 
+                                  reinterpret_cast<cufftComplex *>(y.get()), CUFFT_INVERSE);
+        }
+        flens::checkStatus(status);
+    }
+    
+    cufftDestroy(plan);
+  
+}
+
+template <typename IndexType>
+typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+dft_single(IndexType n, 
+            flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::CUDA> x, IndexType incX, 
+            flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::CUDA> y, IndexType incY,
+            DFTDirection direction)
+{
+    CXXBLAS_DEBUG_OUT("dft_single [CUFFT interface, complex double]");
+    
+    cufftHandle plan;
+    cufftResult status;
+    
+    if ( incX==1 && incY==1 ) {
+      
+        status = cufftPlan1d(&plan, n, CUFFT_Z2Z, 1);
+        flens::checkStatus(status);
+
+        status = cufftSetStream(plan, flens::CudaEnv::getStream());
+        flens::checkStatus(status);
+
+        if (direction==DFTDirection::Forward) {
+            status = cufftExecZ2Z(plan, 
+                                  reinterpret_cast<cufftDoubleComplex *>(x.get()), 
+                                  reinterpret_cast<cufftDoubleComplex *>(y.get()), CUFFT_FORWARD);
+        } else {
+            status = cufftExecZ2Z(plan, 
+                                  reinterpret_cast<cufftDoubleComplex *>(x.get()), 
+                                  reinterpret_cast<cufftDoubleComplex *>(y.get()), CUFFT_INVERSE);  
+        }
+        flens::checkStatus(status);
+    } else {
+        IndexType inembed = 1+(n-1)*incX;
+        IndexType onembed = 1+(n-1)*incY;
+        status = cufftPlanMany(&plan, 1, &n,
+                               &inembed, incX, 1, 
+                               &onembed, incY, 1,
+                               CUFFT_Z2Z, 1);
+        flens::checkStatus(status);
+
+        status = cufftSetStream(plan, flens::CudaEnv::getStream());
+        flens::checkStatus(status);
+
+        if (direction==DFTDirection::Forward) {
+            status = cufftExecZ2Z(plan, 
+                                  reinterpret_cast<cufftDoubleComplex *>(x.get()), 
+                                  reinterpret_cast<cufftDoubleComplex *>(y.get()), CUFFT_FORWARD);
+        } else {
+            status = cufftExecZ2Z(plan, 
+                                  reinterpret_cast<cufftDoubleComplex *>(x.get()), 
+                                  reinterpret_cast<cufftDoubleComplex *>(y.get()), CUFFT_INVERSE);
+        }
+        flens::checkStatus(status);
+    }
+    
+    cufftDestroy(plan);
+  
+}
+#endif
 
 } // namespace cxxdft
 

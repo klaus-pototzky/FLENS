@@ -36,4 +36,18 @@
 #include <playground/cxxblas/level1extensions/prod.tcc>
 #include <playground/cxxblas/level1extensions/sum.tcc>
 
+#include <playground/cxxblas/level1extensions/acxpby.tcc>
+#include <playground/cxxblas/level1extensions/acxpy.tcc>
+#include <playground/cxxblas/level1extensions/ccopy.tcc>
+#include <playground/cxxblas/level1extensions/geaxpby.tcc>
+#include <playground/cxxblas/level1extensions/geaxpy.tcc>
+#include <playground/cxxblas/level1extensions/gecopy.tcc>
+#include <playground/cxxblas/level1extensions/gecotr.tcc>
+#include <playground/cxxblas/level1extensions/gescal.tcc>
+#include <playground/cxxblas/level1extensions/geraxpy.tcc>
+#include <playground/cxxblas/level1extensions/gerscal.tcc>
+#include <playground/cxxblas/level1extensions/racxpy.tcc>
+#include <playground/cxxblas/level1extensions/raxpy.tcc>
+#include <playground/cxxblas/level1extensions/rscal.tcc>
+
 #endif // PLAYGROUND_CXXBLAS_LEVEL1EXTENSIONS_LEVEL1EXTENSIONS_TCC

@@ -36,4 +36,18 @@
 #include <playground/cxxblas/level1extensions/prod.h>
 #include <playground/cxxblas/level1extensions/sum.h>
 
+#include <playground/cxxblas/level1extensions/acxpby.h>
+#include <playground/cxxblas/level1extensions/acxpy.h>
+#include <playground/cxxblas/level1extensions/ccopy.h>
+#include <playground/cxxblas/level1extensions/geaxpby.h>
+#include <playground/cxxblas/level1extensions/geaxpy.h>
+#include <playground/cxxblas/level1extensions/gecopy.h>
+#include <playground/cxxblas/level1extensions/gecotr.h>
+#include <playground/cxxblas/level1extensions/gescal.h>
+#include <playground/cxxblas/level1extensions/geraxpy.h>
+#include <playground/cxxblas/level1extensions/gerscal.h>
+#include <playground/cxxblas/level1extensions/racxpy.h>
+#include <playground/cxxblas/level1extensions/raxpy.h>
+#include <playground/cxxblas/level1extensions/rscal.h>
+
 #endif // PLAYGROUND_CXXBLAS_LEVEL1EXTENSIONS_LEVEL1EXTENSIONS_H

@@ -268,14 +268,14 @@ DiagMatrix<FS>::leadingDimension() const
 }
 
 template <typename FS>
-const typename DiagMatrix<FS>::ElementType *
+const typename DiagMatrix<FS>::ConstPointerType
 DiagMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename DiagMatrix<FS>::ElementType *
+typename DiagMatrix<FS>::PointerType
 DiagMatrix<FS>::data()
 {
     return _engine.data();

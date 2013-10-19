@@ -33,6 +33,7 @@
 #ifndef CXXBLAS_AUXILIARY_AUXILIARY_H
 #define CXXBLAS_AUXILIARY_AUXILIARY_H 1
 
+#include <cxxblas/auxiliary/cast.h>
 #include <cxxblas/auxiliary/complex.h>
 #include <cxxblas/auxiliary/debugmacro.h>
 

@@ -31,7 +31,7 @@ main(int argc, char* argv[])
     ///
     /// Calculate determinant based on LU factorization
     ///
-    cout << lapack::extensions::det(A, Pivots) << endl;
+    cout << "det(A) = " << lapack::extensions::det(A, Pivots) << endl;
         
     return 0;
 }

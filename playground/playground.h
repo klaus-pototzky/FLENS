@@ -33,8 +33,8 @@
 #ifndef PLAYGROUND_PLAYGROUND_H
 #define PLAYGROUND_PLAYGROUND_H 1
 
-#include<playground/cxxdft/cxxdft.h>
 #include<playground/cxxblas/cxxblas.h>
+#include<playground/cxxdft/cxxdft.h>
 #include<playground/flens/flens.h>
 
 #endif // PLAYGROUND_PLAYGROUND_H

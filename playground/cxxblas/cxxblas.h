@@ -33,8 +33,16 @@
 #ifndef PLAYGROUND_CXXBLAS_CXXBLAS_H
 #define PLAYGROUND_CXXBLAS_CXXBLAS_H 1
 
+#include <playground/cxxblas/drivers/drivers.h>
+
+#include <playground/cxxblas/auxiliary/auxiliary.h>
+#include <playground/cxxblas/level1/level1.h>
 #include <playground/cxxblas/level1extensions/level1extensions.h>
+#include <playground/cxxblas/level2/level2.h>
+
+
 #include <playground/cxxblas/intrinsics/intrinsics.h>
 #include <playground/cxxblas/level3extensions/level3extensions.h>
+#include <playground/cxxblas/level3/level3.h>
 
 #endif // PLAYGROUND_CXXBLAS_CXXBLAS_H

@@ -35,13 +35,14 @@
 
 #define HAVE_CXXDFT_MULTIPLE 1
 
-#include <complex>
+#include <cxxblas/typedefs.h>
+#include <cxxblas/drivers/drivers.h>
 #include <playground/cxxdft/direction.h>
 
 namespace cxxdft {
 
 template <typename IndexType, typename VIN, typename VOUT>
-    void
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
     dft_multiple(IndexType n, IndexType m,
                  const VIN *x, IndexType strideX, IndexType distX,
                  VOUT *y, IndexType strideY, IndexType distY,
@@ -51,25 +52,25 @@ template <typename IndexType, typename VIN, typename VOUT>
     
 #ifdef HAVE_FFTW_FLOAT    
 template <typename IndexType>
-    void
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
     dft_multiple(IndexType n, IndexType m,
-                 std::complex<float> *x, IndexType strideX, IndexType distX,
-                 std::complex<float> *y, IndexType strideY, IndexType distY,
+                 cxxblas::ComplexFloat *x, IndexType strideX, IndexType distX,
+                 cxxblas::ComplexFloat *y, IndexType strideY, IndexType distY,
                  DFTDirection direction);
 #endif // HAVE_FFTW_FLOAT
     
 #ifdef HAVE_FFTW_DOUBLE
 template <typename IndexType>
-    void
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
     dft_multiple(IndexType n, IndexType m,
-                 std::complex<double> *x, IndexType strideX, IndexType distX,
-                 std::complex<double> *y, IndexType strideY, IndexType distY,
+                 cxxblas::ComplexDouble *x, IndexType strideX, IndexType distX,
+                 cxxblas::ComplexDouble *y, IndexType strideY, IndexType distY,
                  DFTDirection direction);
 #endif // HAVE_FFTW_DOUBLE
 
 #ifdef HAVE_FFTW_LONGDOUBLE
 template <typename IndexType>
-    void
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
     dft_multiple(IndexType n, IndexType m,
                  std::complex<long double> *x, IndexType strideX, IndexType distX,
                  std::complex<long double> *y, IndexType strideY, IndexType distY,
@@ -78,14 +79,50 @@ template <typename IndexType>
  
 #ifdef HAVE_FFTW_QUAD
 template <typename IndexType>
-    void
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
     dft_multiple(IndexType n, IndexType m,
                  std::complex<__float128> *x, IndexType strideX, IndexType distX,
                  std::complex<__float128> *y, IndexType strideY, IndexType distY,
                  DFTDirection direction);
 #endif // HAVE_FFTW_QUAD
     
-#endif
+#endif // HAVE_FFTW
+    
+#ifdef HAVE_CLFFT
+    
+ template <typename IndexType>
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    dft_multiple(IndexType n,  IndexType m, 
+                 flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::OpenCL> x, IndexType strideX, IndexType distX, 
+                 flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::OpenCL> y, IndexType strideY, IndexType distY,
+                 DFTDirection direction);
+    
+template <typename IndexType>
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    dft_multiple(IndexType n, IndexType m, 
+                 flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::OpenCL> x, IndexType strideX, IndexType distX, 
+                 flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::OpenCL> y, IndexType strideY, IndexType distY,
+                 DFTDirection direction);   
+    
+#endif // HAVE_CLFFT
+    
+#ifdef HAVE_CUFFT
+    
+template <typename IndexType>
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    dft_multiple(IndexType n,  IndexType m, 
+                 flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::CUDA> x, IndexType strideX, IndexType distX, 
+                 flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::CUDA> y, IndexType strideY, IndexType distY,
+                 DFTDirection direction);
+    
+template <typename IndexType>
+    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    dft_multiple(IndexType n,  IndexType m, 
+                 flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::CUDA> x, IndexType strideX, IndexType distX, 
+                 flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::CUDA> y, IndexType strideY, IndexType distY,
+                 DFTDirection direction);
+#endif // HAVE_CUFFT
+    
     
 } // namespace cxxfft
 

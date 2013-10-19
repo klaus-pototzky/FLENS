@@ -327,14 +327,14 @@ GeMatrix<FS>::cols() const
 }
 
 template <typename FS>
-const typename GeMatrix<FS>::ElementType *
+const typename GeMatrix<FS>::ConstPointerType
 GeMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename GeMatrix<FS>::ElementType *
+typename GeMatrix<FS>::PointerType
 GeMatrix<FS>::data()
 {
     return _engine.data();

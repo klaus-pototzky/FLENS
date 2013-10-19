@@ -33,11 +33,13 @@
 #ifndef PLAYGROUND_FLENS_FLENS_TCC
 #define PLAYGROUND_FLENS_FLENS_TCC 1
 
+#include<playground/flens/auxiliary/auxiliary.tcc>
 #include<playground/flens/dft/dft.tcc>
 #include<playground/flens/mpi/mpi-flens.tcc>
 #include<playground/flens/solver/solver.tcc>
 #include<playground/flens/sparse/sparse.tcc>
 #include<playground/flens/blas-extensions/blas-extensions.tcc>
 #include<playground/flens/lapack-extensions/lapack-extensions.tcc>
+#include<playground/flens/storage/storage.tcc>
 
 #endif // PLAYGROUND_FLENS_FLENS_TCC

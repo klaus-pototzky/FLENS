@@ -355,14 +355,14 @@ DenseVector<A>::endIndex() const
 }
 
 template <typename A>
-const typename DenseVector<A>::ElementType *
+typename DenseVector<A>::ConstPointerType
 DenseVector<A>::data() const
 {
     return _array.data();
 }
 
 template <typename A>
-typename DenseVector<A>::ElementType *
+typename DenseVector<A>::PointerType
 DenseVector<A>::data()
 {
     return _array.data();
