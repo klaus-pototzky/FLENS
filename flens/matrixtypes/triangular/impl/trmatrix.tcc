@@ -283,14 +283,14 @@ TrMatrix<FS>::diag()
 }
 
 template <typename FS>
-const typename TrMatrix<FS>::ElementType *
+const typename TrMatrix<FS>::ConstPointerType
 TrMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename TrMatrix<FS>::ElementType *
+typename TrMatrix<FS>::PointerType
 TrMatrix<FS>::data()
 {
     return _engine.data();

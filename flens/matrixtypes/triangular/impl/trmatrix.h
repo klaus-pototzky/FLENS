@@ -62,6 +62,8 @@ class TrMatrix
     public:
         typedef FS                                  Engine;
         typedef typename Engine::ElementType        ElementType;
+        typedef typename Engine::PointerType        PointerType;
+        typedef typename Engine::ConstPointerType   ConstPointerType;
         typedef typename Engine::IndexType          IndexType;
 
         // view types from Engine
@@ -198,10 +200,10 @@ class TrMatrix
         Diag &
         diag();
 
-        const ElementType *
+        const ConstPointerType
         data() const;
 
-        ElementType *
+        PointerType
         data();
 
         IndexType
