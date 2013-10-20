@@ -67,7 +67,7 @@ class ConstDeviceFullStorageView
     public:
         typedef T                                     ElementType;
         typedef device_ptr<T, A::Type>                PointerType;
-        typedef const device_ptr<T, A::Type>          ConstPointerType;
+        typedef const device_ptr<const T, A::Type>    ConstPointerType;
         typedef typename I::IndexType                 IndexType;
         typedef A                                     Allocator;
 
@@ -196,11 +196,11 @@ class ConstDeviceFullStorageView
                      IndexType firstViewIndex = I::defaultIndexBase) const;
 
     private:
-        PointerType          _data;
-        Allocator            _allocator;
-        IndexType            _numRows, _numCols;
-        IndexType            _leadingDimension;
-        IndexType            _firstRow, _firstCol;
+        const ConstPointerType  _data;
+        Allocator               _allocator;
+        IndexType               _numRows, _numCols;
+        IndexType               _leadingDimension;
+        IndexType               _firstRow, _firstCol;
 };
 
 #endif // HAVE_DEVICE_STORAGE

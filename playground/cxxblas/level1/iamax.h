@@ -45,14 +45,14 @@ namespace cxxblas {
 template <typename IndexType, typename T>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-         const flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX,
+         const flens::device_ptr<const T, flens::StorageType::OpenCL> x, IndexType incX,
          IndexType &result);
 
 // siamax, result on device (with temporary workspace)
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-         const flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX,
+         const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX,
          flens::device_ptr<IndexType, flens::StorageType::OpenCL> result,
          flens::device_ptr<float, flens::StorageType::OpenCL> work);
 
@@ -60,7 +60,7 @@ template <typename IndexType>
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-         const flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX,
+         const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX,
          flens::device_ptr<IndexType, flens::StorageType::OpenCL> result,
          flens::device_ptr<double, flens::StorageType::OpenCL> work);
 
@@ -69,7 +69,7 @@ template <typename IndexType>
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
          flens::device_ptr<IndexType, flens::StorageType::OpenCL> result,
          flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> work);
 
@@ -77,7 +77,7 @@ template <typename IndexType>
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
          flens::device_ptr<IndexType, flens::StorageType::OpenCL> result,
          flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> work);
 
@@ -89,7 +89,7 @@ template <typename IndexType>
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-          const flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX,
+          const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
           IndexType &result);
 
     
@@ -97,7 +97,7 @@ template <typename IndexType>
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-          const flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX,
+          const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
           IndexType &result);
 
     
@@ -105,14 +105,14 @@ template <typename IndexType>
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-          const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
+          const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
           IndexType &result);
         
 // ziamax
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     iamax(IndexType n,
-          const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
+          const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
           IndexType &result);
 
     

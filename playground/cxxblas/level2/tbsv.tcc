@@ -45,7 +45,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<float, flens::StorageType::OpenCL> A, IndexType ldA,
+     const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
      flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("clAmdBlasStrsv");
@@ -68,7 +68,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<double, flens::StorageType::OpenCL> A, IndexType ldA,
+     const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
      flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("clAmdBlasDtrsv");
@@ -90,7 +90,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
      flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("clAmdBlasCtrsv");
@@ -112,7 +112,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
      flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("clAmdBlasZtrsv");
@@ -138,7 +138,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<float, flens::StorageType::CUDA> A, IndexType ldA,
+     const flens::device_ptr<const float, flens::StorageType::CUDA> A, IndexType ldA,
      flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("cublasStrsv");
@@ -165,7 +165,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<double, flens::StorageType::CUDA> A, IndexType ldA,
+     const flens::device_ptr<const double, flens::StorageType::CUDA> A, IndexType ldA,
       flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("cublasDtrsv");
@@ -191,7 +191,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
      flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("cublasCtrsv");
@@ -218,7 +218,7 @@ typename If<IndexType>::isBlasCompatibleInteger
 trsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
      flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX)
 {
     CXXBLAS_DEBUG_OUT("cublasZtrsv");

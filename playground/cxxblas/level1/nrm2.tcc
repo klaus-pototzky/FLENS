@@ -44,7 +44,7 @@ namespace cxxblas {
 template <typename IndexType, typename T>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-    const flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX,
+    const flens::device_ptr<const T, flens::StorageType::OpenCL> x, IndexType incX,
     T &result)
 {
     flens::CustomAllocator<T, flens::StorageType::OpenCL>                 allocator_real;
@@ -67,7 +67,7 @@ nrm2(IndexType n,
 template <typename IndexType, typename T>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-     const flens::device_ptr<std::complex<T>, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const std::complex<T>, flens::StorageType::OpenCL> x, IndexType incX,
      T &result)
 {
 
@@ -91,7 +91,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-     const flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX,
      flens::device_ptr<float, flens::StorageType::OpenCL> result,
      flens::device_ptr<float, flens::StorageType::OpenCL> work)
 {
@@ -111,7 +111,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-     const flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX,
      flens::device_ptr<double, flens::StorageType::OpenCL> result,
      flens::device_ptr<double, flens::StorageType::OpenCL> work)
 {
@@ -131,7 +131,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
      flens::device_ptr<float, flens::StorageType::OpenCL> result,
      flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> work)
 {
@@ -151,7 +151,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
      flens::device_ptr<double, flens::StorageType::OpenCL> result,
      flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> work)
 {
@@ -175,7 +175,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-    const flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
     float &result)
 {
     CXXBLAS_DEBUG_OUT(" cublasSnrm2");
@@ -195,7 +195,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-    const flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
     double &result)
 {
     CXXBLAS_DEBUG_OUT("cublasDnrm2");
@@ -214,7 +214,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
      float &result)
 {
     CXXBLAS_DEBUG_OUT("cublasCnrm2");
@@ -234,7 +234,7 @@ nrm2(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 nrm2(IndexType n,
-    const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
     double &result)
 {
     CXXBLAS_DEBUG_OUT("cublasDznrm2");

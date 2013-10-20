@@ -50,10 +50,17 @@ device_ptr<DataType, StorageType::OpenCL>::device_ptr(const cl_mem &_ptr, int _o
 }
 
 template <typename DataType>
-device_ptr<DataType, StorageType::OpenCL>::device_ptr(const device_ptr<DataType, StorageType::OpenCL> &other)
+device_ptr<DataType, StorageType::OpenCL>::device_ptr(const device_ptr<typename std::add_const<DataType>::type, StorageType::OpenCL> &other)
     : ptr(other.get()), offset(other.getOffset())
 {
 }
+
+template <typename DataType>
+device_ptr<DataType, StorageType::OpenCL>::device_ptr(const device_ptr<typename std::remove_const<DataType>::type, StorageType::OpenCL> &other)
+    : ptr(other.get()), offset(other.getOffset())
+{
+}
+
 
 template <typename DataType>
 cl_mem &
@@ -127,9 +134,14 @@ device_ptr<DataType, StorageType::CUDA>::device_ptr(DataType *_ptr, int _deviceI
 {
 }
 
+template <typename DataType>
+device_ptr<DataType, StorageType::CUDA>::device_ptr(const device_ptr<typename std::add_const<DataType>::type, StorageType::CUDA> &other)
+    : ptr(other.get()), deviceID(other.getDeviceID())
+{
+}
 
 template <typename DataType>
-device_ptr<DataType, StorageType::CUDA>::device_ptr(const device_ptr<DataType, StorageType::CUDA> &other) 
+device_ptr<DataType, StorageType::CUDA>::device_ptr(const device_ptr<typename std::remove_const<DataType>::type, StorageType::CUDA> &other)
     : ptr(other.get()), deviceID(other.getDeviceID())
 {
 }

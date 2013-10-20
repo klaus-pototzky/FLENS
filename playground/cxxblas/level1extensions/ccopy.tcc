@@ -61,7 +61,7 @@ ccopy(IndexType n, const std::complex<T> *x, IndexType incX,
 
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 void
-ccopy(IndexType n, const flens::device_ptr<T, STORAGETYPE> x, IndexType incX, 
+ccopy(IndexType n, const flens::device_ptr<const T, STORAGETYPE> x, IndexType incX, 
       T *y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("ccopy_generic [real] [device -> host]");
@@ -70,7 +70,7 @@ ccopy(IndexType n, const flens::device_ptr<T, STORAGETYPE> x, IndexType incX,
 
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 void
-ccopy(IndexType n, const flens::device_ptr<std::complex<T>, STORAGETYPE> x, IndexType incX, 
+ccopy(IndexType n, const flens::device_ptr<const std::complex<T>, STORAGETYPE> x, IndexType incX, 
       std::complex<T> *y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("ccopy_generic [complex] [device -> host]");
@@ -81,7 +81,7 @@ ccopy(IndexType n, const flens::device_ptr<std::complex<T>, STORAGETYPE> x, Inde
 
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 void
-ccopy(IndexType n, const flens::device_ptr<T, STORAGETYPE> x, IndexType incX, 
+ccopy(IndexType n, const flens::device_ptr<const T, STORAGETYPE> x, IndexType incX, 
       flens::device_ptr<T, STORAGETYPE> y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("ccopy_generic [real] [device -> host]");
@@ -90,7 +90,7 @@ ccopy(IndexType n, const flens::device_ptr<T, STORAGETYPE> x, IndexType incX,
 
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 void
-ccopy(IndexType n, const flens::device_ptr<std::complex<T>, STORAGETYPE> x, IndexType incX, 
+ccopy(IndexType n, const flens::device_ptr<const std::complex<T>, STORAGETYPE> x, IndexType incX, 
       flens::device_ptr<std::complex<T>, STORAGETYPE> y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("ccopy_generic [complex] [device -> host]");

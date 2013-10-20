@@ -48,7 +48,7 @@ tbmm(StorageOrder order, Side side, StorageUpLo upLo,
       IndexType m, IndexType n,
       IndexType k,
       const ALPHA &alpha,
-      const flens::device_ptr<T, STORAGETYPE> A, IndexType ldA,
+      const flens::device_ptr<const T, STORAGETYPE> A, IndexType ldA,
       flens::device_ptr<T, STORAGETYPE> B, IndexType ldB);
 {
     if (order==RowMajor) {

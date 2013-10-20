@@ -46,7 +46,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<float, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
          flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX);
 
 // dtrsv
@@ -55,7 +55,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<double, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
          flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX);
 
 // ctrsv
@@ -64,7 +64,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
          flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX);
 
 // ztrsv
@@ -73,7 +73,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
          flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX);
 
 #endif // HAVE_CLBLAS
@@ -86,7 +86,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<float, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const float, flens::StorageType::CUDA> A, IndexType ldA,
          flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX);
 
 // dtrsv
@@ -95,7 +95,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<double, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const double, flens::StorageType::CUDA> A, IndexType ldA,
          flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX);
 
 // ctrsv
@@ -104,7 +104,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
          flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX);
 
 // ztrsv
@@ -113,7 +113,7 @@ template <typename IndexType>
     trsv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
          IndexType n,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
          flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX);
 
 #endif // HAVE_CUBLAS

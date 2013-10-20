@@ -44,7 +44,7 @@ template <typename IndexType, typename ALPHA, typename T, typename BETA,
     void
     geaxpby(StorageOrder order,
             Transpose trans, IndexType m, IndexType n,
-            const ALPHA &alpha, const flens::device_ptr<T, STORAGETYPE> A, IndexType ldA,
+            const ALPHA &alpha, const flens::device_ptr<const T, STORAGETYPE> A, IndexType ldA,
             const BETA &beta, flens::device_ptr<T, STORAGETYPE> B, IndexType ldB);
 
 #endif 

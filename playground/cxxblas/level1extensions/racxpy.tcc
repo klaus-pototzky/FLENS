@@ -44,7 +44,7 @@ template <typename IndexType, typename ALPHA, typename X,
           typename BETA, typename Y, flens::StorageType STORAGETYPE>
 void
 racxpby(IndexType n, const ALPHA &alpha, 
-        const flens::device_ptr<X, STORAGETYPE> x, IndexType incX,
+        const flens::device_ptr<const X, STORAGETYPE> x, IndexType incX,
         const BETA &beta, 
         flens::device_ptr<Y, STORAGETYPE> y, IndexType incY)
 {

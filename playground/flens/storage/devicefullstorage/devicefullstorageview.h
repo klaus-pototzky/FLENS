@@ -67,7 +67,7 @@ class DeviceFullStorageView
     public:
         typedef T                                     ElementType;
         typedef device_ptr<T, A::Type>                PointerType;
-        typedef const device_ptr<T, A::Type>          ConstPointerType;
+        typedef const device_ptr<const T, A::Type>    ConstPointerType;
         typedef typename I::IndexType                 IndexType;
         typedef A                                     Allocator;
 

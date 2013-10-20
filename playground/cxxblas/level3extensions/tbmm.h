@@ -47,7 +47,7 @@ template <typename IndexType, typename ALPHA, typename T,
          IndexType m, IndexType n,
          IndexType k,
          const ALPHA &alpha,
-         const flens::device_ptr<T, STORAGETYPE> A, IndexType ldA,
+         const flens::device_ptr<const T, STORAGETYPE> A, IndexType ldA,
          flens::device_ptr<T, STORAGETYPE> B, IndexType ldB);
 
 #endif // HAVE_CLBLAS or HAVE_CUBLAS

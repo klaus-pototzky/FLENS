@@ -49,8 +49,8 @@ gbmm(StorageOrder order, Side side,
       IndexType kl, IndexType ku,
       IndexType l,
       const ALPHA &alpha,
-      const flens::device_ptr<T, STORAGETYPE> A, IndexType ldA,
-      const flens::device_ptr<T, STORAGETYPE> B, IndexType ldB,
+      const flens::device_ptr<const T, STORAGETYPE> A, IndexType ldA,
+      const flens::device_ptr<const T, STORAGETYPE> B, IndexType ldB,
       const BETA &beta,
       flens::device_ptr<T, STORAGETYPE> C, IndexType ldC);
 {

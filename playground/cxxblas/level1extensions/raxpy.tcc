@@ -43,7 +43,7 @@ namespace cxxblas {
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 void
 raxpy(IndexType n, const T &alpha, 
-      const flens::device_ptr<T, STORAGETYPE> x, IndexType incX,
+      const flens::device_ptr<const T, STORAGETYPE> x, IndexType incX,
       flens::device_ptr<T, STORAGETYPE> y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("raxpy"); 

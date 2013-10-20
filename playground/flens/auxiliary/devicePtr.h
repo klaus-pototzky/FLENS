@@ -33,6 +33,8 @@
 #ifndef PLAYGROUND_FLENS_AUXILIARY_DEVICEPTR_H
 #define PLAYGROUND_FLENS_AUXILIARY_DEVICEPTR_H 1
 
+#include <type_traits>
+
 namespace flens {
 
 enum StorageType {
@@ -55,7 +57,9 @@ class device_ptr<DataType, StorageType::OpenCL> {
 
         device_ptr(const cl_mem &_ptr, int _offset);
 
-        device_ptr(const device_ptr<DataType, StorageType::OpenCL> &other);
+        device_ptr(const device_ptr<typename std::add_const<DataType>::type, StorageType::OpenCL> &other);
+
+        device_ptr(const device_ptr<typename std::remove_const<DataType>::type, StorageType::OpenCL> &other);
 
         cl_mem &
         get();
@@ -100,7 +104,9 @@ class device_ptr<DataType, StorageType::CUDA> {
 
         device_ptr(DataType *_ptr, int _deviceID);
 
-        device_ptr(const device_ptr<DataType, StorageType::CUDA> &other) ;
+        device_ptr(const device_ptr<typename std::add_const<DataType>::type, StorageType::CUDA> &other);
+
+        device_ptr(const device_ptr<typename std::remove_const<DataType>::type, StorageType::CUDA> &other);
 
         DataType 
         *get() const;

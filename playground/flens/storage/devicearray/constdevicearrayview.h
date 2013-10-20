@@ -53,11 +53,11 @@ template <typename T,
 class ConstDeviceArrayView
 {
     public:
-        typedef T                                ElementType;
-        typedef device_ptr<T, A::Type>           PointerType;
-        typedef const device_ptr<T, A::Type>     ConstPointerType;
-        typedef typename I::IndexType            IndexType;
-        typedef A                                Allocator;
+        typedef T                                      ElementType;
+        typedef device_ptr<T, A::Type>                 PointerType;
+        typedef const device_ptr<const T, A::Type>     ConstPointerType;
+        typedef typename I::IndexType                  IndexType;
+        typedef A                                      Allocator;
 
         typedef ConstDeviceArrayView             ConstView;
         typedef DeviceArrayView<T, I, A>         View;
@@ -118,9 +118,9 @@ class ConstDeviceArrayView
         ConstDeviceArrayView &
         operator=(const ConstDeviceArrayView &rhs);
 
-        const PointerType _data;
-        Allocator         _allocator;
-        IndexType         _length, _stride, _firstIndex;
+        const ConstPointerType _data;
+        Allocator              _allocator;
+        IndexType              _length, _stride, _firstIndex;
 };
 
 #endif // defined(HAVE_CUBLAS) || defined(HAVE_CLBLAS)

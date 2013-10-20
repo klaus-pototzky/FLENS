@@ -63,7 +63,7 @@ template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
     void
     gecopy(StorageOrder order,
            Transpose trans, IndexType m, IndexType n,
-           const flens::device_ptr<T, STORAGETYPE> A, IndexType ldA,
+           const flens::device_ptr<const T, STORAGETYPE> A, IndexType ldA,
            T *B, IndexType ldB);
 //
 // Copy within the device
@@ -72,7 +72,7 @@ template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
     void
     gecopy(StorageOrder order,
            Transpose trans, IndexType m, IndexType n,
-           const flens::device_ptr<T, STORAGETYPE> A, IndexType ldA,
+           const flens::device_ptr<const T, STORAGETYPE> A, IndexType ldA,
            flens::device_ptr<T, STORAGETYPE> B, IndexType ldB);
     
 #endif // HAVE_CLBLAS or HAVE_CUBLAS

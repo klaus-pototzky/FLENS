@@ -46,7 +46,7 @@ namespace cxxblas {
     template <typename ALPHA, typename T, typename BETA>
     void
     axpby(int n, ALPHA alpha, 
-         const flens::device_ptr<T, flens::StorageType::OpenCL> x, int incX,
+         const flens::device_ptr<const T, flens::StorageType::OpenCL> x, int incX,
          BETA beta,
          flens::device_ptr<T, flens::StorageType::OpenCL> y, int incY);
     
@@ -58,7 +58,7 @@ namespace cxxblas {
     template <typename ALPHA, typename T, typename BETA>
     void
     axpby(int n, ALPHA alpha, 
-         const flens::device_ptr<T, flens::StorageType::CUDA> x, int incX,
+         const flens::device_ptr<const T, flens::StorageType::CUDA> x, int incX,
          BETA beta,
          flens::device_ptr<T, flens::StorageType::CUDA> y, int incY);
     

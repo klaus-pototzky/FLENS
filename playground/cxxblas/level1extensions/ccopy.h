@@ -62,13 +62,13 @@ template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 // ccopy [real]
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
     void
-    ccopy(IndexType n, const flens::device_ptr<T, STORAGETYPE> x, IndexType incX, 
+    ccopy(IndexType n, const flens::device_ptr<const T, STORAGETYPE> x, IndexType incX, 
           T *y, IndexType incY);
 
 // ccopy [complex]
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
     void
-    ccopy(IndexType n, const flens::device_ptr<std::complex<T>, STORAGETYPE> x, IndexType incX, 
+    ccopy(IndexType n, const flens::device_ptr<const std::complex<T>, STORAGETYPE> x, IndexType incX, 
           std::complex<T> *y, IndexType incY);
 //
 // Copy device -> device
@@ -77,13 +77,13 @@ template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
 // ccopy [real]
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
     void
-    ccopy(IndexType n, const flens::device_ptr<T, STORAGETYPE> x, IndexType incX, 
+    ccopy(IndexType n, const flens::device_ptr<const T, STORAGETYPE> x, IndexType incX, 
           flens::device_ptr<T, STORAGETYPE> y, IndexType incY);
     
 // ccopy [complex]
 template <typename IndexType, typename T, flens::StorageType STORAGETYPE>
     void
-    ccopy(IndexType n, const flens::device_ptr<std::complex<T>, STORAGETYPE> x, IndexType incX, 
+    ccopy(IndexType n, const flens::device_ptr<const std::complex<T>, STORAGETYPE> x, IndexType incX, 
           flens::device_ptr<std::complex<T>, STORAGETYPE> y, IndexType incY);
     
 #endif 

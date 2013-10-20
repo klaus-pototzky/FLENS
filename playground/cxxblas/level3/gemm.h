@@ -45,8 +45,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          float alpha,
-         const flens::device_ptr<float, flens::StorageType::OpenCL> A, IndexType ldA,
-         const flens::device_ptr<float, flens::StorageType::OpenCL> B, IndexType ldB,
+         const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const float, flens::StorageType::OpenCL> B, IndexType ldB,
          float beta,
          flens::device_ptr<float, flens::StorageType::OpenCL> C, IndexType ldC);
 
@@ -56,8 +56,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          double alpha,
-         const flens::device_ptr<double, flens::StorageType::OpenCL> A, IndexType ldA,
-         const flens::device_ptr<double, flens::StorageType::OpenCL> B, IndexType ldB,
+         const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const double, flens::StorageType::OpenCL> B, IndexType ldB,
          double beta,
          flens::device_ptr<double, flens::StorageType::OpenCL> C, IndexType ldC);
 
@@ -67,8 +67,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          ComplexFloat alpha,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> B, IndexType ldB,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> B, IndexType ldB,
          ComplexFloat beta,
          flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> C, IndexType ldC);
 
@@ -78,8 +78,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          ComplexDouble alpha,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> B, IndexType ldB,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> B, IndexType ldB,
          ComplexDouble beta,
          flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> C, IndexType ldC);
 
@@ -93,8 +93,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          float alpha,
-         const flens::device_ptr<float, flens::StorageType::CUDA> A, IndexType ldA,
-         const flens::device_ptr<float, flens::StorageType::CUDA> B, IndexType ldB,
+         const flens::device_ptr<const float, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const float, flens::StorageType::CUDA> B, IndexType ldB,
          float beta,
          flens::device_ptr<float, flens::StorageType::CUDA> C, IndexType ldC);
 
@@ -104,8 +104,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          double alpha,
-         const flens::device_ptr<double, flens::StorageType::CUDA> A, IndexType ldA,
-         const flens::device_ptr<double, flens::StorageType::CUDA> B, IndexType ldB,
+         const flens::device_ptr<const double, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const double, flens::StorageType::CUDA> B, IndexType ldB,
          double beta,
          flens::device_ptr<double, flens::StorageType::CUDA> C, IndexType ldC);
 
@@ -115,8 +115,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          ComplexFloat alpha,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> B, IndexType ldB,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> B, IndexType ldB,
          ComplexFloat beta,
          flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> C, IndexType ldC);
 
@@ -126,8 +126,8 @@ template <typename IndexType>
     gemm(StorageOrder order, Transpose transA, Transpose transB,
          IndexType m, IndexType n, IndexType k,
          ComplexDouble alpha,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> B, IndexType ldB,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> B, IndexType ldB,
          ComplexDouble beta,
          flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> C, IndexType ldC);
 

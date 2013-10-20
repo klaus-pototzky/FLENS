@@ -44,8 +44,8 @@ namespace cxxblas {
 template <typename IndexType, typename T>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX,
-    const flens::device_ptr<T, flens::StorageType::OpenCL> y, IndexType incY,
+    const flens::device_ptr<const T, flens::StorageType::OpenCL> x, IndexType incX,
+    const flens::device_ptr<const T, flens::StorageType::OpenCL> y, IndexType incY,
     T &result)
 {
      flens::CustomAllocator<T, flens::StorageType::OpenCL>   allocator;
@@ -66,8 +66,8 @@ dot(IndexType n,
 template <typename IndexType, typename T>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX,
-     const flens::device_ptr<T, flens::StorageType::OpenCL> y, IndexType incY,
+     const flens::device_ptr<const T, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const T, flens::StorageType::OpenCL> y, IndexType incY,
      T &result)
 {
      flens::CustomAllocator<T, flens::StorageType::OpenCL>   allocator;
@@ -88,8 +88,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX,
-    const flens::device_ptr<float, flens::StorageType::OpenCL> y, IndexType incY,
+    const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX,
+    const flens::device_ptr<const float, flens::StorageType::OpenCL> y, IndexType incY,
     flens::device_ptr<float, flens::StorageType::OpenCL> result,
     flens::device_ptr<float, flens::StorageType::OpenCL> work)
 {
@@ -110,8 +110,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX,
-     const flens::device_ptr<float, flens::StorageType::OpenCL> y, IndexType incY,
+     const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const float, flens::StorageType::OpenCL> y, IndexType incY,
      flens::device_ptr<float, flens::StorageType::OpenCL> result,
      flens::device_ptr<float, flens::StorageType::OpenCL> work)
 {
@@ -123,8 +123,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX,
-    const flens::device_ptr<double, flens::StorageType::OpenCL> y, IndexType incY,
+    const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX,
+    const flens::device_ptr<const double, flens::StorageType::OpenCL> y, IndexType incY,
     flens::device_ptr<double, flens::StorageType::OpenCL> result,
     flens::device_ptr<double, flens::StorageType::OpenCL> work)
 {
@@ -145,8 +145,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX,
-     const flens::device_ptr<double, flens::StorageType::OpenCL> y, IndexType incY,
+     const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const double, flens::StorageType::OpenCL> y, IndexType incY,
      flens::device_ptr<double, flens::StorageType::OpenCL> result,
      flens::device_ptr<double, flens::StorageType::OpenCL> work)
 {
@@ -157,8 +157,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
-    const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY,
+    const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
+    const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY,
     flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> result,
     flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> work)
 {
@@ -179,8 +179,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY,
      flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> result,
      flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> work)
 {
@@ -201,8 +201,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
-    const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY,
+    const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
+    const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY,
     flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> result,
     flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> work)
 {
@@ -223,8 +223,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY,
      flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> result,
      flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> work)
 {
@@ -249,8 +249,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX,
-    const flens::device_ptr<float, flens::StorageType::CUDA> y, IndexType incY,
+    const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const float, flens::StorageType::CUDA> y, IndexType incY,
     float &result)
 {
     CXXBLAS_DEBUG_OUT(" cublasSdot");
@@ -272,8 +272,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX,
-     const flens::device_ptr<float, flens::StorageType::CUDA> y, IndexType incY,
+     const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
+     const flens::device_ptr<const float, flens::StorageType::CUDA> y, IndexType incY,
      float &result)
 {
     dot(n, x, incX, y, incY, result);
@@ -283,8 +283,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX,
-    const flens::device_ptr<double, flens::StorageType::CUDA> y, IndexType incY,
+    const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const double, flens::StorageType::CUDA> y, IndexType incY,
     double &result)
 {
     CXXBLAS_DEBUG_OUT("cublasDdot");
@@ -305,8 +305,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-    const flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX,
-    const flens::device_ptr<double, flens::StorageType::CUDA> y, IndexType incY,
+    const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const double, flens::StorageType::CUDA> y, IndexType incY,
     double &result)
 {
     dot(n, x, incX, y, incY, result);
@@ -340,8 +340,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
-     const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> y, IndexType incY, 
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
+     const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> y, IndexType incY, 
      ComplexFloat &result)
 {
     CXXBLAS_DEBUG_OUT("cublasCdotu");
@@ -364,8 +364,8 @@ dotu(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dot(IndexType n,
-    const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
-    const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> y, IndexType incY,
+    const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
+    const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> y, IndexType incY,
     ComplexDouble &result)
 {
     CXXBLAS_DEBUG_OUT("cublasZdot");
@@ -387,8 +387,8 @@ dot(IndexType n,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 dotu(IndexType n,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
-     const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> y, IndexType incY,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
+     const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> y, IndexType incY,
      ComplexDouble &result)
 {
     CXXBLAS_DEBUG_OUT("cublasZdotu");

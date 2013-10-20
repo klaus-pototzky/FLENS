@@ -52,35 +52,35 @@ template <typename IndexType, typename T>
 template <typename IndexType, typename T>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n, 
-         const flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX, 
+         const flens::device_ptr<const T, flens::StorageType::OpenCL> x, IndexType incX, 
          T *y, IndexType incY);
 
 // scopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n, 
-         const flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX, 
+         const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX, 
          flens::device_ptr<float, flens::StorageType::OpenCL> y, IndexType incY);
 
 // dcopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n, 
-         const flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX, 
+         const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX, 
          flens::device_ptr<double, flens::StorageType::OpenCL> y, IndexType incY);
 
 // ccopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n, 
-         const flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX, 
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX, 
          flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY);
 
 // zcopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n, 
-         const flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX, 
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX, 
          flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY);
 #endif
 
@@ -97,35 +97,35 @@ template <typename IndexType, typename T>
 template <typename IndexType, typename T>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n, 
-         const flens::device_ptr<T, flens::StorageType::CUDA> x, IndexType incX, 
+         const flens::device_ptr<const T, flens::StorageType::CUDA> x, IndexType incX, 
          T *y, IndexType incY);
 
 // scopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n,
-         const flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX,
+         const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
          flens::device_ptr<float, flens::StorageType::CUDA> y, IndexType incY);
 
 // dcopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n,
-         const flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX,
+         const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
          flens::device_ptr<double, flens::StorageType::CUDA> y, IndexType incY);
 
 // ccopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n,
-         const flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
+         const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
          flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> y, IndexType incY);
 
 // zcopy
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
     copy(IndexType n,
-         const flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
+         const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
          flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> y, IndexType incY);
     
 #endif // HAVE_CUBLAS
