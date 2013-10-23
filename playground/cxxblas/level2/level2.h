@@ -35,25 +35,25 @@
 
 #include <playground/cxxblas/level2/gbmv.h>
 #include <playground/cxxblas/level2/gemv.h>
-// #include <playground/cxxblas/level2/ger.h>
-// #include <playground/cxxblas/level2/hbmv.h>
-// #include <playground/cxxblas/level2/hemv.h>
-// #include <playground/cxxblas/level2/her.h>
-// #include <playground/cxxblas/level2/her2.h>
-// #include <playground/cxxblas/level2/hpmv.h>
-// #include <playground/cxxblas/level2/hpr.h>
-// #include <playground/cxxblas/level2/hpr2.h>
-// #include <playground/cxxblas/level2/sbmv.h>
-// #include <playground/cxxblas/level2/spmv.h>
-// #include <playground/cxxblas/level2/spr.h>
-// #include <playground/cxxblas/level2/spr2.h>
-// #include <playground/cxxblas/level2/symv.h>
-// #include <playground/cxxblas/level2/syr.h>
-// #include <playground/cxxblas/level2/syr2.h>
+#include <playground/cxxblas/level2/ger.h>
+#include <playground/cxxblas/level2/hbmv.h>
+#include <playground/cxxblas/level2/hemv.h>
+#include <playground/cxxblas/level2/her.h>
+#include <playground/cxxblas/level2/her2.h>
+#include <playground/cxxblas/level2/hpmv.h>
+#include <playground/cxxblas/level2/hpr.h>
+#include <playground/cxxblas/level2/hpr2.h>
+#include <playground/cxxblas/level2/sbmv.h>
+#include <playground/cxxblas/level2/spmv.h>
+#include <playground/cxxblas/level2/spr.h>
+#include <playground/cxxblas/level2/spr2.h>
+#include <playground/cxxblas/level2/symv.h>
+#include <playground/cxxblas/level2/syr.h>
+#include <playground/cxxblas/level2/syr2.h>
 #include <playground/cxxblas/level2/tbmv.h>
 #include <playground/cxxblas/level2/tbsv.h>
-// #include <playground/cxxblas/level2/tpmv.h>
-// #include <playground/cxxblas/level2/tpsv.h>
+#include <playground/cxxblas/level2/tpmv.h>
+#include <playground/cxxblas/level2/tpsv.h>
 #include <playground/cxxblas/level2/trmv.h>
 #include <playground/cxxblas/level2/trsv.h>
 

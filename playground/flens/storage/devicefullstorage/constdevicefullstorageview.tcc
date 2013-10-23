@@ -114,23 +114,6 @@ ConstDeviceFullStorageView<T, Order, I, A>::operator()(IndexType row,
                                                        IndexType col) const
 {
     ASSERT(0);
-#   ifndef NDEBUG
-    if (numRows()>0 && numCols()>0) {
-        ASSERT(row>=_firstRow);
-        ASSERT(row<_firstRow+_numRows);
-        ASSERT(col>=_firstCol);
-        ASSERT(col<_firstCol+_numCols);
-    } else {
-        ASSERT(row==_firstRow);
-        ASSERT(col==_firstCol);
-        ASSERT(_data.get());
-    }
-#   endif
-
-    if (Order==ColMajor) {
-        return _data.get()[col*_leadingDimension+row];
-    }
-    return _data.get()[row*_leadingDimension+col];
 }
 
 //-- methods -------------------------------------------------------------------
@@ -205,9 +188,9 @@ const typename ConstDeviceFullStorageView<T, Order, I, A>::ConstPointerType
 ConstDeviceFullStorageView<T, Order, I, A>::data() const
 {
     if (Order==ColMajor) {
-        return _data.shift(_firstCol*_leadingDimension+_firstRow);
+        return _data;
     }
-    return _data.shift(_firstRow*_leadingDimension+_firstCol);
+    return _data;
 }
 
 template <typename T, StorageOrder Order, typename I, typename A>
@@ -227,10 +210,13 @@ ConstDeviceFullStorageView<T, Order, I, A>::data(IndexType row, IndexType col) c
     }
 #   endif
 
+    IndexType _row = row - _firstRow;
+    IndexType _col = col - _firstCol;
+    
     if (Order==ColMajor) {
-        return _data.shift(col*_leadingDimension+row);
+        return _data.shift(_col*_leadingDimension+_row);
     }
-    return _data.shift(row*_leadingDimension+col);
+    return _data.shift(_row*_leadingDimension+_col);
 }
 
 
@@ -246,14 +232,6 @@ void
 ConstDeviceFullStorageView<T, Order, I, A>::changeIndexBase(IndexType firstRow,
                                                             IndexType firstCol)
 {
-    if (_data.get()) {
-        if (Order==RowMajor) {
-            _data = data().shift(- (firstRow*leadingDimension() + firstCol));
-	}
-        if (Order==ColMajor) {
-            _data = data().shift(- (firstCol*leadingDimension() + firstRow));
-        }
-    }
     _firstRow = firstRow;
     _firstCol = firstCol;
 }

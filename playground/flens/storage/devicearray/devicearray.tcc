@@ -288,7 +288,7 @@ void
 DeviceArray<T, I, A>::_allocate(const ElementType &value)
 {
     _raw_allocate();
-    flens::fill_n(_data, length(), value);
+    fill(value);
 }
 
 template <typename T, typename I, typename A>

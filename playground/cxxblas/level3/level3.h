@@ -34,12 +34,12 @@
 #define PLAYGROUND_CXXBLAS_LEVEL3_LEVEL3_H 1
 
 #include <playground/cxxblas/level3/gemm.h>
-// #include <playground/cxxblas/level3/hemm.h>
-// #include <playground/cxxblas/level3/herk.h>
-// #include <playground/cxxblas/level3/her2k.h>
-// #include <playground/cxxblas/level3/symm.h>
-// #include <playground/cxxblas/level3/syrk.h>
-// #include <playground/cxxblas/level3/syr2k.h>
+#include <playground/cxxblas/level3/hemm.h>
+#include <playground/cxxblas/level3/herk.h>
+#include <playground/cxxblas/level3/her2k.h>
+#include <playground/cxxblas/level3/symm.h>
+#include <playground/cxxblas/level3/syrk.h>
+#include <playground/cxxblas/level3/syr2k.h>
 #include <playground/cxxblas/level3/trmm.h>
 #include <playground/cxxblas/level3/trsm.h>
 

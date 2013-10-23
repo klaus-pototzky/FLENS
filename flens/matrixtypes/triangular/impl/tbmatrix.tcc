@@ -378,14 +378,14 @@ TbMatrix<FS>::numSuperDiags() const
 }
 
 template <typename FS>
-const typename TbMatrix<FS>::ElementType *
+const typename TbMatrix<FS>::ConstPointerType
 TbMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename TbMatrix<FS>::ElementType *
+typename TbMatrix<FS>::PointerType
 TbMatrix<FS>::data()
 {
     return _engine.data();

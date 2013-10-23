@@ -41,4 +41,12 @@
 #include <playground/flens/storage/devicefullstorage/devicefullstorage.tcc>
 #include <playground/flens/storage/devicefullstorage/devicefullstorageview.tcc>
 
+#include <playground/flens/storage/devicebandstorage/constdevicebandstorageview.tcc>
+#include <playground/flens/storage/devicebandstorage/devicebandstorage.tcc>
+#include <playground/flens/storage/devicebandstorage/devicebandstorageview.tcc>
+
+#include <playground/flens/storage/devicepackedstorage/constdevicepackedstorageview.tcc>
+#include <playground/flens/storage/devicepackedstorage/devicepackedstorage.tcc>
+#include <playground/flens/storage/devicepackedstorage/devicepackedstorageview.tcc>
+
 #endif // PLAYGROUND_FLENS_STORAGE_STORAGE_TCC

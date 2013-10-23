@@ -208,9 +208,8 @@ template <typename T, typename I, typename A>
 bool
 DeviceArrayView<T, I, A>::fill(const ElementType &value)
 {
-    // Allow only to set to zero
-    ASSERT(value==ElementType(0));
-    cxxblas::scal(length(), value, data(), stride());
+  
+    fill_stride(length(), value, data(), stride());
     
     return true;
 }

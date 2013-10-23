@@ -357,14 +357,14 @@ SbMatrix<FS>::order() const
 }
 
 template <typename FS>
-const typename SbMatrix<FS>::ElementType *
+const typename SbMatrix<FS>::ConstPointerType
 SbMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename SbMatrix<FS>::ElementType *
+typename SbMatrix<FS>::PointerType
 SbMatrix<FS>::data()
 {
     return _engine.data();

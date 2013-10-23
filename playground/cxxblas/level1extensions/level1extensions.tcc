@@ -39,6 +39,11 @@
 #include <playground/cxxblas/level1extensions/acxpby.tcc>
 #include <playground/cxxblas/level1extensions/acxpy.tcc>
 #include <playground/cxxblas/level1extensions/ccopy.tcc>
+#include <playground/cxxblas/level1extensions/gbaxpby.tcc>
+#include <playground/cxxblas/level1extensions/gbaxpy.tcc>
+#include <playground/cxxblas/level1extensions/gbcopy.tcc>
+#include <playground/cxxblas/level1extensions/gbcotr.tcc>
+#include <playground/cxxblas/level1extensions/gbscal.tcc>
 #include <playground/cxxblas/level1extensions/geaxpby.tcc>
 #include <playground/cxxblas/level1extensions/geaxpy.tcc>
 #include <playground/cxxblas/level1extensions/gecopy.tcc>
@@ -46,8 +51,16 @@
 #include <playground/cxxblas/level1extensions/gescal.tcc>
 #include <playground/cxxblas/level1extensions/geraxpy.tcc>
 #include <playground/cxxblas/level1extensions/gerscal.tcc>
+#include <playground/cxxblas/level1extensions/gescal.tcc>
 #include <playground/cxxblas/level1extensions/racxpy.tcc>
 #include <playground/cxxblas/level1extensions/raxpy.tcc>
 #include <playground/cxxblas/level1extensions/rscal.tcc>
+#include <playground/cxxblas/level1extensions/traxpby.tcc>
+#include <playground/cxxblas/level1extensions/traxpy.tcc>
+#include <playground/cxxblas/level1extensions/trcopy.tcc>
+#include <playground/cxxblas/level1extensions/tpaxpby.tcc>
+#include <playground/cxxblas/level1extensions/tpaxpy.tcc>
+#include <playground/cxxblas/level1extensions/tpcopy.tcc>
+#include <playground/cxxblas/level1extensions/tpscal.tcc>
 
 #endif // PLAYGROUND_CXXBLAS_LEVEL1EXTENSIONS_LEVEL1EXTENSIONS_TCC

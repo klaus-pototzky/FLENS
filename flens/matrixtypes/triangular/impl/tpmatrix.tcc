@@ -283,14 +283,14 @@ TpMatrix<PS>::diag()
 }
 
 template <typename PS>
-const typename TpMatrix<PS>::ElementType *
+const typename TpMatrix<PS>::ConstPointerType
 TpMatrix<PS>::data() const
 {
     return _engine.data();
 }
 
 template <typename PS>
-typename TpMatrix<PS>::ElementType *
+typename TpMatrix<PS>::PointerType
 TpMatrix<PS>::data()
 {
     return _engine.data();

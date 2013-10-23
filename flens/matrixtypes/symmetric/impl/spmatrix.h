@@ -57,6 +57,8 @@ class SpMatrix
     public:
         typedef PS                                  Engine;
         typedef typename Engine::ElementType        ElementType;
+        typedef typename Engine::PointerType        PointerType;
+        typedef typename Engine::ConstPointerType   ConstPointerType;
         typedef typename Engine::IndexType          IndexType;
 
         // view types from Engine
@@ -173,10 +175,10 @@ class SpMatrix
         StorageUpLo &
         upLo();
 
-        const ElementType *
+        const ConstPointerType
         data() const;
 
-        ElementType *
+        PointerType
         data();
 
         StorageOrder

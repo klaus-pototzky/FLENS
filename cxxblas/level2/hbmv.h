@@ -55,7 +55,7 @@ template <typename IndexType, typename ALPHA, typename MA, typename VX,
 // chbmv
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
-    hbmv(StorageOrder order, Transpose trans,
+    hbmv(StorageOrder order, StorageUpLo upLo,
          IndexType n, IndexType k,
          const ComplexFloat &alpha,
          const ComplexFloat *A, IndexType ldA,
@@ -66,7 +66,7 @@ template <typename IndexType>
 // zhbmv
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
-    hbmv(StorageOrder order, Transpose trans,
+    hbmv(StorageOrder order, StorageUpLo upLo,
          IndexType n,  IndexType k,
          const ComplexDouble &alpha,
          const ComplexDouble *A, IndexType ldA,

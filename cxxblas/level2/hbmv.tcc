@@ -170,7 +170,7 @@ hbmv(StorageOrder order, StorageUpLo upLo,
 // chbmv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-hbmv(StorageOrder order, Transpose trans,
+hbmv(StorageOrder order, StorageUpLo upLo,
      IndexType n, IndexType k,
      const ComplexFloat &alpha,
      const ComplexFloat *A, IndexType ldA,
@@ -180,7 +180,7 @@ hbmv(StorageOrder order, Transpose trans,
 {
     CXXBLAS_DEBUG_OUT("[" BLAS_IMPL "] cblas_chbmv");
 
-    cblas_chbmv(CBLAS::getCblasType(order), CBLAS::getCblasType(trans),
+    cblas_chbmv(CBLAS::getCblasType(order), CBLAS::getCblasType(upLo),
                 n, k,
                 reinterpret_cast<const float *>(&alpha),
                 reinterpret_cast<const float *>(A), ldA,
@@ -192,7 +192,7 @@ hbmv(StorageOrder order, Transpose trans,
 // zhbmv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-hbmv(StorageOrder order, Transpose trans,
+hbmv(StorageOrder order, StorageUpLo upLo,
      IndexType n, IndexType k,
      const ComplexDouble &alpha,
      const ComplexDouble *A, IndexType ldA,
@@ -202,7 +202,7 @@ hbmv(StorageOrder order, Transpose trans,
 {
     CXXBLAS_DEBUG_OUT("[" BLAS_IMPL "] cblas_zhbmv");
 
-    cblas_zhbmv(CBLAS::getCblasType(order), CBLAS::getCblasType(trans),
+    cblas_zhbmv(CBLAS::getCblasType(order), CBLAS::getCblasType(upLo),
                 n, k,
                 reinterpret_cast<const double *>(&alpha),
                 reinterpret_cast<const double *>(A), ldA,

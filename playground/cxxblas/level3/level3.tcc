@@ -34,12 +34,12 @@
 #define PLAYGROUND_CXXBLAS_LEVEL3_LEVEL3_TCC 1
 
 #include <playground/cxxblas/level3/gemm.tcc>
-// #include <playground/cxxblas/level3/hemm.tcc>
-// #include <playground/cxxblas/level3/herk.tcc>
-// #include <playground/cxxblas/level3/her2k.tcc>
-// #include <playground/cxxblas/level3/symm.tcc>
-// #include <playground/cxxblas/level3/syrk.tcc>
-// #include <playground/cxxblas/level3/syr2k.tcc>
+#include <playground/cxxblas/level3/hemm.tcc>
+#include <playground/cxxblas/level3/herk.tcc>
+#include <playground/cxxblas/level3/her2k.tcc>
+#include <playground/cxxblas/level3/symm.tcc>
+#include <playground/cxxblas/level3/syrk.tcc>
+#include <playground/cxxblas/level3/syr2k.tcc>
 #include <playground/cxxblas/level3/trmm.tcc>
 #include <playground/cxxblas/level3/trsm.tcc>
 

@@ -70,7 +70,9 @@ template <typename T,
 class ConstBandStorageView
 {
     public:
-        typedef T                       ElementType;
+        typedef T                                     ElementType;
+        typedef T*                                    PointerType;
+        typedef const T*                              ConstPointerType;
         typedef typename I::IndexType   IndexType;
         typedef A                       Allocator;
 

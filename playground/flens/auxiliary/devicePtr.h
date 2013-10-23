@@ -92,6 +92,10 @@ template <typename DataTypeThis, typename DataTypeThat>
 bool operator != (const device_ptr<DataTypeThis, StorageType::OpenCL> & compareThis, 
                   const device_ptr<DataTypeThat, StorageType::OpenCL> & compareThat);
 
+template <typename DataTypeThis, typename IndexType>
+device_ptr<DataTypeThis, StorageType::OpenCL>
+operator+ (const device_ptr<DataTypeThis, StorageType::OpenCL> &left, IndexType right);
+
 #endif // HAVE_OPENCL
 
 #ifdef WITH_CUBLAS
@@ -132,6 +136,10 @@ bool operator == (const device_ptr<DataTypeThis, StorageType::CUDA> & compareThi
 template <typename DataTypeThis, typename DataTypeThat>
 bool operator != (const device_ptr<DataTypeThis, StorageType::CUDA> & compareThis, 
                   const device_ptr<DataTypeThat, StorageType::CUDA> & compareThat);
+
+template <typename DataTypeThis, typename IndexType>
+device_ptr<DataTypeThis, StorageType::CUDA>
+operator+ (const device_ptr<DataTypeThis, StorageType::CUDA> &left, IndexType right);
 
 #endif // WITH_CUBLAS
 

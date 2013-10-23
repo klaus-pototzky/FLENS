@@ -48,6 +48,17 @@
 #include <playground/flens/storage/devicefullstorage/isdevicefullstorage.h>
 
 
+#include <playground/flens/storage/devicebandstorage/constdevicebandstorageview.h>
+#include <playground/flens/storage/devicebandstorage/devicebandstorage.h>
+#include <playground/flens/storage/devicebandstorage/devicebandstorageview.h>
+#include <playground/flens/storage/devicebandstorage/hasdevicebandstorage.h>
+#include <playground/flens/storage/devicebandstorage/isdevicebandstorage.h>
+
+#include <playground/flens/storage/devicepackedstorage/constdevicepackedstorageview.h>
+#include <playground/flens/storage/devicepackedstorage/devicepackedstorage.h>
+#include <playground/flens/storage/devicepackedstorage/devicepackedstorageview.h>
+#include <playground/flens/storage/devicepackedstorage/hasdevicepackedstorage.h>
+#include <playground/flens/storage/devicepackedstorage/isdevicepackedstorage.h>
 ///
 /// Define Abbreviations for pinned memory
 ///
@@ -66,7 +77,15 @@ template <typename T,
           typename I = IndexOptions<> >
 using PinnedHostFullStorage = FullStorage<T, Order, I, PinnedAllocator<T> >;
 
+template <typename T,
+          StorageOrder Order = ColMajor,
+          typename I = IndexOptions<> >
+using PinnedHostBandStorage = BandStorage<T, Order, I, PinnedAllocator<T> >;
 
+template <typename T,
+          StorageOrder Order = ColMajor,
+          typename I = IndexOptions<> >
+using PinnedHostPackedStorage = PackedStorage<T, Order, I, PinnedAllocator<T> >;
 }
 #endif
 

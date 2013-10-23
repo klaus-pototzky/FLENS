@@ -278,14 +278,14 @@ SpMatrix<PS>::upLo()
 }
 
 template <typename PS>
-const typename SpMatrix<PS>::ElementType *
+const typename SpMatrix<PS>::ConstPointerType
 SpMatrix<PS>::data() const
 {
     return _engine.data();
 }
 
 template <typename PS>
-typename SpMatrix<PS>::ElementType *
+typename SpMatrix<PS>::PointerType
 SpMatrix<PS>::data()
 {
     return _engine.data();

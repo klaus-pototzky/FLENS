@@ -52,58 +52,51 @@ fill_n(flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType length, T v
      flens::checkStatus(status); 
 }
 
+template <typename IndexType, typename T>
+void
+fill_stride(IndexType length, T value, flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX)
+{
+    if (length==IndexType(0)) {
+        return;
+    }
+    if (incX==IndexType(1)) {
+        fill_n(x, length, value);
+        return;
+    }
+    cxxblas::copy(IndexType(1), &value, IndexType(1), x, incX);
+    IndexType rest = length-1;
+    for(IndexType i=1; i<length; i*=2) {
+        cxxblas::copy(std::min(rest,i), x, incX, x+i*incX, incX);
+        rest -= i;
+    }
+    
+}
+
 #endif // HAVE_OPENCL
 
 #ifdef HAVE_CUBLAS
 
-template <typename IndexType>
+template <typename IndexType, typename T>
 void
-fill_n(flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType length, float value)
+fill_n(flens::device_ptr<T, flens::StorageType::CUDA> x, IndexType length, T value)
 {
-    ASSERT(value==float(0)); 
-    
-    // Caution: Hack, but it's working!
-    // Fill with zero (required since NaN can not be scaled)
-    int dummy_value = 0;
-    cudaMemset(x.get(), dummy_value, length*sizeof(float));
+    fill_stride(length, value, x, IndexType(1));
 }
     
-template <typename IndexType>
+template <typename IndexType, typename T>
 void
-fill_n(flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType length, double value){
-  
-    ASSERT(value==double(0)); 
-    
-    // Caution: Hack, but it's working!
-    // Fill with zero (required since NaN can not be scaled)
-    int dummy_value = 0;
-    cudaMemset(x.get(), dummy_value, length*sizeof(double));
-
-}
-    
-template <typename IndexType>
-void
-fill_n(flens::device_ptr<std::complex<float>, flens::StorageType::CUDA> x, IndexType length, std::complex<float> value)
+fill_stride(IndexType length, T value, flens::device_ptr<T, flens::StorageType::CUDA> x, IndexType incX)
 {
-    ASSERT(value==std::complex<float>(0)); 
+    if (length==IndexType(0)) {
+        return;
+    }
+    cxxblas::copy(IndexType(1), &value, IndexType(1), x, incX);
+    IndexType rest = length-1;
+    for(IndexType i=1; i<length; i*=2) {
+        cxxblas::copy(std::min(rest,i), x, incX, x+i*incX, incX);
+        rest -= i;
+    }
     
-    // Caution: Hack, but it's working!
-    // Fill with zero (required since NaN can not be scaled)
-    int dummy_value = 0;
-    cudaMemset(x.get(), dummy_value, 2*length*sizeof(float));
-}
-    
-template <typename IndexType>
-void
-fill_n(flens::device_ptr<std::complex<double>, flens::StorageType::CUDA> x, IndexType length, std::complex<double> value)
-{
-    ASSERT(value==std::complex<double>(0)); 
-    
-    // Caution: Hack, but it's working!
-    // Fill with zero (required since NaN can not be scaled)
-    int dummy_value = 0;
-    cudaMemset(x.get(), dummy_value, 2*length*sizeof(double));
-
 }
 #endif // HAVE_CUBLAS
  

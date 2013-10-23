@@ -341,14 +341,14 @@ HeMatrix<FS>::lastCol() const
 }
 
 template <typename FS>
-const typename HeMatrix<FS>::ElementType *
+const typename HeMatrix<FS>::ConstPointerType
 HeMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename HeMatrix<FS>::ElementType *
+typename HeMatrix<FS>::PointerType
 HeMatrix<FS>::data()
 {
     return _engine.data();

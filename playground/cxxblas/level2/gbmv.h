@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2009, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -38,6 +38,7 @@
 namespace cxxblas {
   
 #ifdef HAVE_CLBLAS
+
 // sgbmv
 template <typename IndexType>
     typename If<IndexType>::isBlasCompatibleInteger
@@ -68,10 +69,10 @@ template <typename IndexType>
     gbmv(StorageOrder order, Transpose trans,
          IndexType m, IndexType n,
          IndexType kl, IndexType ku,
-         ComplexFloat alpha,
+         const ComplexFloat &alpha,
          const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
          const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
-         ComplexFloat beta,
+         const ComplexFloat &beta,
          flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY);
 
 // zgbmv
@@ -80,10 +81,10 @@ template <typename IndexType>
     gbmv(StorageOrder order, Transpose trans,
          IndexType m, IndexType n,
          IndexType kl, IndexType ku,
-         ComplexDouble alpha,
+         const ComplexDouble &alpha,
          const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
          const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
-         ComplexDouble beta,
+         const ComplexDouble &beta,
          flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY);
 
 #endif // HAVE_CLBLAS
@@ -139,7 +140,7 @@ template <typename IndexType>
          flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> y, IndexType incY);
 
 #endif // HAVE_CUBLAS
-
+    
 } // namespace cxxblas
 
 #endif // PLAYGROUND_CXXBLAS_LEVEL2_GBMV_H

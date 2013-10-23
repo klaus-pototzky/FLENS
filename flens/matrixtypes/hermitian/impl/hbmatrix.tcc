@@ -359,14 +359,14 @@ HbMatrix<FS>::numOffDiags() const
 }
 
 template <typename FS>
-const typename HbMatrix<FS>::ElementType *
+const typename HbMatrix<FS>::ConstPointerType
 HbMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename HbMatrix<FS>::ElementType *
+typename HbMatrix<FS>::PointerType
 HbMatrix<FS>::data()
 {
     return _engine.data();

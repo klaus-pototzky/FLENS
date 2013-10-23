@@ -43,25 +43,23 @@ template <typename IndexType, typename T>
     void
     fill_n(flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType length, T value);
     
+template <typename IndexType, typename T>
+    void
+    fill_stride(IndexType length, T value, flens::device_ptr<T, flens::StorageType::OpenCL> x, IndexType incX);
+    
 #endif // HAVE_OPENCL
 
 #ifdef HAVE_CUBLAS
 
-template <typename IndexType>
+template <typename IndexType, typename T>
     void
-    fill_n(flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType length, float value);
+    fill_n(flens::device_ptr<T, flens::StorageType::CUDA> x, IndexType length, T value);
     
-template <typename IndexType>
+template <typename IndexType, typename T>
     void
-    fill_n(flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType length, double value);
-    
-template <typename IndexType>
-    void
-    fill_n(flens::device_ptr<std::complex<float>, flens::StorageType::CUDA> x, IndexType length, std::complex<float> value);
-    
-template <typename IndexType>
-    void
-    fill_n(flens::device_ptr<std::complex<double>, flens::StorageType::CUDA> x, IndexType length, std::complex<double> value);
+    fill_stride(IndexType length, T value, flens::device_ptr<T, flens::StorageType::CUDA> x, IndexType incX);
+
+
     
 #endif // HAVE_CUBLAS
  

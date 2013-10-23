@@ -118,6 +118,13 @@ bool operator != (const device_ptr<DataTypeThis, StorageType::OpenCL> & compareT
             || compareThis.getOffset()!=compareThat.getOffset());
 }
 
+template <typename DataTypeThis, typename IndexType>
+device_ptr<DataTypeThis, StorageType::OpenCL>
+operator+ (const device_ptr<DataTypeThis, StorageType::OpenCL> &left, IndexType right)
+{
+    return left.shift(right);
+}
+
 #endif // HAVE_OPENCL
 
 #ifdef WITH_CUBLAS
@@ -188,6 +195,12 @@ bool operator != (const device_ptr<DataTypeThis, StorageType::CUDA> & compareThi
             || compareThis.getDeviceID()!=compareThat.getDeviceID());
 }
 
+template <typename DataTypeThis, typename IndexType>
+device_ptr<DataTypeThis, StorageType::CUDA>
+operator+ (const device_ptr<DataTypeThis, StorageType::CUDA> &left, IndexType right)
+{
+    return left.shift(right);
+}
 #endif // WITH_CUBLAS
 
 

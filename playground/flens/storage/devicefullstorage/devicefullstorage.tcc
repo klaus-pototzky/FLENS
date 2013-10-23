@@ -823,6 +823,7 @@ DeviceFullStorage<T, Order, I, A>::_allocate(const ElementType &value)
     }
 
     _raw_allocate();
+    fill(value);
 }
 
 template <typename T, StorageOrder Order, typename I, typename A>

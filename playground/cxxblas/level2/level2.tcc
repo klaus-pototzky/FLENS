@@ -35,25 +35,25 @@
 
 #include <playground/cxxblas/level2/gbmv.tcc>
 #include <playground/cxxblas/level2/gemv.tcc>
-// #include <playground/cxxblas/level2/ger.tcc>
-// #include <playground/cxxblas/level2/hbmv.tcc>
-// #include <playground/cxxblas/level2/hemv.tcc>
-// #include <playground/cxxblas/level2/her.tcc>
-// #include <playground/cxxblas/level2/her2.tcc>
-// #include <playground/cxxblas/level2/hpmv.tcc>
-// #include <playground/cxxblas/level2/hpr.tcc>
-// #include <playground/cxxblas/level2/hpr2.tcc>
-// #include <playground/cxxblas/level2/sbmv.tcc>
-// #include <playground/cxxblas/level2/spmv.tcc>
-// #include <playground/cxxblas/level2/spr.tcc>
-// #include <playground/cxxblas/level2/spr2.tcc>
-// #include <playground/cxxblas/level2/syr2.tcc>
-// #include <playground/cxxblas/level2/symv.tcc>
-// #include <playground/cxxblas/level2/syr.tcc>
+#include <playground/cxxblas/level2/ger.tcc>
+#include <playground/cxxblas/level2/hbmv.tcc>
+#include <playground/cxxblas/level2/hemv.tcc>
+#include <playground/cxxblas/level2/her.tcc>
+#include <playground/cxxblas/level2/her2.tcc>
+#include <playground/cxxblas/level2/hpmv.tcc>
+#include <playground/cxxblas/level2/hpr.tcc>
+#include <playground/cxxblas/level2/hpr2.tcc>
+#include <playground/cxxblas/level2/sbmv.tcc>
+#include <playground/cxxblas/level2/spmv.tcc>
+#include <playground/cxxblas/level2/spr.tcc>
+#include <playground/cxxblas/level2/spr2.tcc>
+#include <playground/cxxblas/level2/symv.tcc>
+#include <playground/cxxblas/level2/syr2.tcc>
+#include <playground/cxxblas/level2/syr.tcc>
 #include <playground/cxxblas/level2/tbmv.tcc>
 #include <playground/cxxblas/level2/tbsv.tcc>
-// #include <playground/cxxblas/level2/tpmv.tcc>
-// #include <playground/cxxblas/level2/tpsv.tcc>
+#include <playground/cxxblas/level2/tpmv.tcc>
+#include <playground/cxxblas/level2/tpsv.tcc>
 #include <playground/cxxblas/level2/trmv.tcc>
 #include <playground/cxxblas/level2/trsv.tcc>
 

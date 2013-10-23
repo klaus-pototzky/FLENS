@@ -39,6 +39,11 @@
 #include <playground/cxxblas/level1extensions/acxpby.h>
 #include <playground/cxxblas/level1extensions/acxpy.h>
 #include <playground/cxxblas/level1extensions/ccopy.h>
+#include <playground/cxxblas/level1extensions/gbaxpby.h>
+#include <playground/cxxblas/level1extensions/gbaxpy.h>
+#include <playground/cxxblas/level1extensions/gbcopy.h>
+#include <playground/cxxblas/level1extensions/gbcotr.h>
+#include <playground/cxxblas/level1extensions/gbscal.h>
 #include <playground/cxxblas/level1extensions/geaxpby.h>
 #include <playground/cxxblas/level1extensions/geaxpy.h>
 #include <playground/cxxblas/level1extensions/gecopy.h>
@@ -46,8 +51,16 @@
 #include <playground/cxxblas/level1extensions/gescal.h>
 #include <playground/cxxblas/level1extensions/geraxpy.h>
 #include <playground/cxxblas/level1extensions/gerscal.h>
+#include <playground/cxxblas/level1extensions/hescal.h>
 #include <playground/cxxblas/level1extensions/racxpy.h>
 #include <playground/cxxblas/level1extensions/raxpy.h>
 #include <playground/cxxblas/level1extensions/rscal.h>
+#include <playground/cxxblas/level1extensions/traxpby.h>
+#include <playground/cxxblas/level1extensions/traxpy.h>
+#include <playground/cxxblas/level1extensions/trcopy.h>
+#include <playground/cxxblas/level1extensions/tpaxpby.h>
+#include <playground/cxxblas/level1extensions/tpaxpy.h>
+#include <playground/cxxblas/level1extensions/tpcopy.h>
+#include <playground/cxxblas/level1extensions/tpscal.h>
 
 #endif // PLAYGROUND_CXXBLAS_LEVEL1EXTENSIONS_LEVEL1EXTENSIONS_H

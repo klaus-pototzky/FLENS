@@ -64,6 +64,8 @@ class HbMatrix
     public:
         typedef FS                                  Engine;
         typedef typename Engine::ElementType        ElementType;
+        typedef typename Engine::PointerType        PointerType;
+        typedef typename Engine::ConstPointerType   ConstPointerType;
         typedef typename Engine::IndexType          IndexType;
 
         // view types from Engine
@@ -208,10 +210,10 @@ class HbMatrix
         IndexType
         numOffDiags() const;
 
-        const ElementType *
+        const ConstPointerType
         data() const;
 
-        ElementType *
+        PointerType
         data();
 
         template <typename RHS>

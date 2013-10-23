@@ -286,14 +286,14 @@ HpMatrix<PS>::upLo()
 }
 
 template <typename PS>
-const typename HpMatrix<PS>::ElementType *
+const typename HpMatrix<PS>::ConstPointerType
 HpMatrix<PS>::data() const
 {
     return _engine.data();
 }
 
 template <typename PS>
-typename HpMatrix<PS>::ElementType *
+typename HpMatrix<PS>::PointerType
 HpMatrix<PS>::data()
 {
     return _engine.data();

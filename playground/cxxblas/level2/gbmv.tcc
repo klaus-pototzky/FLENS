@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2012, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -38,32 +38,31 @@
 
 namespace cxxblas {
 
-
 #ifdef HAVE_CLBLAS
 
 // sgbmv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     float alpha,
-     const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
-     const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX,
-     float beta,
-     flens::device_ptr<float, flens::StorageType::OpenCL> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      float alpha,
+      const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
+      const flens::device_ptr<const float, flens::StorageType::OpenCL> x, IndexType incX,
+      float beta,
+      flens::device_ptr<float, flens::StorageType::OpenCL> y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("clAmdBlasSgbmv");
 
-    cl_int status = CLBLAS_IMPL_EX(Sgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
-                                          m, n, kl, ku,
-                                          alpha,
-                                          A.get(), A.getOffset(), ldA,
-                                          x.get(), x.getOffset(), incX,
-                                          beta,
-                                          y.get(), y.getOffset(), incY,
-                                          1, flens::OpenCLEnv::getQueuePtr(),
-                                          0, NULL, NULL);
+    cl_int status = CLBLAS_IMPL(Sgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
+                                       m, n, kl, ku,
+                                       alpha,
+                                       A.get(), A.getOffset(), ldA,
+                                        x.get(), x.getOffset(), incX,
+                                       beta,
+                                       y.get(), y.getOffset(), incY,
+                                       1, flens::OpenCLEnv::getQueuePtr(),
+                                       0, NULL, NULL);
 
     flens::checkStatus(status);
 }
@@ -72,25 +71,27 @@ gbmv(StorageOrder order, Transpose trans,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     double alpha,
-     const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
-     const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX,
-     double beta,
-     flens::device_ptr<double, flens::StorageType::OpenCL> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      double alpha,
+      const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
+      const flens::device_ptr<const double, flens::StorageType::OpenCL> x, IndexType incX,
+      double beta,
+      flens::device_ptr<double, flens::StorageType::OpenCL> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasDgbmv");
+    CXXBLAS_DEBUG_OUT("[" BLAS_IMPL "] cblas_dgbmv");
 
-    cl_int status = CLBLAS_IMPL_EX(Dgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
-                                          m, n, kl, ku,
-                                          alpha,
-                                          A.get(), A.getOffset(), ldA,
-                                          x.get(), x.getOffset(), incX,
-                                          beta,
-                                          y.get(), y.getOffset(), incY,
-                                          1, flens::OpenCLEnv::getQueuePtr(),
-                                          0, NULL, NULL);
+    CXXBLAS_DEBUG_OUT("clAmdBlasDgemv");
+
+    cl_int status = CLBLAS_IMPL(Dgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
+                                       m,  n, kl, ku,
+                                       alpha,
+                                       A.get(), A.getOffset(), ldA,
+                                       x.get(), x.getOffset(), incX,
+                                       beta,
+                                       y.get(), y.getOffset(), incY,
+                                       1, flens::OpenCLEnv::getQueuePtr(),
+                                       0, NULL, NULL);
 
     flens::checkStatus(status);
 }
@@ -99,32 +100,32 @@ gbmv(StorageOrder order, Transpose trans,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     ComplexFloat alpha,
-     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
-     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
-     ComplexFloat beta,
-     flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      const ComplexFloat &alpha,
+      const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
+      const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX,
+      const ComplexFloat &beta,
+      flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasCgbmv");
-    
+    CXXBLAS_DEBUG_OUT("clAmdBlasCgemv");
+
     if (trans==Conj) {
         order  = (order==RowMajor) ? ColMajor : RowMajor;
         gbmv(order, ConjTrans, n, m, ku, kl, alpha, A, ldA,
              x, incX, beta, y, incY);
         return;
     }
-    
-    cl_int status = CLBLAS_IMPL_EX(Cgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
-                                          m, n, kl, ku,
-                                          *(reinterpret_cast<cl_double2*>(&alpha)),
-                                          A.get(), A.getOffset(), ldA,
-                                          x.get(), x.getOffset(), incX,
-                                          *(reinterpret_cast<cl_double2*>(&beta)),
-                                          y.get(), y.getOffset(), incY,
-                                          1, flens::OpenCLEnv::getQueuePtr(),
-                                          0, NULL, NULL);
+
+    cl_int status = CLBLAS_IMPL(Cgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
+                                       m,  n, kl, ku,
+                                       *(reinterpret_cast<const cl_float2*>(&alpha)),
+                                       A.get(), A.getOffset(), ldA,
+                                       x.get(), x.getOffset(), incX,
+                                       *(reinterpret_cast<const cl_float2*>(&beta)),
+                                       y.get(), y.getOffset(), incY,
+                                       1, flens::OpenCLEnv::getQueuePtr(),
+                                       0, NULL, NULL);
 
     flens::checkStatus(status);
 }
@@ -133,34 +134,35 @@ gbmv(StorageOrder order, Transpose trans,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     ComplexDouble alpha,
-     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
-     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
-     ComplexDouble beta,
-     flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      const ComplexDouble &alpha,
+      const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
+      const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX,
+      const ComplexDouble &beta,
+      flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasZgbmv");
-    
+    CXXBLAS_DEBUG_OUT("clAmdBlasZgemv");
+
     if (trans==Conj) {
         order  = (order==RowMajor) ? ColMajor : RowMajor;
         gbmv(order, ConjTrans, n, m, ku, kl, alpha, A, ldA,
              x, incX, beta, y, incY);
         return;
     }
-
-    cl_int status = CLBLAS_IMPL_EX(Zgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
-                                          m, n, kl, ku,
-                                          *(reinterpret_cast<cl_double2*>(&alpha)),
-                                          A.get(), A.getOffset(), ldA,
-                                          x.get(), x.getOffset(), incX,
-                                          *(reinterpret_cast<cl_double2*>(&beta)),
-                                          y.get(), y.getOffset(), incY,
-                                          1, flens::OpenCLEnv::getQueuePtr(),
-                                          0, NULL, NULL);
+    
+    cl_int status = CLBLAS_IMPL(Zgbmv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(trans),
+                                       m,  n, kl, ku,
+                                       *(reinterpret_cast<const cl_double2*>(&alpha)),
+                                       A.get(), A.getOffset(), ldA,
+                                       x.get(), x.getOffset(), incX,
+                                       *(reinterpret_cast<const cl_double2*>(&beta)),
+                                       y.get(), y.getOffset(), incY,
+                                       1, flens::OpenCLEnv::getQueuePtr(),
+                                       0, NULL, NULL);
 
     flens::checkStatus(status);
+    
 }
 
 #endif // HAVE_CLBLAS
@@ -171,23 +173,25 @@ gbmv(StorageOrder order, Transpose trans,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     float alpha,
-     const flens::device_ptr<const float, flens::StorageType::CUDA> A, IndexType ldA,
-     const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
-     float beta,
-     flens::device_ptr<float, flens::StorageType::CUDA> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      float alpha,
+      const flens::device_ptr<const float, flens::StorageType::CUDA> A, IndexType ldA,
+      const flens::device_ptr<const float, flens::StorageType::CUDA> x, IndexType incX,
+      float beta,
+      flens::device_ptr<float, flens::StorageType::CUDA> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("cublasSgbmv");
-    
+    CXXBLAS_DEBUG_OUT("cublasSgemv");
+      
     if (order==RowMajor) {
         trans = Transpose(trans^Trans);
         gbmv(ColMajor, trans, n, m, ku, kl, alpha, A, ldA,
              x, incX, beta, y, incY);
         return;
     }
-
+    
+    ASSERT(trans!=Conj);
+    
     cublasStatus_t status = cublasSgbmv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(trans),
                                         m, n, kl, ku,
@@ -198,28 +202,31 @@ gbmv(StorageOrder order, Transpose trans,
                                         y.get(), incY);
     
     flens::checkStatus(status);
+    
 }
 
 // dgbmv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType kl, IndexType ku,
-     IndexType m, IndexType n,
-     double alpha,
-     const flens::device_ptr<const double, flens::StorageType::CUDA> A, IndexType ldA,
-     const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
-     double beta,
-     flens::device_ptr<double, flens::StorageType::CUDA> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      double alpha,
+      const flens::device_ptr<const double, flens::StorageType::CUDA> A, IndexType ldA,
+      const flens::device_ptr<const double, flens::StorageType::CUDA> x, IndexType incX,
+      double beta,
+      flens::device_ptr<double, flens::StorageType::CUDA> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("cublasDgbmv");
-    
+    CXXBLAS_DEBUG_OUT("cublasDgemv");
+      
     if (order==RowMajor) {
         trans = Transpose(trans^Trans);
         gbmv(ColMajor, trans, n, m, ku, kl, alpha, A, ldA,
              x, incX, beta, y, incY);
         return;
     }
+    
+    ASSERT(trans!=Conj);
 
     cublasStatus_t status = cublasDgbmv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(trans),
@@ -231,29 +238,32 @@ gbmv(StorageOrder order, Transpose trans,
                                         y.get(), incY);
     
     flens::checkStatus(status);
+    
 }
 
 // cgbmv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     const ComplexFloat &alpha,
-     const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
-     const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
-     const ComplexFloat &beta,
-     flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      const ComplexFloat &alpha,
+      const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
+      const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> x, IndexType incX,
+      const ComplexFloat &beta,
+      flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("cublasCgbmv");
-    
+    CXXBLAS_DEBUG_OUT("cublasCgemv");
+      
     if (order==RowMajor) {
         trans = Transpose(trans^Trans);
         gbmv(ColMajor, trans, n, m, ku, kl, alpha, A, ldA,
              x, incX, beta, y, incY);
         return;
     }
-
+        
+    ASSERT(trans!=Conj);
+    
     cublasStatus_t status = cublasCgbmv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(trans),
                                         m, n, kl, ku,
@@ -270,23 +280,25 @@ gbmv(StorageOrder order, Transpose trans,
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
 gbmv(StorageOrder order, Transpose trans,
-     IndexType m, IndexType n,
-     IndexType kl, IndexType ku,
-     const ComplexDouble &alpha,
-     const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
-     const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
-     const ComplexDouble &beta,
-     flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> y, IndexType incY)
+      IndexType m, IndexType n,
+      IndexType kl, IndexType ku,
+      const ComplexDouble &alpha,
+      const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
+      const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> x, IndexType incX,
+      const ComplexDouble &beta,
+      flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("cublasZgbmv");
-    
+    CXXBLAS_DEBUG_OUT("cublasZgemv");
+      
     if (order==RowMajor) {
         trans = Transpose(trans^Trans);
         gbmv(ColMajor, trans, n, m, ku, kl, alpha, A, ldA,
              x, incX, beta, y, incY);
         return;
     }
-
+    
+    ASSERT(trans!=Conj);
+    
     cublasStatus_t status = cublasZgbmv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(trans),
                                         m, n, kl, ku,

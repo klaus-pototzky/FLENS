@@ -341,14 +341,14 @@ SyMatrix<FS>::lastCol() const
 }
 
 template <typename FS>
-const typename SyMatrix<FS>::ElementType *
+const typename SyMatrix<FS>::ConstPointerType
 SyMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename SyMatrix<FS>::ElementType *
+typename SyMatrix<FS>::PointerType
 SyMatrix<FS>::data()
 {
     return _engine.data();

@@ -448,14 +448,14 @@ GbMatrix<FS>::order() const
 }
 
 template <typename FS>
-const typename GbMatrix<FS>::ElementType *
+const typename GbMatrix<FS>::ConstPointerType
 GbMatrix<FS>::data() const
 {
     return _engine.data();
 }
 
 template <typename FS>
-typename GbMatrix<FS>::ElementType *
+typename GbMatrix<FS>::PointerType
 GbMatrix<FS>::data()
 {
     return _engine.data();

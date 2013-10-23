@@ -39,18 +39,18 @@ namespace cxxblas {
 
 #ifdef HAVE_CLBLAS
 
-// strsv
+// stbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
-     Transpose transA, Diag diag,
-     IndexType n, IndexType k,
-     const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
-     flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX)
+tbsv(StorageOrder order, StorageUpLo upLo,
+      Transpose transA, Diag diag,
+      IndexType n, IndexType k,
+      const flens::device_ptr<const float, flens::StorageType::OpenCL> A, IndexType ldA,
+      flens::device_ptr<float, flens::StorageType::OpenCL> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasStrsv");
+    CXXBLAS_DEBUG_OUT("clAmdBlasStbsv");
 
-    cl_int status = CLBLAS_IMPL(Strsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
+    cl_int status = CLBLAS_IMPL(Stbsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
                                        CLBLAS::getClblasType(transA), CLBLAS::getClblasType(diag),
                                        n, k,
                                        A.get(), A.getOffset(), ldA,
@@ -62,18 +62,18 @@ trsv(StorageOrder order, StorageUpLo upLo,
     
 }
 
-// dtrsv
+// dtbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
-     Transpose transA, Diag diag,
-     IndexType n, IndexType k,
-     const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
-     flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX)
+tbsv(StorageOrder order, StorageUpLo upLo,
+      Transpose transA, Diag diag,
+      IndexType n, IndexType k,
+      const flens::device_ptr<const double, flens::StorageType::OpenCL> A, IndexType ldA,
+      flens::device_ptr<double, flens::StorageType::OpenCL> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasDtrsv");
+    CXXBLAS_DEBUG_OUT("clAmdBlasDtbsv");
 
-    cl_int status = CLBLAS_IMPL(Dtrsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
+    cl_int status = CLBLAS_IMPL(Dtbsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
                                        CLBLAS::getClblasType(transA), CLBLAS::getClblasType(diag),
                                        n, k,
                                        A.get(), A.getOffset(), ldA,
@@ -84,18 +84,18 @@ trsv(StorageOrder order, StorageUpLo upLo,
     flens::checkStatus(status);
 }
 
-// ctrsv
+// ctbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
-     Transpose transA, Diag diag,
-     IndexType n, IndexType k,
-     const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
-     flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX)
+tbsv(StorageOrder order, StorageUpLo upLo,
+      Transpose transA, Diag diag,
+      IndexType n, IndexType k,
+      const flens::device_ptr<const ComplexFloat, flens::StorageType::OpenCL> A, IndexType ldA,
+      flens::device_ptr<ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasCtrsv");
+    CXXBLAS_DEBUG_OUT("clAmdBlasCtbsv");
 
-    cl_int status = CLBLAS_IMPL(Ctrsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
+    cl_int status = CLBLAS_IMPL(Ctbsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
                                        CLBLAS::getClblasType(transA), CLBLAS::getClblasType(diag),
                                        n,  k,
                                        A.get(), A.getOffset(), ldA,
@@ -106,18 +106,18 @@ trsv(StorageOrder order, StorageUpLo upLo,
     flens::checkStatus(status);
 }
 
-// ztrsv
+// ztbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
-     Transpose transA, Diag diag,
-     IndexType n, IndexType k,
-     const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
-     flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX)
+tbsv(StorageOrder order, StorageUpLo upLo,
+      Transpose transA, Diag diag,
+      IndexType n, IndexType k,
+      const flens::device_ptr<const ComplexDouble, flens::StorageType::OpenCL> A, IndexType ldA,
+      flens::device_ptr<ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("clAmdBlasZtrsv");
+    CXXBLAS_DEBUG_OUT("clAmdBlasZtbsv");
     
-    cl_int status = CLBLAS_IMPL(Ztrsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
+    cl_int status = CLBLAS_IMPL(Ztbsv)(CLBLAS::getClblasType(order), CLBLAS::getClblasType(upLo),
                                        CLBLAS::getClblasType(transA), CLBLAS::getClblasType(diag),
                                        n, k,
                                        A.get(), A.getOffset(), ldA,
@@ -132,24 +132,24 @@ trsv(StorageOrder order, StorageUpLo upLo,
 
 #ifdef HAVE_CUBLAS
 
-// strsv
+// stbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
+tbsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
      const flens::device_ptr<const float, flens::StorageType::CUDA> A, IndexType ldA,
      flens::device_ptr<float, flens::StorageType::CUDA> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("cublasStrsv");
+    CXXBLAS_DEBUG_OUT("cublasStbsv");
     
     if (order==RowMajor) {
         transA = Transpose(transA^Trans);
         upLo = (upLo==Upper) ? Lower : Upper;
-        trsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
+        tbsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
         return;
     }
-    cublasStatus_t status = cublasStrsv(flens::CudaEnv::getHandle(), 
+    cublasStatus_t status = cublasStbsv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(upLo), CUBLAS::getCublasType(transA),
                                         CUBLAS::getCublasType(diag),
                                         n, k,
@@ -159,24 +159,24 @@ trsv(StorageOrder order, StorageUpLo upLo,
     flens::checkStatus(status);
 }
 
-// dtrsv
+// dtbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
+tbsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
      const flens::device_ptr<const double, flens::StorageType::CUDA> A, IndexType ldA,
       flens::device_ptr<double, flens::StorageType::CUDA> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("cublasDtrsv");
+    CXXBLAS_DEBUG_OUT("cublasDtbsv");
     
     if (order==RowMajor) {
         transA = Transpose(transA^Trans);
         upLo = (upLo==Upper) ? Lower : Upper;
-        trsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
+        tbsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
         return;
     }
-    cublasStatus_t status = cublasDtrsv(flens::CudaEnv::getHandle(), 
+    cublasStatus_t status = cublasDtbsv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(upLo), CUBLAS::getCublasType(transA),
                                         CUBLAS::getCublasType(diag),
                                         n, k,
@@ -185,24 +185,24 @@ trsv(StorageOrder order, StorageUpLo upLo,
     
     flens::checkStatus(status);
 }
-// ctrsv
+// ctbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
+tbsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
      const flens::device_ptr<const ComplexFloat, flens::StorageType::CUDA> A, IndexType ldA,
      flens::device_ptr<ComplexFloat, flens::StorageType::CUDA> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("cublasCtrsv");
+    CXXBLAS_DEBUG_OUT("cublasCtbsv");
     
     if (order==RowMajor) {
         transA = Transpose(transA^Trans);
         upLo = (upLo==Upper) ? Lower : Upper;
-        trsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
+        tbsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
         return;
     }
-    cublasStatus_t status = cublasCtrsv(flens::CudaEnv::getHandle(), 
+    cublasStatus_t status = cublasCtbsv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(upLo), CUBLAS::getCublasType(transA),
                                         CUBLAS::getCublasType(diag),
                                         n, k,
@@ -212,24 +212,24 @@ trsv(StorageOrder order, StorageUpLo upLo,
     flens::checkStatus(status);
 }
 
-// ztrsv
+// ztbsv
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
-trsv(StorageOrder order, StorageUpLo upLo,
+tbsv(StorageOrder order, StorageUpLo upLo,
      Transpose transA, Diag diag,
      IndexType n, IndexType k,
      const flens::device_ptr<const ComplexDouble, flens::StorageType::CUDA> A, IndexType ldA,
      flens::device_ptr<ComplexDouble, flens::StorageType::CUDA> x, IndexType incX)
 {
-    CXXBLAS_DEBUG_OUT("cublasZtrsv");
+    CXXBLAS_DEBUG_OUT("cublasZtbsv");
     
     if (order==RowMajor) {
         transA = Transpose(transA^Trans);
         upLo = (upLo==Upper) ? Lower : Upper;
-        trsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
+        tbsv(ColMajor, upLo, transA, diag, n, k, A, ldA, x, incX);
         return;
     }
-    cublasStatus_t status = cublasZtrsv(flens::CudaEnv::getHandle(), 
+    cublasStatus_t status = cublasZtbsv(flens::CudaEnv::getHandle(), 
                                         CUBLAS::getCublasType(upLo), CUBLAS::getCublasType(transA),
                                         CUBLAS::getCublasType(diag),
                                         n, k,
