@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2011, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,17 +30,20 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
+#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
+#define PLAYGROUND_FLENS_MAGMA_MAGMA_TCC 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#ifdef USE_CXXMAGMA
+#   include <playground/cxxmagma/cxxmagma.tcc>
+#endif
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#include <flens/lapack/auxiliary/getf77char.tcc>
+
+#include <playground/flens/magma/ge/qrf.tcc>
+#include <playground/flens/magma/ge/sv.tcc>
+#include <playground/flens/magma/ge/trf.tcc>
+#include <playground/flens/magma/ge/tri.tcc>
+#include <playground/flens/magma/ge/trs.tcc>
+
+
+#endif // PLAYGROUND_FLENS_MAGMA_MAGMA_TCC

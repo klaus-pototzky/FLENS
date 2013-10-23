@@ -41,5 +41,7 @@
 #include<playground/flens/blas-extensions/blas-extensions.h>
 #include<playground/flens/lapack-extensions/lapack-extensions.h>
 #include<playground/flens/storage/storage.h>
-
+#include<playground/flens/matrixtypes/matrixtypetraits.h>
+#include<playground/flens/vectortypes/densevectortypetraits.h>
+#include<playground/flens/magma/magma.h>
 #endif // PLAYGROUND_FLENS_FLENS_H

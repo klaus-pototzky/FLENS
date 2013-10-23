@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2011, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,17 +30,35 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
+#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_H
+#define PLAYGROUND_FLENS_MAGMA_MAGMA_H 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+
+//
+//  Select MAGMA preferences generic vs external implementation.
+//
+
+#define MAGMA_SELECT  external
+
+
+//
+//  If an external LAPACK implementation is available include headers
+//
+#ifdef USE_CXXMAGMA
+#   include <playground/cxxmagma/cxxmagma.h>
+#endif
+
+#include <cmath>
+
+#include <flens/lapack/auxiliary/getf77char.h>
+
+#include <playground/flens/magma/ge/qrf.h>
+#include <playground/flens/magma/ge/sv.h>
+#include <playground/flens/magma/ge/trf.h>
+#include <playground/flens/magma/ge/tri.h>
+#include <playground/flens/magma/ge/trs.h>
+
+
+
+#endif // FLENS_LAPACK_LAPACK_H

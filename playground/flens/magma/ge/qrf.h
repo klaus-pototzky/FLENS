@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2011, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,17 +30,50 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#ifndef PLAYGROUND_FLENS_MAGMA_GE_QRF_H
+#define PLAYGROUND_FLENS_MAGMA_GE_QRF_H 1
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#include <flens/matrixtypes/matrixtypes.h>
+#include <flens/vectortypes/vectortypes.h>
+
+namespace flens { namespace magma {
+
+#ifdef USE_CXXMAGMA
+
+//== (ge)qrf ===================================================================
+//
+//  Variant for CPU 
+//
+template <typename MA, typename VTAU, typename VWORK>
+    typename RestrictTo<IsHostGeMatrix<MA>::value
+                     && IsHostDenseVector<VTAU>::value
+                     && IsHostDenseVector<VWORK>::value,
+             void>::Type
+    qrf(MA &&A, VTAU &&tau, VWORK &&work);
+
+//
+//  Variant for GPU 
+//
+template <typename MA, typename VTAU, typename VWORK>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostDenseVector<VTAU>::value
+                     && IsDeviceDenseVector<VWORK>::value,
+             void>::Type
+    qrf(MA &&A, VTAU &&tau, VWORK &&work);
+
+
+//
+//  Real/complex variant with temporary workspace
+//
+template <typename MA, typename VTAU>
+    typename RestrictTo<IsGeMatrix<MA>::value
+                     && IsDenseVector<VTAU>::value,
+             void>::Type
+    qrf(MA &&A, VTAU &&tau);
+
+#endif // USE_CXXMAGMA
+    
+} } // namespace magma, flens
+
+#endif // PLAYGROUND_FLENS_MAGMA_GE_QRF_H

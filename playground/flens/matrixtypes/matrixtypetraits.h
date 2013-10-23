@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2007-2012, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,17 +30,23 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
+#ifndef PLAYGROUND_FLENS_MATRIXTYPES_MATRIXTYPETRAITS_H
+#define PLAYGROUND_FLENS_MATRIXTYPES_MATRIXTYPETRAITS_H 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#include<playground/flens/matrixtypes/hbmatrixtypetraits.h>
+#include<playground/flens/matrixtypes/hematrixtypetraits.h>
+#include<playground/flens/matrixtypes/hpmatrixtypetraits.h>
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#include<playground/flens/matrixtypes/gbmatrixtypetraits.h>
+#include<playground/flens/matrixtypes/gematrixtypetraits.h>
+
+#include<playground/flens/matrixtypes/sbmatrixtypetraits.h>
+#include<playground/flens/matrixtypes/spmatrixtypetraits.h>
+#include<playground/flens/matrixtypes/symatrixtypetraits.h>
+
+#include<playground/flens/matrixtypes/tbmatrixtypetraits.h>
+#include<playground/flens/matrixtypes/tpmatrixtypetraits.h>
+#include<playground/flens/matrixtypes/trmatrixtypetraits.h>
+
+
+#endif // PLAYGROUND_FLENS_MATRIXTYPES_MATRIXTYPETRAITS_H

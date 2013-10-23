@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2012, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,17 +30,23 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
+#ifndef PLAYGROUND_CXXMAGMA_CXXMAGMA_H
+#define PLAYGROUND_CXXMAGMA_CXXMAGMA_H 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#ifdef USE_CXXMAGMA
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#ifdef DEBUG_CXXMAGMA
+#    define CXXMAGMA_DEBUG_OUT(msg) std::cerr << "CXXMAGMA: " << msg << std::endl;
+#endif
+
+#ifndef CXXMAGMA_DEBUG_OUT
+#   define  CXXMAGMA_DEBUG_OUT(msg)
+#endif
+
+#include <playground/cxxmagma/header.h>
+#include <playground/cxxmagma/interface/interface.h>
+
+#endif // USE_CXXMAGMA
+
+#endif // PLAYGROUND_CXXMAGMA_CXXMAGMA_H 1
+

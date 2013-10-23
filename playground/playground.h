@@ -35,6 +35,7 @@
 
 #include<playground/cxxblas/cxxblas.h>
 #include<playground/cxxdft/cxxdft.h>
+#include<playground/cxxmagma/cxxmagma.h>
 #include<playground/flens/flens.h>
 
 #endif // PLAYGROUND_PLAYGROUND_H

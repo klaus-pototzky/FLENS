@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2007-2012, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,17 +30,46 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
+#ifndef PLAYGROUND_FLENS_MATRIXTYPES_HEMATRIXTYPETRAITS_H
+#define PLAYGROUND_FLENS_MATRIXTYPES_HEMATRIXTYPETRAITS_H 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#include <flens/matrixtypes/hermitian/impl/hematrix.h>
+#include <flens/storage/fullstorage/isfullstorage.h>
+#include <playground/flens/storage/devicefullstorage/isdevicefullstorage.h>
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+namespace flens {
+
+#ifdef HAVE_DEVICE_STORAGE
+
+//
+//  IsHostHeMatrix
+//
+
+template <typename T>
+struct IsHostHeMatrix
+{
+    typedef typename std::remove_reference<T>::type  TT;
+
+    static const bool value = IsHeMatrix<TT>::value
+                           && IsFullStorage<typename TT::Engine>::value;
+};
+
+
+//
+//  IsDeviceHeMatrix
+//
+
+template <typename T>
+struct IsDeviceHeMatrix
+{
+    typedef typename std::remove_reference<T>::type  TT;
+
+    static const bool value = IsHeMatrix<TT>::value
+                           && IsDeviceFullStorage<typename TT::Engine>::value;
+};
+
+#endif // HAVE_DEVICE_STORAGE
+
+} // namespace flens
+
+#endif // PLAYGROUND_FLENS_MATRIXTYPES_HEMATRIXTYPETRAITS_H

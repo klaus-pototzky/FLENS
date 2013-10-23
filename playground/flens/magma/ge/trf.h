@@ -30,17 +30,40 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#ifndef PLAYGROUND_FLENS_MAGMA_GE_TRF_H
+#define PLAYGROUND_FLENS_MAGMA_GE_TRF_H 1
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#include <flens/lapack/typedefs.h>
+#include <flens/matrixtypes/matrixtypes.h>
+#include <flens/vectortypes/vectortypes.h>
+
+namespace flens { namespace magma {
+
+#ifdef USE_CXXMAGMA
+
+//== (ge)trf ===================================================================
+//
+//  Real and complex variant [Host]
+//
+template <typename MA, typename VPIV>
+    typename RestrictTo<IsHostGeMatrix<MA>::value
+                     && IsHostIntegerDenseVector<VPIV>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    trf(MA &&A, VPIV &&piv);
+    
+//== (ge)trf ===================================================================
+//
+//  Real and complex variant [Device]
+//
+template <typename MA, typename VPIV>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostIntegerDenseVector<VPIV>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    trf(MA &&A, VPIV &&piv);
+    
+#endif
+
+} } // namespace magma, flens
+
+#endif // PLAYGROUND_FLENS_MAGMA_GE_TRF_H

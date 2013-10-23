@@ -35,6 +35,7 @@
 
 #include<playground/cxxblas/cxxblas.tcc>
 #include<playground/cxxdft/cxxdft.tcc>
+#include<playground/cxxmagma/cxxmagma.tcc>
 #include<playground/flens/flens.tcc>
 
 #endif // PLAYGROUND_PLAYGROUND_TCC

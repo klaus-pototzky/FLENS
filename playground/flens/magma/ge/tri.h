@@ -30,17 +30,43 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#ifndef PLAYGROUND_FLENS_MAGMA_GE_TRI_H
+#define PLAYGROUND_FLENS_MAGMA_GE_TRI_H 1
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#include <flens/lapack/typedefs.h>
+#include <flens/matrixtypes/matrixtypes.h>
+#include <flens/vectortypes/vectortypes.h>
+
+namespace flens { namespace magma {
+
+#ifdef USE_CXXMAGMA
+
+//== (ge)tri ===================================================================
+//
+//  Real/complex variant
+//
+template <typename MA, typename VPIV, typename VWORK>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostIntegerDenseVector<VPIV>::value
+                     && IsDeviceDenseVector<VWORK>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    tri(MA          &&A,
+        const VPIV  &piv,
+        VWORK       &&work);
+
+//
+//  Real/complex variant with temporary workspace
+//
+template <typename MA, typename VPIV>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostIntegerDenseVector<VPIV>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    tri(MA          &&A,
+        const VPIV  &piv);
+
+#endif // USE_CXXMAGMA
+    
+} } // namespace lapack, flens
+
+#endif // PLAYGROUND_FLENS_MAGMA_GE_TRI_H

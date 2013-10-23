@@ -30,17 +30,40 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_FLENS_TCC
-#define PLAYGROUND_FLENS_FLENS_TCC 1
 
-#include<playground/flens/auxiliary/auxiliary.tcc>
-#include<playground/flens/dft/dft.tcc>
-#include<playground/flens/mpi/mpi-flens.tcc>
-#include<playground/flens/solver/solver.tcc>
-#include<playground/flens/sparse/sparse.tcc>
-#include<playground/flens/blas-extensions/blas-extensions.tcc>
-#include<playground/flens/lapack-extensions/lapack-extensions.tcc>
-#include<playground/flens/storage/storage.tcc>
-#include<playground/flens/magma/magma.tcc>
+#ifndef PLAYGROUND_FLENS_MAGMA_GE_TRS_H
+#define PLAYGROUND_FLENS_MAGMA_GE_TRS_H 1
 
-#endif // PLAYGROUND_FLENS_FLENS_TCC
+#include <flens/lapack/typedefs.h>
+#include <flens/matrixtypes/matrixtypes.h>
+#include <flens/vectortypes/vectortypes.h>
+
+namespace flens { namespace magma {
+
+#ifdef USE_CXXMAGMA
+  
+//== (ge)trs ===================================================================
+//
+//  Real and complex variant
+//
+template <typename MA, typename VPIV, typename MB>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostIntegerDenseVector<VPIV>::value
+                     && IsDeviceGeMatrix<MB>::value,
+             void>::Type
+    trs(Transpose trans, const MA &A, const VPIV &piv, MB &&B);
+
+//== Variant for convenience: Rhs b is vector ==================================
+
+template <typename MA, typename VPIV, typename VB>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostIntegerDenseVector<VPIV>::value
+                     && IsDeviceDenseVector<VB>::value,
+             void>::Type
+    trs(Transpose trans, const MA &A, const VPIV &piv, VB &&b);
+
+#endif // USE_CXXMAGMA
+    
+} } // namespace lapack, flens
+
+#endif // PLAYGROUND_FLENS_MAGMA_GE_TRS_H
