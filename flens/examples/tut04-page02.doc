@@ -26,7 +26,7 @@ Example Code
 
 Comments on Example Code
 ========================
-:import: flens/examples/lapack-geqrf.cc
+:import: flens/examples/lapack-geqrf.cc [brief]
 
 Compile
 =======
@@ -104,8 +104,7 @@ Compile
   *--[SHELL]----------------------------------------------------------------*
   |                                                                         |
   |  cd flens/examples                                                      |
-  |  g++ -DUSE_CXXLAPACK -framework vecLib                               +++|
-  |      -std=c++11 -Wall -I../.. -o lapack-complex-geqrf                +++|
+  |  g++ -std=c++11 -Wall -I../.. -o lapack-complex-geqrf                +++|
   |      lapack-complex-geqrf.cc                                            |
   |                                                                         |
   *-------------------------------------------------------------------------*

@@ -139,7 +139,7 @@ typename RestrictTo<DefaultEval<VectorClosureOpConj<VX> >::value
                  && IsVector<VX>::value,
          void>::Type
 copy(const VectorClosureOpConj<VX> &x, Vector<VY> &y)
-{   
+{
     FLENS_BLASLOG_BEGIN_COPY(x, y);
     copyConj(x.left(), y.impl());
     FLENS_BLASLOG_END;
@@ -199,9 +199,11 @@ copy(const VectorClosure<OpMult, VL, MR> &xA, Vector<VY> &y)
 
 template <typename Op, typename VL, typename VR, typename VY>
 void
-copy(const VectorClosure<Op, VL, VR> &x, Vector<VY> &y)
+copy(const VectorClosure<Op, VL, VR> &FLENS_BLASLOG_VARDECL(x),
+     Vector<VY>                      &FLENS_BLASLOG_VARDECL(y))
 {
     FLENS_BLASLOG_ERROR_COPY(x, y);
+
     ASSERT(0);
 }
 
@@ -365,10 +367,12 @@ copy(Transpose trans, const MatrixClosure<OpMult, MA, MB> &AB, Matrix<MC> &C)
 
 template <typename Op, typename ML, typename MR, typename MB>
 void
-copy(Transpose trans, const MatrixClosure<Op, ML, MR> &A, Matrix<MB> &B)
+copy(Transpose DEBUG_VAR(trans), const MatrixClosure<Op, ML, MR> &DEBUG_VAR(A),
+     Matrix<MB> &DEBUG_VAR(B) )
 {
     FLENS_BLASLOG_ERROR_MCOPY(trans, A, B);
     ERROR_MSG("B = <Unknown Closure>");
+
     ASSERT(0);
 }
 
@@ -379,10 +383,10 @@ copy(Transpose trans, const MatrixClosure<Op, ML, MR> &A, Matrix<MB> &B)
 template <typename MA, typename MB>
 typename RestrictTo<IsHermitianMatrix<MA>::value,
          void>::Type
-copy(Transpose trans, const MA &A, Matrix<MB> &B)
+copy(Transpose DEBUG_VAR(trans), const MA &A, Matrix<MB> &B)
 {
 #   ifndef FLENS_DEBUG_CLOSURES
-    ASSERT(trans==NoTrans || trans==Trans);
+    ASSERT(trans==NoTrans || trans==ConjTrans);
 #   else
     if (trans!=NoTrans && trans!=Trans) {
         typedef typename MA::ElementType TA;
@@ -404,7 +408,7 @@ copy(Transpose trans, const MA &A, Matrix<MB> &B)
 template <typename MA, typename MB>
 typename RestrictTo<IsSymmetricMatrix<MA>::value,
          void>::Type
-copy(Transpose trans, const MA &A, Matrix<MB> &B)
+copy(Transpose DEBUG_VAR(trans), const MA &A, Matrix<MB> &B)
 {
 #   ifndef FLENS_DEBUG_CLOSURES
     ASSERT(trans==NoTrans || trans==Trans);

@@ -39,7 +39,6 @@
 
 #include <flens/lapack/auxiliary/getf77char.tcc>
 #include <flens/lapack/auxiliary/nint.tcc>
-#include <flens/lapack/auxiliary/pow.tcc>
 #include <flens/lapack/auxiliary/sign.tcc>
 
 #include <flens/lapack/debug/hex.tcc>
@@ -78,7 +77,6 @@
 #include <flens/lapack/ge/svj1.tcc>
 #include <flens/lapack/ge/svx.tcc>
 #include <flens/lapack/ge/tf2.tcc>
-#include <flens/lapack/ge/trexc.tcc>
 #include <flens/lapack/ge/trf.tcc>
 #include <flens/lapack/ge/tri.tcc>
 #include <flens/lapack/ge/trs.tcc>
@@ -112,15 +110,18 @@
 #include <flens/lapack/impl/ormr3.tcc>
 #include <flens/lapack/impl/ormrz.tcc>
 #include <flens/lapack/impl/trevc.tcc>
+#include <flens/lapack/impl/trexc.tcc>
 #include <flens/lapack/impl/trsen.tcc>
 #include <flens/lapack/impl/trsna.tcc>
 #include <flens/lapack/impl/trsyl.tcc>
 #include <flens/lapack/impl/tzrzf.tcc>
 #include <flens/lapack/impl/ung2r.tcc>
+#include <flens/lapack/impl/unghr.tcc>
 #include <flens/lapack/impl/ungl2.tcc>
 #include <flens/lapack/impl/unglq.tcc>
 #include <flens/lapack/impl/ungqr.tcc>
 #include <flens/lapack/impl/unm2r.tcc>
+#include <flens/lapack/impl/unmhr.tcc>
 #include <flens/lapack/impl/unml2.tcc>
 #include <flens/lapack/impl/unmlq.tcc>
 #include <flens/lapack/impl/unmqr.tcc>

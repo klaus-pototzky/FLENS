@@ -94,7 +94,8 @@ ungl2_impl(IndexType                 k,
             A(i,_(i+1,n)) = conjugate(A(i,_(i+1,n)));
             if (i<m) {
                 A(i,i) = One;
-                larf(Right, A(i,_(i,n)), conj(tau(i)), A(_(i+1,m),_(i,n)), work);
+                larf(Right, A(i,_(i,n)), conj(tau(i)), A(_(i+1,m),_(i,n)),
+                     work);
             }
             A(i,_(i+1,n)) *= -tau(i);
             A(i,_(i+1,n)) = conjugate(A(i,_(i+1,n)));
@@ -131,6 +132,7 @@ ungl2_impl(IndexType                 k,
                                        tau.data(),
                                        work.data());
     ASSERT(info==0);
+    FAKE_USE_NDEBUG(info);
 }
 
 } // namespace external

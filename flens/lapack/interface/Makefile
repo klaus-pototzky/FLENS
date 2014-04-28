@@ -1,14 +1,17 @@
-CXX  = g++-4.7
+CXX  ?= g++
 #CXX  = clang++
 
-CXXFLAGS += -std=c++11 -Wall -Wextra -Werror
+CXXFLAGS += -g -std=c++11 -Wall -Wextra -Werror
 CXXFLAGS += -I../../..
 
 #
 # FLENS-LAPACK checks its results by calling REFLAPACK and REFBALS functions
 # without underscore
 #
-CXXFLAGS += -DWITH_REFBLAS
+CXXFLAGS += -DWITH_REFBLAS -DTRACEBACK_ASSERT
+#CXXFLAGS += -DWITH_REFBLAS -DCXXBLAS_DEBUG
+
+#CXXFLAGS += -DLAPACK_DEBUG
 
 test_external_binding =
 

@@ -76,7 +76,7 @@ svj_impl(SVJ::TypeA                typeA,
     using std::abs;
     using std::max;
     using std::min;
-    using flens::pow;
+    using cxxblas::pow;
     using std::sqrt;
     using std::swap;
 
@@ -1143,7 +1143,9 @@ svj_impl(SVJ::TypeA                typeA,
     }
 //
 //  Undo scaling, if necessary (and possible).
-    if (((skl>One) && (sva(1)<big/skl)) || ((skl<One) && (sva(n2)>safeMin/skl))) {
+    if (((skl>One) && (sva(1)<big/skl))
+     || ((skl<One) && (sva(n2)>safeMin/skl)))
+    {
         sva *= skl;
         skl = One;
     }
@@ -1326,8 +1328,8 @@ svj_(SVJ::TypeA                typeA,
 
     if (failed) {
         std::cerr << "error in: svj.tcc ("
-                  << ", m = " << m
-                  << ", n = " << n
+                  << ", m = " << A.numRows()
+                  << ", n = " << A.numCols()
                   << ", typeA = " << char(typeA)
                   << ", jobU = " << char(jobU)
                   << ", jobV = " << char(jobV)
@@ -1337,8 +1339,8 @@ svj_(SVJ::TypeA                typeA,
     } else {
         /*
         std::cerr << "passed: svj.tcc ("
-                  << ", m = " << m
-                  << ", n = " << n
+                  << ", m = " << A.numRows()
+                  << ", n = " << A.numCols()
                   << ", typeA = " << char(typeA)
                   << ", jobU = " << char(jobU)
                   << ", jobV = " << char(jobV)

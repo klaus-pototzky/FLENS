@@ -33,7 +33,7 @@
 /* Based on
  *
        SUBROUTINE DPOTF2( UPLO, N, A, LDA, INFO )
-       SUBROUTINE ZPOTF2( UPLO, N, A, LDA, INFO )       
+       SUBROUTINE ZPOTF2( UPLO, N, A, LDA, INFO )
  *
  *  -- LAPACK routine (version 3.3.1) --
  *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -170,7 +170,7 @@ potf2_impl(HeMatrix<MA> &A)
 
     const PT Zero(0), One(1);
     const T  COne(1);
-    
+
     IndexType info = 0;
 //
 //  Quick return if possible
@@ -288,6 +288,7 @@ potf2_impl(HeMatrix<MA> &A)
     return info;
 }
 
+
 } // namespace external
 
 #endif // USE_CXXLAPACK
@@ -295,137 +296,68 @@ potf2_impl(HeMatrix<MA> &A)
 //== public interface ==========================================================
 
 template <typename MA>
-typename SyMatrix<MA>::IndexType
-potf2(SyMatrix<MA> &A)
-{
-    typedef typename SyMatrix<MA>::IndexType    IndexType;
-
-//
-//  Test the input parameters
-//
-    ASSERT(A.firstRow()==1);
-    ASSERT(A.firstCol()==1);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Make copies of output arguments
-//
-    typename SyMatrix<MA>::NoView       A_org      = A;
-#   endif
-
-//
-//  Call implementation
-//
-    IndexType info = LAPACK_SELECT::potf2_impl(A);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Make copies of generic results
-//
-    typename SyMatrix<MA>::NoView       A_generic      = A;
-//
-//  Restore output arguments
-//
-    A = A_org;
-
-//
-//  Compare results
-//
-    IndexType _info = external::potf2_impl(A);
-
-    bool failed = false;
-    if (! isIdentical(A_generic, A, "A_generic", "_A")) {
-        std::cerr << "CXXLAPACK: A_generic = " << A_generic << std::endl;
-        std::cerr << "F77LAPACK: A = " << A << std::endl;
-        failed = true;
-    }
-
-    if (! isIdentical(info, _info, " info", "_info")) {
-        std::cerr << "CXXLAPACK:  info = " << info << std::endl;
-        std::cerr << "F77LAPACK: _info = " << _info << std::endl;
-        failed = true;
-    }
-
-    if (failed) {
-        ASSERT(0);
-    }
-
-#   endif
-
-    return info;
-}
-
-template <typename MA>
-typename HeMatrix<MA>::IndexType
-potf2(HeMatrix<MA> &A)
-{
-    typedef typename HeMatrix<MA>::IndexType    IndexType;
-
-//
-//  Test the input parameters
-//
-    ASSERT(A.firstRow()==1);
-    ASSERT(A.firstCol()==1);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Make copies of output arguments
-//
-    typename HeMatrix<MA>::NoView       A_org      = A;
-#   endif
-
-//
-//  Call implementation
-//
-    IndexType info = LAPACK_SELECT::potf2_impl(A);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Make copies of generic results
-//
-    typename HeMatrix<MA>::NoView       A_generic      = A;
-//
-//  Restore output arguments
-//
-    A = A_org;
-
-//
-//  Compare results
-//
-    IndexType _info = external::potf2_impl(A);
-
-    bool failed = false;
-    if (! isIdentical(A_generic, A, "A_generic", "_A")) {
-        std::cerr << "CXXLAPACK: A_generic = " << A_generic << std::endl;
-        std::cerr << "F77LAPACK: A = " << A << std::endl;
-        failed = true;
-    }
-
-    if (! isIdentical(info, _info, " info", "_info")) {
-        std::cerr << "CXXLAPACK:  info = " << info << std::endl;
-        std::cerr << "F77LAPACK: _info = " << _info << std::endl;
-        failed = true;
-    }
-
-    if (failed) {
-        ASSERT(0);
-    }
-
-#   endif
-
-    return info;
-}
-
-//-- forwarding ----------------------------------------------------------------
-template <typename MA>
-typename MA::IndexType
+typename RestrictTo<IsRealSyMatrix<MA>::value
+                 || IsHeMatrix<MA>::value,
+         typename RemoveRef<MA>::Type::IndexType>::Type
 potf2(MA &&A)
 {
-    typedef typename MA::IndexType  IndexType;
+//
+//  Remove references from rvalue types
+//
+    typedef typename RemoveRef<MA>::Type    MatrixA;
+    typedef typename MatrixA::IndexType     IndexType;
 
-    CHECKPOINT_ENTER;
-    IndexType info =  potf2(A);
-    CHECKPOINT_LEAVE;
+//
+//  Test the input parameters
+//
+    ASSERT(A.firstRow()==1);
+    ASSERT(A.firstCol()==1);
+
+#   ifdef CHECK_CXXLAPACK
+//
+//  Make copies of output arguments
+//
+    typename MatrixA::GeneralNoView     A_org      = A.general();
+#   endif
+
+//
+//  Call implementation
+//
+    IndexType info = LAPACK_SELECT::potf2_impl(A);
+
+#   ifdef CHECK_CXXLAPACK
+//
+//  Make copies of generic results
+//
+    typename MatrixA::GeneralNoView     A_generic  = A.general();
+//
+//  Restore output arguments
+//
+    A.general() = A_org;
+
+//
+//  Compare results
+//
+    IndexType _info = external::potf2_impl(A);
+
+    bool failed = false;
+    if (! isIdentical(A_generic, A.general(), "A_generic", "_A")) {
+        std::cerr << "CXXLAPACK: A_generic = " << A_generic << std::endl;
+        std::cerr << "F77LAPACK: A = " << A.general() << std::endl;
+        failed = true;
+    }
+
+    if (! isIdentical(info, _info, " info", "_info")) {
+        std::cerr << "CXXLAPACK:  info = " << info << std::endl;
+        std::cerr << "F77LAPACK: _info = " << _info << std::endl;
+        failed = true;
+    }
+
+    if (failed) {
+        ASSERT(0);
+    }
+
+#   endif
 
     return info;
 }

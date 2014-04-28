@@ -32,7 +32,7 @@
 
 /* Based on
  *
- * Yousef Saad - Iterative methods for sparse linear systems  (2nd edition) 
+ * Yousef Saad - Iterative methods for sparse linear systems  (2nd edition)
  * Algorithm 6.18
  *
  */
@@ -41,6 +41,7 @@
 #define PLAYGROUND_FLENS_SOLVER_CG_TCC 1
 
 #include <cmath>
+#include <playground/flens/solver/cg.h>
 
 namespace flens { namespace solver {
 
@@ -59,10 +60,10 @@ cg(const MA &A, VX &&x, const VB &b,
     typedef typename VectorX::NoView       Vector;
     typedef typename VectorX::IndexType    IndexType;
     typedef typename VectorX::ElementType  ElementType;
-    
+
     Vector Ap, r, p;
     ElementType alpha, beta, rNormSquare, rNormSquarePrev;
-    
+
     r = b - A*x;
     p = r;
     rNormSquare = r*r;
@@ -71,7 +72,7 @@ cg(const MA &A, VX &&x, const VB &b,
         if (abs(rNormSquare)<=tol) {
             return 0;
         }
-        
+
         Ap    = A*p;
         alpha = rNormSquare/(p*Ap);
         x     = x + alpha*p;
@@ -79,7 +80,7 @@ cg(const MA &A, VX &&x, const VB &b,
 
         rNormSquarePrev = rNormSquare;
         rNormSquare     = r*r;
-        
+
         beta = rNormSquare/rNormSquarePrev;
         p    = beta*p + r;
     }
@@ -101,17 +102,17 @@ cg(const MA &A, VX &&x, const VB &b,
     typedef typename VectorX::NoView       Vector;
     typedef typename VectorX::IndexType    IndexType;
     typedef typename VectorX::ElementType  ElementType;
-   
+
     Vector      Ap, AtAp, r, p;
     ElementType alpha, beta, rNormSquare, rNormSquarePrev;
-    
+
     p = b - A*x;
     r = transpose(A)*p;
     p = r;
-    
+
     rNormSquare = r*r;
     for (IndexType k=1; k<=maxIterations; k++) {
-      
+
         if ( abs(rNormSquare)<=tol ) {
             return 0;
         }

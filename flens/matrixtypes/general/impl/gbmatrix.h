@@ -61,7 +61,7 @@ class GbMatrix
         typedef typename Engine::PointerType        PointerType;
         typedef typename Engine::ConstPointerType   ConstPointerType;
         typedef typename Engine::IndexType          IndexType;
-    
+
         // view types from Engine
         typedef typename Engine::ConstView          EngineConstView;
         typedef typename Engine::View               EngineView;
@@ -70,7 +70,7 @@ class GbMatrix
         typedef typename Engine::ConstArrayView     ConstArrayView;
         typedef typename Engine::ArrayView          ArrayView;
         typedef typename Engine::Array              Array;
-        
+
         typedef typename Engine::ConstFullStorageView   ConstFullStorageView;
         typedef typename Engine::FullStorageView        FullStorageView;
         typedef typename Engine::FullStorage            FullStorage;
@@ -87,11 +87,11 @@ class GbMatrix
         typedef TbMatrix<EngineConstView>           ConstTriangularView;
         typedef TbMatrix<EngineView>                TriangularView;
         typedef TbMatrix<EngineNoView>              TriangularNoView;
-    
+
         typedef GeMatrix<ConstFullStorageView>      ConstGeView;
         typedef GeMatrix<FullStorageView>           GeView;
         typedef GeMatrix<FullStorage>               GeNoView;
-    
+
         GbMatrix();
 
         explicit
@@ -179,7 +179,7 @@ class GbMatrix
 
         View
         strictLower();
-    
+
         // Diagonals
 
         const ConstVectorView
@@ -193,37 +193,37 @@ class GbMatrix
 
         View
         diags(IndexType fromDiag, IndexType toDiag);
-    
+
         // row view (vector view)
         const ConstVectorView
         operator()(IndexType row, const Underscore<IndexType> &) const;
-    
+
         VectorView
         operator()(IndexType row, const Underscore<IndexType> &);
-    
+
         const ConstVectorView
         operator()(IndexType row, const Range<IndexType> &cols) const;
-    
+
         VectorView
         operator()(IndexType row, const Range<IndexType> &cols);
-    
+
         // column view (vector view)
         const ConstVectorView
         operator()(const Underscore<IndexType> &, IndexType col) const;
-    
+
         VectorView
         operator()(const Underscore<IndexType> &, IndexType col);
-    
+
         const ConstVectorView
         operator()(const Range<IndexType> &rows, IndexType col) const;
-    
+
         VectorView
         operator()(const Range<IndexType> &rows, IndexType col);
-    
+
         // view to the underlying Storage Matrix
         const ConstGeView
         viewStorageGeMatrix() const;
-    
+
         GeView
         viewStorageGeMatrix();
 

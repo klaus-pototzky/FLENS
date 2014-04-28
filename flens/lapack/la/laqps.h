@@ -34,6 +34,8 @@
  *
        SUBROUTINE DLAQPS( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU, VN1,
       $                   VN2, AUXV, F, LDF )
+       SUBROUTINE ZLAQPS( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU, VN1,
+      $                   VN2, AUXV, F, LDF )
  *
  *  -- LAPACK auxiliary routine (version 3.3.1) --
  *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -50,36 +52,33 @@
 namespace flens { namespace lapack {
 
 //== laqps =====================================================================
-template <typename MA, typename JPIV, typename VTAU,
-          typename VN1, typename VN2, typename VAUX,
-          typename MF>
-    void
-    laqps(typename GeMatrix<MA>::IndexType  offset,
-          typename GeMatrix<MA>::IndexType  nb,
-          typename GeMatrix<MA>::IndexType  &kb,
-          GeMatrix<MA>                      &A,
-          DenseVector<JPIV>                 &jPiv,
-          DenseVector<VTAU>                 &tau,
-          DenseVector<VN1>                  &vn1,
-          DenseVector<VN2>                  &vn2,
-          DenseVector<VAUX>                 &aux,
-          GeMatrix<MF>                      &F);
-
-//-- forwarding ----------------------------------------------------------------
-template <typename MA, typename JPIV, typename VTAU,
-          typename VN1, typename VN2, typename VAUX,
-          typename MF>
-    void
-    laqps(typename MA::IndexType  offset,
-          typename MA::IndexType  nb,
-          typename MA::IndexType  &kb,
-          MA                      &&A,
-          JPIV                    &&jPiv,
-          VTAU                    &&tau,
-          VN1                     &&vn1,
-          VN2                     &&vn2,
-          VAUX                    &&aux,
-          MF                      &&F);
+//
+//  Real and complex variant
+//
+template <typename IndexType, typename MA, typename JPIV, typename VTAU,
+          typename VN1, typename VN2, typename VAUX, typename MF>
+    typename RestrictTo<((IsRealGeMatrix<MA>::value &&
+                          IsRealDenseVector<VTAU>::value &&
+                          IsRealDenseVector<VAUX>::value &&
+                          IsRealGeMatrix<MF>::value)
+                      || (IsComplexGeMatrix<MA>::value &&
+                          IsComplexDenseVector<VTAU>::value &&
+                          IsComplexDenseVector<VAUX>::value &&
+                          IsComplexGeMatrix<MF>::value))
+                      && IsIntegerDenseVector<JPIV>::value
+                      && IsRealDenseVector<VN1>::value
+                      && IsRealDenseVector<VN2>::value,
+             void>::Type
+    laqps(IndexType   offset,
+          IndexType   nb,
+          IndexType   &kb,
+          MA          &&A,
+          JPIV        &&jPiv,
+          VTAU        &&tau,
+          VN1         &&vn1,
+          VN2         &&vn2,
+          VAUX        &&aux,
+          MF          &&F);
 
 } } // namespace lapack, flens
 

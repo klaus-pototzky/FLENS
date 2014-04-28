@@ -35,5 +35,6 @@
 
 #include <cxxblas/auxiliary/cast.tcc>
 #include <cxxblas/auxiliary/complex.tcc>
+#include <cxxblas/auxiliary/pow.tcc>
 
 #endif // CXXBLAS_AUXILIARY_AUXILIARY_TCC

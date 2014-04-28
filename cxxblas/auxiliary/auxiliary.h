@@ -35,6 +35,13 @@
 
 #include <cxxblas/auxiliary/cast.h>
 #include <cxxblas/auxiliary/complex.h>
+#include <cxxblas/auxiliary/complextrait.h>
 #include <cxxblas/auxiliary/debugmacro.h>
+#include <cxxblas/auxiliary/fakeuse.h>
+#include <cxxblas/auxiliary/iscomplex.h>
+#include <cxxblas/auxiliary/ismpfrreal.h>
+#include <cxxblas/auxiliary/issame.h>
+#include <cxxblas/auxiliary/pow.h>
+#include <cxxblas/auxiliary/restrictto.h>
 
 #endif // CXXBLAS_AUXILIARY_AUXILIARY_H

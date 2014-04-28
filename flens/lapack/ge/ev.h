@@ -76,7 +76,7 @@ template <typename MA, typename VWR, typename VWI, typename MVL, typename MVR,
        MVR      &&VR,
        VWORK    &&work);
 
-//== (ge)ev workspace query ======================================================
+//== (ge)ev workspace query ====================================================
 //
 //  Real variant
 //
@@ -106,8 +106,6 @@ template <typename MA, typename VWR, typename VWI, typename MVL, typename MVR,
        MVR      &&VR);
 
 
-#ifdef USE_CXXLAPACK
-
 //== (ge)ev ====================================================================
 //
 //  Complex variant
@@ -130,7 +128,7 @@ template <typename MA, typename VW, typename MVL, typename MVR, typename VWORK,
        VWORK    &&work,
        VRWORK   &&rWork);
 
-//== (ge)ev workspace query =======================================================
+//== (ge)ev workspace query ====================================================
 //
 //  Complex variant
 //
@@ -156,8 +154,18 @@ template <typename MA, typename VW, typename MVL, typename MVR>
        MVL      &&VL,
        MVR      &&VR);
 
-#endif // USE_CXXLAPACK
-
+//== (ge)ev ====================================================================
+//
+//  Real/complex variant that only computes eigenvalues
+//
+template <typename MA, typename VW>
+    typename RestrictTo<(IsComplexGeMatrix<MA>::value
+                      && IsComplexDenseVector<VW>::value)
+             ||         (IsRealGeMatrix<MA>::value
+                      && IsRealDenseVector<VW>::value),
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    ev(MA       &&A,
+       VW       &&w);
 
 } } // namespace lapack, flens
 

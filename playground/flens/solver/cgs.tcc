@@ -40,6 +40,7 @@
 #define PLAYGROUND_FLENS_SOLVER_CGS_TCC 1
 
 #include <cmath>
+#include <playground/flens/solver/cgs.h>
 
 namespace flens { namespace solver {
 
@@ -58,38 +59,38 @@ cgs(const MA &A, VX &&x, const VB &b,
     typedef typename VectorX::NoView       Vector;
     typedef typename VectorX::IndexType    IndexType;
     typedef typename VectorX::ElementType  ElementType;
-    
+
     Vector r, r0, p, u, v, q, t;
     ElementType alpha, beta, gamma;
-    
+
     r = b - A*x;
     r0 = r;
     p = r;
     u = r;
-    
+
     for (IndexType k=1; k<=maxIterations; k++) {
 
         if (abs(r*r)<=tol) {
             return 0;
         }
-        
+
         v = A*p;
         gamma = r*r0;
         alpha = gamma/(v*r0);
-        
+
         q = u - alpha*v;
         t = u + q;
         x = x + alpha*t;
         r = r - alpha*A*t;
-        
+
         beta = (r*r0)/gamma;
-        
+
         u = r + beta * q;
         p = beta*beta*p + u + beta*q;
     }
-    
+
     return maxIterations;
-    
+
 }
 
 } }// namespace solver, flens

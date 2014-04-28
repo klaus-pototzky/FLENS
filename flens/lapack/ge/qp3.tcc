@@ -72,7 +72,6 @@ qp3_wsq_impl(const GeMatrix<MA> &A)
         iws   = 1;
         lwOpt = 1;
     } else {
-    
         if (IsReal<ElementType>::value) {
             iws = 3*n + 1;
             const IndexType nb = ilaenv<ElementType>(1, "GEQRF", "", m, n);
@@ -278,13 +277,15 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
 
 //-- (ge)qp3 [complex variant] -------------------------------------------------
 
-template <typename MA, typename JPIV, typename VTAU, typename VWORK, typename VRWORK>
+template <typename MA, typename JPIV, typename VTAU, typename VWORK,
+          typename VRWORK>
 void
 qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
-         DenseVector<VWORK> &work, DenseVector<VRWORK> &rwork)
+         DenseVector<VWORK> &work, DenseVector<VRWORK> &rWork)
 {
     using std::max;
     using std::min;
+    using std::real;
 
     typedef typename GeMatrix<MA>::ElementType  T;
     typedef typename GeMatrix<MA>::IndexType    IndexType;
@@ -323,7 +324,7 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
 //
     IndexType  nFixed = 1;
     for (IndexType j=1; j<=n; ++j) {
-        if (jPiv(j)!=0) {
+        if (jPiv(j)!=IndexType(0)) {
             if (j!=nFixed) {
                 blas::swap(A(_,j), A(_,nFixed));
                 jPiv(j)      = jPiv(nFixed);
@@ -351,10 +352,10 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
         auto tau1 = tau(_(1,na));
 
         qrf(A1, tau1, work);
-        iws = max(iws, IndexType(cxxblas::real(work(1))));
+        iws = max(iws, IndexType(real(work(1))));
         if (na<n) {
             unmqr(Left, ConjTrans, A1, tau1, A2, work);
-            iws = max(iws, IndexType(cxxblas::real(work(1))));
+            iws = max(iws, IndexType(real(work(1))));
         }
     }
 //
@@ -391,7 +392,7 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
 //                  Not enough workspace to use optimal NB: Reduce NB and
 //                  determine the minimum value of NB.
 //
-                    nb = (lWork) / (sn+1);
+                    nb = lWork / (sn+1);
                     nbMin = max(IndexType(2),
                                 ilaenv<T>(2, "GEQRF", "", sm, sn));
 
@@ -403,8 +404,8 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
 //      store the exact column norms.
 //
         for (IndexType j=nFixed+1; j<=n; ++j) {
-            rwork(j) = blas::nrm2(A(_(nFixed+1,m),j));
-            rwork(n+j) = rwork(j);
+            rWork(j) = blas::nrm2(A(_(nFixed+1,m),j));
+            rWork(n+j) = rWork(j);
         }
 
         IndexType j;
@@ -428,8 +429,8 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
                 auto _A    = A(_,_(j,n));
                 auto _jPiv = jPiv(_(j,n));
                 auto _tau  = tau(_(j,min(j+jb-1,minmn)));
-                auto vn1   = rwork(_(j,n));
-                auto vn2   = rwork(_(j+n,2*n));
+                auto vn1   = rWork(_(j,n));
+                auto vn2   = rWork(_(j+n,2*n));
                 auto aux   = work(_(1, jb));
 
                 IndexType fLen = jb*(n-j+1);
@@ -452,8 +453,8 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
             auto _A    = A(_,_(j,n));
             auto _jPiv = jPiv(_(j,n));
             auto _tau  = tau(_(j,minmn));
-            auto vn1   = rwork(_(j,n));
-            auto vn2   = rwork(_(j+n,2*n));
+            auto vn1   = rWork(_(j,n));
+            auto vn2   = rWork(_(j+n,2*n));
             auto _work = work(_(1, n+1-j));
 
             laqp2(j-1, _A, _jPiv, _tau, vn1, vn2, _work);
@@ -462,6 +463,7 @@ qp3_impl(GeMatrix<MA> &A, DenseVector<JPIV> &jPiv, DenseVector<VTAU> &tau,
     }
 
     work(1) = iws;
+
 }
 
 } // namespace generic
@@ -632,7 +634,7 @@ qp3(MA      &&A,
     typedef typename RemoveRef<VJPIV>::Type     VectorJPiv;
     typedef typename RemoveRef<VTAU>::Type      VectorTau;
     typedef typename RemoveRef<VWORK>::Type     VectorWork;
-    
+
 //
 //  Make copies of output arguments
 //
@@ -641,6 +643,10 @@ qp3(MA      &&A,
     typename VectorTau::NoView   tau_org    = tau;
     typename VectorWork::NoView  work_org   = work;
 #   endif
+
+    if (work.length()==0) {
+        work.resize(qp3_wsq(A));
+    }
 
 //
 //  Call implementation
@@ -744,6 +750,12 @@ qp3(MA      &&A,
 //
     typedef typename RemoveRef<MA>::Type        MatrixA;
     typedef typename MatrixA::IndexType         IndexType;
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<VJPIV>::Type     VectorJPiv;
+    typedef typename RemoveRef<VTAU>::Type      VectorTau;
+    typedef typename RemoveRef<VWORK>::Type     VectorWork;
+    typedef typename RemoveRef<VRWORK>::Type    VectorRWork;
+#   endif
 
     const IndexType m = A.numRows();
     const IndexType n = A.numCols();
@@ -774,20 +786,11 @@ qp3(MA      &&A,
     if (tau.length()==0) {
         tau.resize(k);
     }
-    if (work.length()==0) {
-        work.resize(qp3_wsq(A));
-    }
     if (rWork.length()==0) {
         rWork.resize(2*n);
     }
 
 #   ifdef CHECK_CXXLAPACK
-
-    typedef typename RemoveRef<VJPIV>::Type     VectorJPiv;
-    typedef typename RemoveRef<VTAU>::Type      VectorTau;
-    typedef typename RemoveRef<VWORK>::Type     VectorWork;
-    typedef typename RemoveRef<VRWORK>::Type    VectorRWork;
-    
 //
 //  Make copies of output arguments
 //
@@ -797,6 +800,10 @@ qp3(MA      &&A,
     typename VectorWork::NoView   work_org   = work;
     typename VectorRWork::NoView  rWork_org  = rWork;
 #   endif
+
+    if (work.length()==0) {
+        work.resize(qp3_wsq(A));
+    }
 
 //
 //  Call implementation
@@ -812,7 +819,7 @@ qp3(MA      &&A,
     typename VectorTau::NoView    tau_generic   = tau;
     typename VectorWork::NoView   work_generic  = work;
     typename VectorRWork::NoView  rWork_generic = rWork;
-    
+
     A    = A_org;
     jPiv = jPiv_org;
     tau  = tau_org;
@@ -824,6 +831,9 @@ qp3(MA      &&A,
     } else {
         work = 0;
     }
+
+    rWork = rWork_org;
+
 //
 //  Compare results
 //
@@ -853,14 +863,16 @@ qp3(MA      &&A,
         std::cerr << "F77LAPACK: work = " << work << std::endl;
         failed = true;
     }
-    
+
     if (! isIdentical(rWork_generic, rWork, "rWork_generic", "rWork")) {
-        std::cerr << "CXXLAPACK: rWork_generic = " << rWork_generic << std::endl;
+        std::cerr << "CXXLAPACK: rWork_generic = "
+                  << rWork_generic << std::endl;
         std::cerr << "F77LAPACK: rWork = " << rWork << std::endl;
         failed = true;
     }
-    
+
     if (failed) {
+        std::cerr << "A_org = " << A_org << std::endl;
         ASSERT(0);
     }
 #   endif
@@ -890,7 +902,6 @@ qp3(MA      &&A,
 
     qp3(A, jPiv, tau, work, realWork);
 }
-
 
 //== workspace query ===========================================================
 

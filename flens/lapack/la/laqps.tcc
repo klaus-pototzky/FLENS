@@ -53,12 +53,14 @@ namespace flens { namespace lapack {
 
 namespace generic {
 
+//
+//  Real variant
+//
 template <typename MA, typename JPIV, typename VTAU,
           typename VN1, typename VN2, typename VAUX,
           typename MF>
-typename 
-RestrictTo<IsRealGeMatrix<GeMatrix<MA> >::value,
-           void>::Type
+typename RestrictTo<IsReal<typename MA::ElementType>::value,
+         void>::Type
 laqps_impl(typename GeMatrix<MA>::IndexType  offset,
            typename GeMatrix<MA>::IndexType  nb,
            typename GeMatrix<MA>::IndexType  &kb,
@@ -73,7 +75,7 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
     using std::abs;
     using std::max;
     using std::min;
-    using flens::pow;
+    using cxxblas::pow;
     using std::sqrt;
     using std::swap;
 
@@ -217,12 +219,14 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
     }
 }
 
+//
+//  Complex variant
+//
 template <typename MA, typename JPIV, typename VTAU,
           typename VN1, typename VN2, typename VAUX,
           typename MF>
-typename 
-RestrictTo<IsComplexGeMatrix<GeMatrix<MA> >::value,
-           void>::Type
+typename RestrictTo<IsComplex<typename MA::ElementType>::value,
+         void>::Type
 laqps_impl(typename GeMatrix<MA>::IndexType  offset,
            typename GeMatrix<MA>::IndexType  nb,
            typename GeMatrix<MA>::IndexType  &kb,
@@ -237,13 +241,13 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
     using std::abs;
     using std::max;
     using std::min;
-    using flens::pow;
+    using cxxblas::pow;
     using std::sqrt;
     using std::swap;
 
-    typedef typename GeMatrix<MA>::ElementType                 ElementType;
-    typedef typename ComplexTrait<ElementType>::PrimitiveType  PrimitiveType;
-    typedef typename GeMatrix<MA>::IndexType                   IndexType;
+    typedef typename GeMatrix<MA>::ElementType                  ElementType;
+    typedef typename ComplexTrait<ElementType>::PrimitiveType   PrimitiveType;
+    typedef typename GeMatrix<MA>::IndexType                    IndexType;
 
     const Underscore<IndexType> _;
 
@@ -255,9 +259,9 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
     IndexType lasticc = 0;
     IndexType k = 0;
 
-    const PrimitiveType Zero(0), One(1);
-    const ElementType COne(1);
-    const PrimitiveType tol3z = sqrt(lamch<PrimitiveType>(Eps));
+    const PrimitiveType  Zero(0), One(1);
+    const ElementType    CZero(0), COne(1);
+    const PrimitiveType  tol3z = sqrt(lamch<PrimitiveType>(Eps));
 //
 //  Beginning of while loop.
 //
@@ -281,13 +285,10 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
 //      A(RK:M,K) := A(RK:M,K) - A(RK:M,1:K-1)*F(K,1:K-1)**T.
 //
         if (k>1) {
-            
-            F(k,_(1,k-1)) = conjugate(F(k,_(1,k-1)));
-
+            blas::conj(F(k,_(1,k-1)));
             blas::mv(NoTrans, -COne, A(_(rk,m),_(1,k-1)), F(k,_(1,k-1)),
                      COne, A(_(rk,m),k));
-                     
-            F(k,_(1,k-1)) = conjugate(F(k,_(1,k-1)));
+            blas::conj(F(k,_(1,k-1)));
         }
 //
 //      Generate elementary reflector H(k).
@@ -299,7 +300,7 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
         }
 
         const ElementType Akk = A(rk,k);
-        A(rk,k) = One;
+        A(rk,k) = COne;
 //
 //      Compute Kth column of F:
 //
@@ -307,12 +308,12 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
 //
         if (k<n) {
             blas::mv(ConjTrans, tau(k), A(_(rk,m),_(k+1,n)), A(_(rk,m),k),
-                     Zero, F(_(k+1,n),k));
+                     CZero, F(_(k+1,n),k));
         }
 //
 //      Padding F(1:K,K) with zeros.
 //
-        F(_(1,k),k) = Zero;
+        F(_(1,k),k) = CZero;
 //
 //      Incremental updating of F:
 //      F(1:N,K) := F(1:N,K) - tau(K)*F(1:N,1:K-1)*A(RK:M,1:K-1)**T
@@ -320,7 +321,7 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
 //
         if (k>1) {
             blas::mv(ConjTrans, -tau(k), A(_(rk,m),_(1,k-1)), A(_(rk,m),k),
-                     Zero, aux(_(1,k-1)));
+                     CZero, aux(_(1,k-1)));
             blas::mv(NoTrans, COne, F(_,_(1,k-1)), aux(_(1,k-1)),
                      COne, F(_,k));
         }
@@ -329,8 +330,9 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
 //      A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)**H.
 //
         if (k<n) {
-            blas::mm(NoTrans, ConjTrans, -COne, A(_(rk, rk),_(1,k)), F(_(k+1,n),_(1,k)), 
-                     COne, A(_(rk, rk),_(k+1,n)));
+            blas::mm(NoTrans, ConjTrans,
+                     -COne, A(_(rk,rk),_(1,k)), F(_(k+1,n),_(1,k)),
+                     COne, A(_(rk,rk),_(k+1,n)));
         }
 //
 //      Update partial column norms.
@@ -365,7 +367,7 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
 //
 //  Apply the block reflector to the rest of the matrix:
 //  A(OFFSET+KB+1:M,KB+1:N) := A(OFFSET+KB+1:M,KB+1:N) -
-//                        A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)**T.
+//                      A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)**H.
 //
     if (kb<min(n,m-offset)) {
         blas::mm(NoTrans, ConjTrans,
@@ -387,7 +389,6 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
         lasticc = iTmp;
     }
 }
-
 
 } // namespace generic
 
@@ -435,27 +436,51 @@ laqps_impl(typename GeMatrix<MA>::IndexType  offset,
 #endif // USE_CXXLAPACK
 
 //== public interface ==========================================================
-template <typename MA, typename JPIV, typename VTAU,
-          typename VN1, typename VN2, typename VAUX,
-          typename MF>
-void
-laqps(typename GeMatrix<MA>::IndexType  offset,
-      typename GeMatrix<MA>::IndexType  nb,
-      typename GeMatrix<MA>::IndexType  &kb,
-      GeMatrix<MA>                      &A,
-      DenseVector<JPIV>                 &jPiv,
-      DenseVector<VTAU>                 &tau,
-      DenseVector<VN1>                  &vn1,
-      DenseVector<VN2>                  &vn2,
-      DenseVector<VAUX>                 &aux,
-      GeMatrix<MF>                      &F)
+//
+//  Real and complex variant
+//
+template <typename IndexType, typename MA, typename JPIV, typename VTAU,
+          typename VN1, typename VN2, typename VAUX, typename MF>
+typename RestrictTo<((IsRealGeMatrix<MA>::value &&
+                      IsRealDenseVector<VTAU>::value &&
+                      IsRealDenseVector<VAUX>::value &&
+                      IsRealGeMatrix<MF>::value)
+                  || (IsComplexGeMatrix<MA>::value &&
+                      IsComplexDenseVector<VTAU>::value &&
+                      IsComplexDenseVector<VAUX>::value &&
+                      IsComplexGeMatrix<MF>::value))
+                  && IsIntegerDenseVector<JPIV>::value
+                  && IsRealDenseVector<VN1>::value
+                  && IsRealDenseVector<VN2>::value,
+         void>::Type
+laqps(IndexType   offset,
+      IndexType   nb,
+      IndexType   &kb,
+      MA          &&A,
+      JPIV        &&jPiv,
+      VTAU        &&tau,
+      VN1         &&vn1,
+      VN2         &&vn2,
+      VAUX        &&aux,
+      MF          &&F)
 {
     using std::min;
 
-#   ifndef NDEBUG
+//
+//  Remove references from rvalue types
+//
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<MA>::Type        MatrixA;
+    typedef typename RemoveRef<JPIV>::Type      VectorJPiv;
+    typedef typename RemoveRef<VTAU>::Type      VectorTau;
+    typedef typename RemoveRef<VN1>::Type       VectorVN1;
+    typedef typename RemoveRef<VN2>::Type       VectorVN2;
+    typedef typename RemoveRef<VAUX>::Type      VectorAux;
+    typedef typename RemoveRef<MF>::Type        MatrixF;
+#   endif
 
-    typedef typename GeMatrix<MA>::IndexType    IndexType;
-    
+
+#   ifndef NDEBUG
 //
 //  Test the input parameters
 //
@@ -484,13 +509,14 @@ laqps(typename GeMatrix<MA>::IndexType  offset,
 //
 //  Make copies of output arguments
 //
-    typename GeMatrix<MA>::NoView       A_org      = A;
-    typename DenseVector<JPIV>::NoView  jPiv_org   = jPiv;
-    typename DenseVector<VTAU>::NoView  tau_org    = tau;
-    typename DenseVector<VN1>::NoView   vn1_org    = vn1;
-    typename DenseVector<VN2>::NoView   vn2_org    = vn2;
-    typename DenseVector<VAUX>::NoView  aux_org    = aux;
-    typename GeMatrix<MF>::NoView       F_org      = F;
+    IndexType                    kb_org     = kb;
+    typename MatrixA::NoView     A_org      = A;
+    typename VectorJPiv::NoView  jPiv_org   = jPiv;
+    typename VectorTau::NoView   tau_org    = tau;
+    typename VectorVN1::NoView   vn1_org    = vn1;
+    typename VectorVN2::NoView   vn2_org    = vn2;
+    typename VectorAux::NoView   aux_org    = aux;
+    typename MatrixF::NoView     F_org      = F;
 #   endif
 
 //
@@ -502,14 +528,16 @@ laqps(typename GeMatrix<MA>::IndexType  offset,
 //
 //  Restore output arguments
 //
-    typename GeMatrix<MA>::NoView       A_generic    = A;
-    typename DenseVector<JPIV>::NoView  jPiv_generic = jPiv;
-    typename DenseVector<VTAU>::NoView  tau_generic  = tau;
-    typename DenseVector<VN1>::NoView   vn1_generic  = vn1;
-    typename DenseVector<VN2>::NoView   vn2_generic  = vn2;
-    typename DenseVector<VAUX>::NoView  aux_generic  = aux;
-    typename GeMatrix<MF>::NoView       F_generic    = F;
+    IndexType                    kb_generic   = kb;
+    typename MatrixA::NoView     A_generic    = A;
+    typename VectorJPiv::NoView  jPiv_generic = jPiv;
+    typename VectorTau::NoView   tau_generic  = tau;
+    typename VectorVN1::NoView   vn1_generic  = vn1;
+    typename VectorVN2::NoView   vn2_generic  = vn2;
+    typename VectorAux::NoView   aux_generic  = aux;
+    typename MatrixF::NoView     F_generic    = F;
 
+    kb   = kb_org;
     A    = A_org;
     jPiv = jPiv_org;
     tau  = tau_org;
@@ -524,6 +552,12 @@ laqps(typename GeMatrix<MA>::IndexType  offset,
     external::laqps_impl(offset, nb, kb, A, jPiv, tau, vn1, vn2, aux, F);
 
     bool failed = false;
+    if (! isIdentical(kb_generic, kb, "kb_generic", "kb")) {
+        std::cerr << "CXXLAPACK: kb_generic = " << kb_generic << std::endl;
+        std::cerr << "F77LAPACK: kb = " << kb << std::endl;
+        failed = true;
+    }
+
     if (! isIdentical(A_generic, A, "A_generic", "A")) {
         std::cerr << "CXXLAPACK: A_generic = " << A_generic << std::endl;
         std::cerr << "F77LAPACK: A = " << A << std::endl;
@@ -570,27 +604,6 @@ laqps(typename GeMatrix<MA>::IndexType  offset,
         ASSERT(0);
     }
 #   endif
-}
-
-//-- forwarding ----------------------------------------------------------------
-template <typename MA, typename JPIV, typename VTAU,
-          typename VN1, typename VN2, typename VAUX,
-          typename MF>
-void
-laqps(typename MA::IndexType  offset,
-      typename MA::IndexType  nb,
-      typename MA::IndexType  &kb,
-      MA                      &&A,
-      JPIV                    &&jPiv,
-      VTAU                    &&tau,
-      VN1                     &&vn1,
-      VN2                     &&vn2,
-      VAUX                    &&aux,
-      MF                      &&F)
-{
-    CHECKPOINT_ENTER;
-    laqps(offset, nb, kb, A, jPiv, tau, vn1, vn2, aux, F);
-    CHECKPOINT_LEAVE;
 }
 
 } } // namespace lapack, flens

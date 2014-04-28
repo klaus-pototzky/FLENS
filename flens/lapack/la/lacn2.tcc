@@ -206,7 +206,7 @@ lacn2_impl(DenseVector<VV> &v, DenseVector<VX> &x,
     typedef typename DenseVector<VV>::ElementType   T;
     typedef typename ComplexTrait<T>::PrimitiveType  PT;
     typedef typename DenseVector<VV>::IndexType     IndexType;
-    
+
     const PT safeMin = lamch<PT>(SafeMin);
     const PT Zero(0), One(1), Two(2);
 
@@ -242,12 +242,12 @@ lacn2_impl(DenseVector<VV> &v, DenseVector<VX> &x,
         est = blas::asum1(x);
 
         for (IndexType i=1; i<=n; ++i) {
-	    PT absxi = abs(x(i));
-	    if ( absxi > safeMin ) {
-	        x(i) = x(i) / absxi; 
-	    } else {
-	        x(i) = One;
-	    }
+            PT absxi = abs(x(i));
+            if ( absxi > safeMin ) {
+                x(i) = x(i) / absxi;
+            } else {
+                x(i) = One;
+            }
         }
         kase = 2;
         iSave(1) = 2;
@@ -285,12 +285,12 @@ lacn2_impl(DenseVector<VV> &v, DenseVector<VX> &x,
         }
 
         for (IndexType i=1; i<=n; ++i) {
-	    PT absxi = abs(x(i));
-	    if (absxi > safeMin) {
-	        x(i) = x(i) / absxi;
-	    } else {
-	        x(i) = One;
-	    }
+            PT absxi = abs(x(i));
+            if (absxi > safeMin) {
+                x(i) = x(i) / absxi;
+            } else {
+                x(i) = One;
+            }
         }
         kase = 2;
         iSave(1) = 4;
@@ -357,12 +357,12 @@ lacn2_impl(DenseVector<VV> &v, DenseVector<VX> &x, DenseVector<VSGN> &sgn,
 template <typename  VV, typename VX, typename EST,
           typename KASE, typename VSAVE>
 void
-lacn2_impl(DenseVector<VV> &v, DenseVector<VX> &x, 
+lacn2_impl(DenseVector<VV> &v, DenseVector<VX> &x,
            EST &est, KASE &kase, DenseVector<VSAVE> &iSave)
 {
     typedef typename DenseVector<VV>::IndexType  IndexType;
 
-    cxxlapack::lacn2<IndexType>(v.length(), v.data(), x.data(), 
+    cxxlapack::lacn2<IndexType>(v.length(), v.data(), x.data(),
                                 est, kase, iSave.data());
 }
 
@@ -380,10 +380,15 @@ lacn2(DenseVector<VV> &v, DenseVector<VX> &x, DenseVector<VSGN> &sgn,
 //
 //  Test the input parameters
 //
-#   ifndef NDEBUG
+
+#   if defined(CHECK_CXXLAPACK) || !defined(NDEBUG)
 
     typedef typename DenseVector<VV>::IndexType  IndexType;
-    
+
+#   endif
+
+#   ifndef NDEBUG
+
     const IndexType n = v.length();
 
     ASSERT(v.firstIndex()==1);
@@ -494,10 +499,15 @@ lacn2(DenseVector<VV> &v, DenseVector<VX> &x,
 //
 //  Test the input parameters
 //
-#   ifndef NDEBUG
+
+#   if defined(CHECK_CXXLAPACK) || !defined(NDEBUG)
 
     typedef typename DenseVector<VV>::IndexType  IndexType;
-    
+
+#   endif
+
+#   ifndef NDEBUG
+
     const IndexType n = v.length();
 
     ASSERT(v.firstIndex()==1);

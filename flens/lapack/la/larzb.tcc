@@ -63,7 +63,7 @@ RestrictTo<IsRealGeMatrix<GeMatrix<MV> >::value,
            void>::Type
 larzb_impl(Side                     side,
            Transpose                trans,
-           Direction                direction,
+           Direction                DEBUG_VAR(direction),
            StoreVectors             storeVectors,
            const GeMatrix<MV>       &V,
            const TrMatrix<MT>       &T,
@@ -286,7 +286,7 @@ larzb_impl(Side                     side,
 //      C( 1:m, 1:k ) = C( 1:m, 1:k ) - W( 1:m, 1:k )
 //
         C(_,_(1,k)) -= Work;
-        
+
 
 //
 //      C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
@@ -375,14 +375,20 @@ larzb(Side           side,
 //
 //  Test the input parameters
 //
-#   ifndef NDEBUG
+
 
 //
 //  Remove references from rvalue types
 //
+#   if defined(CHECK_CXXLAPACK) || !defined(NDEBUG)
+
     typedef typename RemoveRef<MC>::Type    MatrixC;
+
+#   endif
+
+#   ifndef NDEBUG
     typedef typename MatrixC::IndexType     IndexType;
-    
+
 //  From LAPACK:  Currently, only STOREV = 'R' and DIRECT = 'B' are supported.
     ASSERT(storeVectors==RowWise);
     ASSERT(direction==Backward);
@@ -415,7 +421,7 @@ larzb(Side           side,
 #   ifdef CHECK_CXXLAPACK
 
     typedef typename RemoveRef<MWORK>::Type MatrixWork;
-    
+
     typename MatrixC::NoView        C_org    = C;
     typename MatrixWork::NoView     Work_org = Work;
 #   endif

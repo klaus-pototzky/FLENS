@@ -33,6 +33,7 @@
 #ifndef CXXBLAS_SPARSELEVEL2_SYCRSMV_TCC
 #define CXXBLAS_SPARSELEVEL2_SYCRSMV_TCC 1
 
+#include <cxxblas/auxiliary/auxiliary.h>
 #include <cxxblas/typedefs.h>
 
 #define HAVE_CXXBLAS_SYCRSMV 1
@@ -52,9 +53,9 @@ sycrsmv(StorageUpLo      upLo,
         const BETA       &beta,
         VY               *y)
 {
-  
+
     CXXBLAS_DEBUG_OUT("sycrsmv_generic");
-    
+
 //
 //  The correct index base of the CRS matrix is stored in first Element of ia
 //
@@ -111,7 +112,7 @@ sycrsmv(StorageUpLo      upLo,
     }
 }
 
-#ifdef HAVE_SPARSEBLAS    
+#ifdef HAVE_SPARSEBLAS
 
 template <typename IndexType>
 typename If<IndexType>::isBlasCompatibleInteger
@@ -125,24 +126,24 @@ sycrsmv(StorageUpLo      upLo,
         const float      &beta,
         float            *y)
 {
-    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] scsrmv"); 
-    
+    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] scsrmv");
+
     char matdescra[5] = { "S*N*" };
     matdescra[1] = getF77BlasChar(upLo);
     matdescra[3] = getIndexBaseChar(ia[0]);
-    
+
     if (matdescra[3]=='E') {
-         sycrsmv<IndexType, float, float, 
-                            float, float, 
+         sycrsmv<IndexType, float, float,
+                            float, float,
                             float>
                             (upLo, n, alpha, A, ia, ja, x, beta, y);
          return;
     };
-      
-    char transA = 'N';   
+
+    char transA = 'N';
 
     mkl_scsrmv(&transA,
-               &n, &n,               
+               &n, &n,
                &alpha, &matdescra[0],
                A, ja, ia, ia+1,
                x,
@@ -161,24 +162,24 @@ sycrsmv(StorageUpLo      upLo,
         const double     &beta,
         double           *y)
 {
-    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] dcsrmv"); 
-    
+    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] dcsrmv");
+
     char matdescra[5] = { "S*N*" };
     matdescra[1] = getF77BlasChar(upLo);
     matdescra[3] = getIndexBaseChar(ia[0]);
-    
+
     if (matdescra[3]=='E') {
-         sycrsmv<IndexType, double, double, 
-                            double, double, 
+         sycrsmv<IndexType, double, double,
+                            double, double,
                             double>
                             (upLo, n, alpha, A, ia, ja, x, beta, y);
          return;
     }
-      
-    char transA = 'N';   
+
+    char transA = 'N';
 
     mkl_dcsrmv(&transA,
-               &n, &n,               
+               &n, &n,
                &alpha, &matdescra[0],
                A, ja, ia, ia+1,
                x,
@@ -197,30 +198,30 @@ sycrsmv(StorageUpLo             upLo,
         const ComplexFloat      &beta,
         ComplexFloat            *y)
 {
-    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] ccsrmv"); 
-    
+    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] ccsrmv");
+
     char matdescra[5] = { "S*N*" };
     matdescra[1] = getF77BlasChar(upLo);
     matdescra[3] = getIndexBaseChar(ia[0]);
-    
+
     if (matdescra[3]=='E') {
-         sycrsmv<IndexType, ComplexFloat, ComplexFloat, 
-                            ComplexFloat, ComplexFloat, 
+         sycrsmv<IndexType, ComplexFloat, ComplexFloat,
+                            ComplexFloat, ComplexFloat,
                             ComplexFloat>
                             (upLo, n, alpha, A, ia, ja, x, beta, y);
          return;
     }
-      
-    char transA = 'N';   
+
+    char transA = 'N';
 
     mkl_ccsrmv(&transA,
-              &n, &n,               
-              reinterpret_cast<const float*>(&alpha), &matdescra[0],
-              reinterpret_cast<const float*>(A), ja, ia, ia+1,
-              reinterpret_cast<const float*>(x),
-              reinterpret_cast<const float*>(&beta), 
-              reinterpret_cast<float*>(y));
-    
+               &n, &n,
+               reinterpret_cast<const float*>(&alpha), &matdescra[0],
+               reinterpret_cast<const float*>(A), ja, ia, ia+1,
+               reinterpret_cast<const float*>(x),
+               reinterpret_cast<const float*>(&beta),
+               reinterpret_cast<float*>(y));
+
 }
 
 template <typename IndexType>
@@ -235,31 +236,31 @@ sycrsmv(StorageUpLo             upLo,
         const ComplexDouble     &beta,
         ComplexDouble           *y)
 {
-    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] zcsrmv");    
-     
+    CXXBLAS_DEBUG_OUT("sycrsmv -> [" BLAS_IMPL "] zcsrmv");
+
     char matdescra[5] = { "S*N*" };
     matdescra[1] = getF77BlasChar(upLo);
     matdescra[3] = getIndexBaseChar(ia[0]);
-    
+
     if (matdescra[3]=='E') {
-         sycrsmv<IndexType, ComplexDouble, ComplexDouble, 
-                            ComplexDouble, ComplexDouble, 
+         sycrsmv<IndexType, ComplexDouble, ComplexDouble,
+                            ComplexDouble, ComplexDouble,
                             ComplexDouble>
                             (upLo, n, alpha, A, ia, ja, x, beta, y);
          return;
     }
-      
-    
-    char transA = 'N';   
+
+
+    char transA = 'N';
 
     mkl_zcsrmv(&transA,
-              &n, &n,               
-              reinterpret_cast<const double*>(&alpha), &matdescra[0],
-              reinterpret_cast<const double*>(A), ja, ia, ia+1,
-              reinterpret_cast<const double*>(x),
-              reinterpret_cast<const double*>(&beta), 
-              reinterpret_cast<double*>(y));
-    
+               &n, &n,
+               reinterpret_cast<const double*>(&alpha), &matdescra[0],
+               reinterpret_cast<const double*>(A), ja, ia, ia+1,
+               reinterpret_cast<const double*>(x),
+               reinterpret_cast<const double*>(&beta),
+               reinterpret_cast<double*>(y));
+
 }
 
 #endif

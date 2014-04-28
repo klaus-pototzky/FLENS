@@ -57,7 +57,7 @@ namespace flens { namespace lapack {
 
 namespace generic {
 
-//-- (ge)tri [real variant] ----------------------------------------------------
+//-- (ge)tri [real and complex variant] ----------------------------------------
 
 template <typename MA, typename VP, typename VWORK>
 typename GeMatrix<MA>::IndexType
@@ -67,8 +67,8 @@ tri_impl(GeMatrix<MA>            &A,
 {
     using std::max;
 
-    typedef typename GeMatrix<MA>::ElementType                ElementType;
-    typedef typename GeMatrix<MA>::IndexType                  IndexType;
+    typedef typename GeMatrix<MA>::ElementType ElementType;
+    typedef typename GeMatrix<MA>::IndexType   IndexType;
 
     const ElementType Zero(0), One(1);
     const IndexType n = A.numRows();
@@ -237,9 +237,12 @@ tri_impl(GeMatrix<MA>             &A,
 //-- (ge)tri [real and complex variant] ----------------------------------------
 
 template <typename MA, typename VPIV, typename VWORK>
-typename RestrictTo<IsGeMatrix<MA>::value
-                 && IsIntegerDenseVector<VPIV>::value
-                 && IsDenseVector<VWORK>::value,
+typename RestrictTo<(IsRealGeMatrix<MA>::value
+                  && IsIntegerDenseVector<VPIV>::value
+                  && IsRealDenseVector<VWORK>::value)
+               ||   (IsComplexGeMatrix<MA>::value
+                  && IsIntegerDenseVector<VPIV>::value
+                  && IsComplexDenseVector<VWORK>::value),
          typename RemoveRef<MA>::Type::IndexType>::Type
 tri(MA          &&A,
     const VPIV  &piv,
@@ -252,13 +255,14 @@ tri(MA          &&A,
 //
     typedef typename RemoveRef<MA>::Type    MatrixA;
     typedef typename MatrixA::IndexType     IndexType;
-
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<VWORK>::Type VectorWork;
+#   endif
 
 //
 //  Test the input parameters
 //
 #   ifndef NDEBUG
-    
     ASSERT(A.firstRow()==1);
     ASSERT(A.firstCol()==1);
     ASSERT(A.numRows()==A.numCols());
@@ -276,9 +280,6 @@ tri(MA          &&A,
 //  Make copies of output arguments
 //
 #   ifdef CHECK_CXXLAPACK
-
-    typedef typename RemoveRef<VWORK>::Type VectorWork;
-    
     typename MatrixA::NoView        A_org    = A;
     typename VectorWork::NoView     work_org = work;
 #   endif
@@ -328,7 +329,6 @@ tri(MA          &&A,
 
     return info;
 }
-
 
 //-- (ge)tri [real/complex variant with temporary workspace] -------------------
 template <typename MA, typename VPIV>

@@ -207,7 +207,8 @@ tri_impl(TrMatrix<MA> &A)
 //-- (tr)tri [real and complex variant] ----------------------------------------
 
 template <typename MA>
-typename RestrictTo<IsTrMatrix<MA>::value,
+typename RestrictTo<IsRealTrMatrix<MA>::value
+                 || IsComplexTrMatrix<MA>::value,
          typename RemoveRef<MA>::Type::IndexType>::Type
 tri(MA &&A)
 {

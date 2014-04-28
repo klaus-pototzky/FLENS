@@ -140,21 +140,26 @@ posv_impl(HeMatrix<MA> &A, GeMatrix<MB> &B)
 
 //== public interface ==========================================================
 
-//-- posv [real variant] -------------------------------------------------------
+//-- posv [real/complex variant] -----------------------------------------------
 
 template <typename MA, typename MB>
-typename RestrictTo<IsRealSyMatrix<MA>::value
-                 && IsRealGeMatrix<MB>::value,
+typename RestrictTo<(IsRealSyMatrix<MA>::value
+                  && IsRealGeMatrix<MB>::value)
+         ||         (IsHeMatrix<MA>::value
+                  && IsComplexGeMatrix<MB>::value),
          typename RemoveRef<MA>::Type::IndexType>::Type
 posv(MA &&A, MB &&B)
 {
-    LAPACK_DEBUG_OUT("posv [real]");
+    LAPACK_DEBUG_OUT("posv [real/complex]");
 
 //
 //  Remove references from rvalue types
 //
     typedef typename RemoveRef<MA>::Type    MatrixA;
     typedef typename MatrixA::IndexType     IndexType;
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<MB>::Type    MatrixB;
+#   endif
 
 //
 //  Test the input parameters
@@ -168,9 +173,6 @@ posv(MA &&A, MB &&B)
     ASSERT(B.numRows()==A.dim());
 
 #   ifdef CHECK_CXXLAPACK
-
-    typedef typename RemoveRef<MB>::Type    MatrixB;
-    
 //
 //  Make copies of output arguments
 //
@@ -223,94 +225,6 @@ posv(MA &&A, MB &&B)
 
     return info;
 }
-
-
-//
-//  Complex variant
-//
-template <typename MA, typename MB>
-typename RestrictTo<IsHeMatrix<MA>::value
-                 && IsComplexGeMatrix<MB>::value,
-         typename RemoveRef<MA>::Type::IndexType>::Type
-posv(MA &&A, MB &&B)
-{
-    LAPACK_DEBUG_OUT("posv [complex]");
-
-//
-//  Remove references from rvalue types
-//
-    typedef typename RemoveRef<MA>::Type    MatrixA;
-    typedef typename MatrixA::IndexType     IndexType;
-
-//
-//  Test the input parameters
-//
-    ASSERT(A.firstRow()==1);
-    ASSERT(A.firstCol()==1);
-
-    ASSERT(B.firstRow()==1);
-    ASSERT(B.firstCol()==1);
-
-    ASSERT(B.numRows()==A.dim());
-
-#   ifdef CHECK_CXXLAPACK
-
-    typedef typename RemoveRef<MB>::Type    MatrixB;
-    
-//
-//  Make copies of output arguments
-//
-    typename MatrixA::NoView  A_org = A;
-    typename MatrixB::NoView  B_org = B;
-#   endif
-
-//
-//  Call implementation
-//
-    const IndexType info = LAPACK_SELECT::posv_impl(A, B);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Compare results
-//
-    typename MatrixA::NoView  A_generic = A;
-    typename MatrixB::NoView  B_generic = B;
-    A = A_org;
-    B = B_org;
-
-    const IndexType _info = external::posv_impl(A, B);
-
-    bool failed = false;
-    if (! isIdentical(A_generic, A, "A_generic", "A")) {
-        std::cerr << "A_org = " << A_org << std::endl;
-        std::cerr << "CXXLAPACK: A_generic = " << A_generic << std::endl;
-        std::cerr << "F77LAPACK: A = " << A << std::endl;
-        failed = true;
-    }
-
-    if (! isIdentical(B_generic, B, "B_generic", "B")) {
-        std::cerr << "B_org = " << B_org << std::endl;
-        std::cerr << "CXXLAPACK: B_generic = " << B_generic << std::endl;
-        std::cerr << "F77LAPACK: B = " << B << std::endl;
-        failed = true;
-    }
-
-    if (! isIdentical(info, _info, " info", "_info")) {
-        std::cerr << "CXXLAPACK:  info = " << info << std::endl;
-        std::cerr << "F77LAPACK: _info = " << _info << std::endl;
-        failed = true;
-    }
-
-    if (failed) {
-        ASSERT(0);
-    }
-
-#   endif
-
-    return info;
-}
-
-
 
 //-- posv [variant if rhs is vector] -----------------------------------------
 

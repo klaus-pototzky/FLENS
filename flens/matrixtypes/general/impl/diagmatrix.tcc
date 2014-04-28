@@ -145,7 +145,7 @@ DiagMatrix<FS> &
 DiagMatrix<FS>::operator=(const ElementType &alpha)
 {
     (*this).diag() = alpha;
-    
+
     return *this;
 }
 
@@ -154,7 +154,7 @@ DiagMatrix<FS> &
 DiagMatrix<FS>::operator+=(const ElementType &alpha)
 {
     (*this).diag() += alpha;
-    
+
     return *this;
 }
 
@@ -162,9 +162,9 @@ template <typename FS>
 DiagMatrix<FS> &
 DiagMatrix<FS>::operator-=(const ElementType &alpha)
 {
-    
+
     (*this).diag() -= alpha;
-    
+
     return *this;
 }
 
@@ -173,7 +173,7 @@ DiagMatrix<FS> &
 DiagMatrix<FS>::operator*=(const ElementType &alpha)
 {
    (*this).diag() *= alpha;
-    
+
     return *this;
 }
 
@@ -182,13 +182,13 @@ DiagMatrix<FS> &
 DiagMatrix<FS>::operator/=(const ElementType &alpha)
 {
     (*this).diag() /= alpha;
-    
+
     return *this;
 }
 
 template <typename FS>
 const typename DiagMatrix<FS>::ElementType &
-DiagMatrix<FS>::operator()(IndexType row, IndexType col) const
+DiagMatrix<FS>::operator()(IndexType row, IndexType DEBUG_VAR(col)) const
 {
     ASSERT( row==col );
 
@@ -197,7 +197,7 @@ DiagMatrix<FS>::operator()(IndexType row, IndexType col) const
 
 template <typename FS>
 typename DiagMatrix<FS>::ElementType &
-DiagMatrix<FS>::operator()(IndexType row, IndexType col)
+DiagMatrix<FS>::operator()(IndexType row, IndexType DEBUG_VAR(col))
 {
     ASSERT( row==col );
 
@@ -210,8 +210,8 @@ const typename DiagMatrix<FS>::ConstVectorView
 DiagMatrix<FS>::diag() const
 {
 
-    return ConstVectorView(_engine.view(_engine.firstIndex(), 
-                                        _engine.lastIndex(), 
+    return ConstVectorView(_engine.view(_engine.firstIndex(),
+                                        _engine.lastIndex(),
                                         _engine.stride()));
 }
 

@@ -22,8 +22,6 @@ LAPACK_DECL(dgeev)(const char           *JOBVL,
                    const INTEGER        *LWORK,
                    INTEGER              *INFO)
 {
-    std::cerr << "dgeev: N = " << *N << std::endl;
-
     using std::max;
     using std::min;
 //

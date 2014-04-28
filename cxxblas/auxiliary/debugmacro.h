@@ -50,8 +50,51 @@
 #include <cassert>
 
 //-- ASSERT -------------------------------------------------------------------
+
+// ASSERT which prints out a trace back of the call
+#if defined(TRACEBACK_ASSERT) && !defined(NDEBUG)
+#   include <execinfo.h>
+#   ifndef ASSERT
+#       define ASSERT(x) if(!(x)) {                                            \
+                             void* callstack[128];                             \
+                             int frames = backtrace(callstack, 128);           \
+                             char** strs = backtrace_symbols(callstack,        \
+                                                             frames);          \
+                             for (int i=0; i<frames; ++i) {                    \
+                                 std::cerr << strs[i] << std::endl;            \
+                             }                                                 \
+                             free(strs);                                       \
+                         }                                                     \
+                         assert(x);
+#   endif
+#endif
+
+// Default ASSERT Macro
 #ifndef ASSERT
 #   define ASSERT(x) assert(x)
 #endif
+
+// Prevent warings because some function parameters are only used in debug
+// mode within assertions.  In non-debug mode this causes warnings because
+// of unused variables.
+
+#ifndef NDEBUG
+
+#   ifndef DEBUG_VAR
+#   define DEBUG_VAR(x)      x
+#   endif
+
+#   ifndef FAKE_USE_NDEBUG
+#   define FAKE_USE_NDEBUG(x)
+#   endif
+
+#else
+
+#   ifndef FAKE_USE_NDEBUG
+#   define FAKE_USE_NDEBUG(x) (void)x
+#   endif
+
+#endif
+
 
 #endif // CXXBLAS_AUXILIARY_DEBUGMACRO_H

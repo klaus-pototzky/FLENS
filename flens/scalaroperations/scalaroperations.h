@@ -34,14 +34,24 @@
 #define FLENS_SCALAROPERATIONS_SCALAROPERATIONS_H 1
 
 #include <flens/scalaroperations/abs.h>
+#include <flens/scalaroperations/acos.h>
+#include <flens/scalaroperations/asin.h>
+#include <flens/scalaroperations/atan.h>
+#include <flens/scalaroperations/atan2.h>
 #include <flens/scalaroperations/cos.h>
 #include <flens/scalaroperations/complex.h>
 #include <flens/scalaroperations/div.h>
+#include <flens/scalaroperations/double.h>
+#include <flens/scalaroperations/exp.h>
 #include <flens/scalaroperations/imag.h>
+#include <flens/scalaroperations/log.h>
 #include <flens/scalaroperations/minus.h>
 #include <flens/scalaroperations/mult.h>
+#include <flens/scalaroperations/pow.h>
 #include <flens/scalaroperations/plus.h>
 #include <flens/scalaroperations/real.h>
 #include <flens/scalaroperations/sin.h>
+#include <flens/scalaroperations/sqrt.h>
+#include <flens/scalaroperations/tan.h>
 
 #endif // FLENS_SCALAROPERATIONS_SCALAROPERATIONS_H

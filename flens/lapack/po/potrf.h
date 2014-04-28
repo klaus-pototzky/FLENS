@@ -54,20 +54,10 @@ namespace flens { namespace lapack {
 //  Real variant
 //
 template <typename MA>
-    typename RestrictTo<IsRealSyMatrix<MA>::value,
+    typename RestrictTo<IsRealSyMatrix<MA>::value
+                     || IsHeMatrix<MA>::value,
              typename RemoveRef<MA>::Type::IndexType>::Type
     potrf(MA &&A);
-
-
-//
-//  Complex variant
-//
-template <typename MA>
-    typename RestrictTo<IsHeMatrix<MA>::value,
-             typename RemoveRef<MA>::Type::IndexType>::Type
-    potrf(MA &&A);
-
-
 
 } } // namespace lapack, flens
 

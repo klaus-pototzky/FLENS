@@ -81,7 +81,7 @@ potrf_impl(SyMatrix<MA> &A)
 //  Determine the block size for this environment.
 //
     const char *upLo = (upper) ? "U" : "L";
-    IndexType nb = ilaenv<T>(1, "POGTRF", upLo, n);
+    IndexType nb = ilaenv<T>(1, "POTRF", upLo, n);
 
     if ((nb<=1) || (nb>=n)) {
 //
@@ -177,17 +177,17 @@ template <typename MA>
 typename HeMatrix<MA>::IndexType
 potrf_impl(HeMatrix<MA> &A)
 {
-    typedef typename HeMatrix<MA>::ElementType      T;
-    typedef typename ComplexTrait<T>::PrimitiveType PT;
-    typedef typename HeMatrix<MA>::IndexType        IndexType;
+    typedef typename HeMatrix<MA>::ElementType       T;
+    typedef typename ComplexTrait<T>::PrimitiveType  PT;
+    typedef typename HeMatrix<MA>::IndexType         IndexType;
 
     const Underscore<IndexType> _;
 
     const IndexType n = A.dim();
     const bool upper = (A.upLo()==Upper);
 
-    const T  COne(1);
-    const PT One(1);
+    const PT  One(1);
+    const T   COne(1);
 
     IndexType info = 0;
 //
@@ -200,7 +200,7 @@ potrf_impl(HeMatrix<MA> &A)
 //  Determine the block size for this environment.
 //
     const char *upLo = (upper) ? "U" : "L";
-    IndexType nb = ilaenv<T>(1, "POGTRF", upLo, n);
+    IndexType nb = ilaenv<T>(1, "POTRF", upLo, n);
 
     if ((nb<=1) || (nb>=n)) {
 //
@@ -338,10 +338,11 @@ potrf_impl(HeMatrix<MA> &A)
 
 //== public interface ==========================================================
 
-//-- potrf [real variant] ------------------------------------------------------
+//-- potrf [real/complex variant] ----------------------------------------------
 
 template <typename MA>
-typename RestrictTo<IsRealSyMatrix<MA>::value,
+typename RestrictTo<IsRealSyMatrix<MA>::value
+                 || IsHeMatrix<MA>::value,
          typename RemoveRef<MA>::Type::IndexType>::Type
 potrf(MA &&A)
 {
@@ -396,68 +397,6 @@ potrf(MA &&A)
 
     return info;
 }
-
-
-//-- potrf [complex variant] ---------------------------------------------------
-
-template <typename MA>
-typename RestrictTo<IsHeMatrix<MA>::value,
-         typename RemoveRef<MA>::Type::IndexType>::Type
-potrf(MA &&A)
-{
-//
-//  Remove references from rvalue types
-//
-    typedef typename RemoveRef<MA>::Type    MatrixA;
-    typedef typename MatrixA::IndexType     IndexType;
-
-//
-//  Test the input parameters
-//
-    ASSERT(A.firstRow()==1);
-    ASSERT(A.firstCol()==1);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Make copies of output arguments
-//
-    typename MatrixA::NoView       _A      = A;
-#   endif
-
-//
-//  Call implementation
-//
-    const IndexType info = LAPACK_SELECT::potrf_impl(A);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Compare results
-//
-    const IndexType _info = external::potrf_impl(_A);
-
-    bool failed = false;
-    if (! isIdentical(A, _A, " A", "_A")) {
-        std::cerr << "CXXLAPACK:  A = " << A << std::endl;
-        std::cerr << "F77LAPACK: _A = " << _A << std::endl;
-        failed = true;
-    }
-
-    if (! isIdentical(info, _info, " info", "_info")) {
-        std::cerr << "CXXLAPACK:  info = " << info << std::endl;
-        std::cerr << "F77LAPACK: _info = " << _info << std::endl;
-        failed = true;
-    }
-
-    if (failed) {
-        ASSERT(0);
-    }
-
-#   endif
-
-    return info;
-}
-
-
 
 } } // namespace lapack, flens
 

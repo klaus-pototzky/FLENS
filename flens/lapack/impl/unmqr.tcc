@@ -50,6 +50,7 @@
 namespace flens { namespace lapack {
 
 //== generic lapack implementation =============================================
+
 namespace generic {
 
 //-- unmqr_wsq [worksize query] ------------------------------------------------
@@ -110,7 +111,6 @@ unmqr_impl(Side                      side,
            GeMatrix<MC>              &C,
            DenseVector<VWORK>        &work)
 {
-     
     using std::max;
     using std::min;
 
@@ -126,7 +126,7 @@ unmqr_impl(Side                      side,
 //
 //  Paramter for maximum block size and buffer for TrMatrix Tr.
 //
-    const IndexType     nbMax = 32;
+    const IndexType     nbMax = 64;
     const IndexType     ldt = nbMax + 1;
     T                   trBuffer[nbMax*ldt];
 
@@ -232,18 +232,17 @@ unmqr_impl(Side                      side,
 //          Form the triangular factor of the block reflector
 //          H = H(i) H(i+1) . . . H(i+ib-1)
 //
-     
             larft(Forward, ColumnWise, nq-i+1,
                   A(_(i,nq),_(i,i+ib-1)), tau(_(i,i+ib-1)), Tr.upper());
 
             if (side==Left) {
 //
-//              H or H**H is applied to C(i:m,1:n)
+//              H or H**T is applied to C(i:m,1:n)
 //
                 ic = i;
             } else {
 //
-//              H or H**H is applied to C(1:m,i:n)
+//              H or H**T is applied to C(1:m,i:n)
 //
                 jc = i;
             }
@@ -259,6 +258,8 @@ unmqr_impl(Side                      side,
 }
 
 } // namespace generic
+
+
 
 //== interface for native lapack ===============================================
 
@@ -350,20 +351,24 @@ unmqr(Side         side,
       MC           &&C,
       VWORK        &&work)
 {
+//
+//  Remove references from rvalue types
+//
+#   if !defined(NDEBUG) || defined(CHECK_CXXLAPACK)
+    typedef typename RemoveRef<MC>::Type    MatrixC;
+#   endif
 
-    LAPACK_DEBUG_OUT("unmqr");
-    
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<MA>::Type    MatrixA;
+    typedef typename RemoveRef<VWORK>::Type VectorWork;
+#   endif
+
 //
 //  Test the input parameters
 //
 #   ifndef NDEBUG
-
-//
-//  Remove references from rvalue types
-//
-    typedef typename RemoveRef<MC>::Type    MatrixC;
     typedef typename MatrixC::IndexType     IndexType;
-    
+
     const IndexType m = C.numRows();
     const IndexType n = C.numCols();
     const IndexType k = A.numCols();
@@ -389,10 +394,6 @@ unmqr(Side         side,
 //  Make copies of output arguments
 //
 #   ifdef CHECK_CXXLAPACK
-
-    typedef typename RemoveRef<MA>::Type    MatrixA;
-    typedef typename RemoveRef<VWORK>::Type VectorWork;
-    
     typename MatrixA::NoView    A_org      = A;
     typename MatrixC::NoView    C_org      = C;
     typename VectorWork::NoView work_org   = work;
@@ -562,6 +563,7 @@ unmqr_wsq(Side        side,
         ASSERT(A.numCols()==n);
     }
 #   endif
+
 //
 //  Call implementation
 //
@@ -577,7 +579,6 @@ unmqr_wsq(Side        side,
 #   endif
 
     return info;
-
 }
 
 } } // namespace lapack, flens

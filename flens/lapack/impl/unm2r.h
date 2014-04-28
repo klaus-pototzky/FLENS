@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
+ *   Copyright (c) 2013, Michael Lehn
+=======
  *   Copyright (c) 2011, Michael Lehn
+>>>>>>> remotes/klaus/public
  *
  *   All rights reserved.
  *
@@ -42,7 +46,7 @@
  */
 
 #ifndef FLENS_LAPACK_IMPL_UNM2R_H
-#define FLENS_LAPACK_IMPL_NUM2R_H 1
+#define FLENS_LAPACK_IMPL_UNM2R_H 1
 
 #include <flens/matrixtypes/matrixtypes.h>
 #include <flens/vectortypes/vectortypes.h>
@@ -51,17 +55,14 @@ namespace flens { namespace lapack {
 
 //== unm2r =====================================================================
 template <typename MA, typename VTAU, typename MC, typename VWORK>
-    void
-    unm2r(Side side, Transpose trans, GeMatrix<MA> &A,
-          const DenseVector<VTAU> &tau, GeMatrix<MC> &C,
-          DenseVector<VWORK> &work);
-
-//-- forwarding ----------------------------------------------------------------
-template <typename MA, typename VTAU, typename MC, typename VWORK>
-    void
+    typename RestrictTo<IsComplexGeMatrix<MA>::value
+                     && IsComplexDenseVector<VTAU>::value
+                     && IsComplexGeMatrix<MC>::value
+                     && IsComplexDenseVector<VWORK>::value,
+             void>::Type
     unm2r(Side side, Transpose trans, MA &&A, const VTAU &tau, MC &&C,
           VWORK &&work);
 
 } } // namespace lapack, flens
 
-#endif // FLENS_LAPACK_IMPL_OUNM2R_H
+#endif // FLENS_LAPACK_IMPL_UNM2R_H

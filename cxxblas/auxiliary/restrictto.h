@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2004, Alexander Stippler
  *
  *   All rights reserved.
  *
@@ -30,30 +30,26 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CXXLAPACK_INTERFACE_ILADLC_TCC
-#define CXXLAPACK_INTERFACE_ILADLC_TCC 1
+#ifndef CXXBLAS_AUXILIARY_RESTRICTTO_H
+#define CXXBLAS_AUXILIARY_RESTRICTTO_H 1
 
-#include <iostream>
-#include <cxxlapack/interface/interface.h>
-#include <cxxlapack/netlib/netlib.h>
+#ifdef INCLUDE_TYPE_TRAITS
+#   include <type_traits>
+#endif
 
-namespace cxxlapack {
+namespace cxxblas {
 
-template <typename IndexType>
-IndexType
-iladlc(IndexType             m,
-       IndexType             n,
-       const double          *A,
-       IndexType             ldA)
+template <bool b, typename T>
+struct RestrictTo
 {
-    CXXLAPACK_DEBUG_OUT("iladlc");
+};
 
-    return LAPACK_IMPL(iladlc)(&m,
-                               &n,
-                               A,
-                               &ldA);
-}
+template <typename T>
+struct RestrictTo<true, T>
+{
+    typedef typename std::remove_reference<T>::type Type;
+};
 
-} // namespace cxxlapack
+} // namespace cxxblas
 
-#endif // CXXLAPACK_INTERFACE_ILADLC_TCC
+#endif // CXXBLAS_AUXILIARY_RESTRICTTO_H

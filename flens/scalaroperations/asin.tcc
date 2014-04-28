@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2014, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,23 +30,35 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FLENS_LAPACK_AUXILIARY_POW_H
-#define FLENS_LAPACK_AUXILIARY_POW_H 1
+#ifndef FLENS_SCALAROPERATIONS_ASIN_TCC
+#define FLENS_SCALAROPERATIONS_ASIN_TCC 1
 
+#include <cmath>
+#include <cxxblas/auxiliary/complex.h>
 #include <flens/auxiliary/auxiliary.h>
+#include <flens/scalaroperations/asin.h>
+#include <flens/scalartypes/impl/scalarclosure.h>
 
 namespace flens {
 
-template <typename T>
-    typename RestrictTo<IsSame<T,int>::value,
-             T>::Type
-    pow(const T &base, const T &exponent);
+template <typename S>
+const typename ScalarClosure<ScalarOpASin, S, S>::ElementType
+evalScalarClosure(const ScalarClosure<ScalarOpASin, S, S> &exp)
+{
+    return asin(exp.left().value());
+}
 
-template <typename T>
-    typename RestrictTo<!IsSame<T,int>::value,
-                        T>::Type
-    pow(const T &base, int exponent);
+//-- operator overloading
+template <typename S>
+const ScalarClosure<ScalarOpASin,
+                    typename S::Impl,
+                    typename S::Impl>
+ASin(const Scalar<S> &s)
+{
+    typedef ScalarClosure<ScalarOpASin, typename S::Impl, typename S::Impl>  SC;
+    return SC(s.impl(), s.impl());
+}
 
 } // namespace flens
 
-#endif // FLENS_LAPACK_AUXILIARY_POW_H
+#endif // FLENS_SCALAROPERATIONS_ASIN_TCC

@@ -54,7 +54,6 @@ namespace flens { namespace lapack {
 
 namespace generic {
 
-
 //-- potrs [real variant] ------------------------------------------------------
 
 template <typename MA, typename MB>
@@ -113,16 +112,15 @@ potrs_impl(const HeMatrix<MA> &A, GeMatrix<MB> &B)
     using std::isnan;
     using std::sqrt;
 
-    typedef typename HeMatrix<MA>::ElementType                ElementType;
-    typedef typename HeMatrix<MA>::IndexType                  IndexType;
+    typedef typename HeMatrix<MA>::ElementType  ElementType;
+    typedef typename HeMatrix<MA>::IndexType    IndexType;
 
 
     const IndexType n    = A.dim();
     const IndexType nRhs = B.numCols();
     const bool upper     = (A.upLo()==Upper);
 
-    const ElementType   One(1);
-
+    const ElementType  One(1);
 //
 //  Quick return if possible
 //
@@ -204,14 +202,22 @@ potrs_impl(const HeMatrix<MA> &A, GeMatrix<MB> &B)
 
 //== public interface ==========================================================
 
-//-- potrs [real variant] ------------------------------------------------------
+//-- potrs [real/complex variant] ----------------------------------------------
 
 template <typename MA, typename MB>
-typename RestrictTo<IsRealSyMatrix<MA>::value
-                 && IsRealGeMatrix<MB>::value,
+typename RestrictTo<(IsRealSyMatrix<MA>::value
+                  && IsRealGeMatrix<MB>::value)
+         ||         (IsHeMatrix<MA>::value
+                  && IsComplexGeMatrix<MB>::value),
          void>::Type
 potrs(const MA &A, MB &&B)
 {
+//
+//  Remove references from rvalue types
+//
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<MB>::Type    MatrixB;
+#   endif
 
 //
 //  Test the input parameters
@@ -225,11 +231,6 @@ potrs(const MA &A, MB &&B)
     ASSERT(A.dim()==B.numRows());
 
 #   ifdef CHECK_CXXLAPACK
-//
-//  Remove references from rvalue types
-//
-    typedef typename RemoveRef<MB>::Type    MatrixB;
-    
 //
 //  Make copies of output arguments
 //
@@ -268,76 +269,6 @@ potrs(const MA &A, MB &&B)
     }
 #   endif
 }
-
-//-- potrs [complex variant] ---------------------------------------------------
-
-
-template <typename MA, typename MB>
-typename RestrictTo<IsHeMatrix<MA>::value
-                 && IsComplexGeMatrix<MB>::value,
-         void>::Type
-potrs(const MA &A, MB &&B)
-{
-
-//
-//  Test the input parameters
-//
-    ASSERT(A.firstRow()==1);
-    ASSERT(A.firstCol()==1);
-
-    ASSERT(B.firstRow()==1);
-    ASSERT(B.firstCol()==1);
-
-    ASSERT(A.dim()==B.numRows());
-
-#   ifdef CHECK_CXXLAPACK
-
-//
-//  Remove references from rvalue types
-//
-    typedef typename RemoveRef<MB>::Type    MatrixB;
-    
-//
-//  Make copies of output arguments
-//
-    typename MatrixB::NoView B_org = B;
-#   endif
-
-//
-//  Call implementation
-//
-    LAPACK_SELECT::potrs_impl(A, B);
-
-#   ifdef CHECK_CXXLAPACK
-//
-//  Make copies of generic results
-//
-    typename MatrixB::NoView B_generic = B;
-//
-//  Restore output arguments
-//
-    B = B_org;
-
-//
-//  Compare results
-//
-    external::potrs_impl(A, B);
-
-    bool failed = false;
-    if (! isIdentical(B_generic, B, "B_generic", "B")) {
-        std::cerr << "CXXLAPACK: B_generic = " << B_generic << std::endl;
-        std::cerr << "F77LAPACK: B = " << B << std::endl;
-        failed = true;
-    }
-
-    if (failed) {
-        ASSERT(0);
-    }
-#   endif
-
-}
-
-
 
 //-- potrs [variant if rhs is vector] ------------------------------------------
 

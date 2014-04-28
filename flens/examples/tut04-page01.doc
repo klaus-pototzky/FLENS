@@ -20,7 +20,7 @@ Example Code
 
 Comments on Example Code
 ========================
-:import: flens/examples/lapack-getrf.cc
+:import: flens/examples/lapack-getrf.cc [brief]
 
 Compile
 =======
@@ -39,6 +39,38 @@ Run
  |                                                                          |
  |  cd flens/examples                                                       |
  |  ./lapack-getrf                                                          |
+ |                                                                          |
+ *--------------------------------------------------------------------------*
+
+Example with Complex Numbers
+============================
+We slightly modify the above examples for using complex numbers.
+
+Example Code
+------------
+:import: flens/examples/lapack-complex-getrf.cc [stripped, downloadable]
+
+Comments on Example Code
+------------------------
+:import: flens/examples/lapack-complex-getrf.cc [brief]
+
+Compile
+-------
+
+ *--[SHELL]----------------------------------------------------------------------*
+ |                                                                               |
+ |  cd flens/examples                                                            |
+ |  g++ -std=c++11 -Wall -I../.. -o lapack-complex-getrf lapack-complex-getrf.cc |
+ |                                                                               |
+ *-------------------------------------------------------------------------------*
+
+Run
+---
+
+ *--[SHELL]-----------------------------------------------------------------*
+ |                                                                          |
+ |  cd flens/examples                                                       |
+ |  ./lapack-complex-getrf                                                  |
  |                                                                          |
  *--------------------------------------------------------------------------*
 
@@ -79,8 +111,8 @@ Compile and Run
  *--[SHELL]------------------------------------------------------------------*
  |                                                                           |
  |  cd flens/examples                                                        |
- |  g++ -Wall -std=c++11 -I../.. -I/opt/local/include/ -c qd-lapack-getrf.cc |
- |  g++ -o qd-lapack-getrf qd-lapack-getrf.o /opt/local/lib/libqd.a          |
+ |  g++ -Wall -std=c++11 -I../.. -c qd-lapack-getrf.cc                       |
+ |  g++ -o qd-lapack-getrf qd-lapack-getrf.o /usr/local/lib/libqd.a          |
  |  ./qd-lapack-getrf                                                        |
  |                                                                           |
  *---------------------------------------------------------------------------*
@@ -125,9 +157,9 @@ Compile and Run
   *--[SHELL]-----------------------------------------------------------------*
   |                                                                          |
   |  cd flens/examples                                                       |
-  |  g++ -Wall -std=c++11 -I../.. -I/opt/local/include                    +++|
+  |  g++ -Wall -std=c++11 -I../..                                         +++|
   |      -o mpfr-real-lapack-getrf mpfr-real-lapack-getrf.cc              +++|
-  |      -L /opt/local/lib -lmpfr -lgmp                                      |
+  |      -lmpfr -lgmp                                                        |
   |  ./mpfr-real-lapack-getrf                                                |
   |                                                                          |
   *--------------------------------------------------------------------------*
@@ -142,7 +174,8 @@ like __GotoBLAS__ or __ATLAS__.  For ATLAS pass `-DWITH_ATLAS` to the compiler:
   *--[SHELL]-----------------------------------------------------------------*
   |                                                                          |
   |  cd flens/examples                                                       |
-  |  g++ -DWITH_ATLAS -Wall -std=c++11 -I../.. -I/opt/local/include       +++|
+  |  g++ -DWITH_ATLAS -Wall -std=c++11 -I../..                            +++|
+  |      -L/usr/local/atlas/lib                                           +++|
   |      -o atlas-lapack-getrf lapack-getrf.cc -latlas -lcblas               |
   |  ./atlas-lapack-getrf                                                    |
   |                                                                          |
@@ -156,7 +189,8 @@ this example is so small that no LEVEL 3 BLAS function gets used):
   |                                                                          |
   |  cd flens/examples                                                       |
   |  g++ -DWITH_ATLAS -DCXXBLAS_DEBUG -Wall -std=c++11 -I../..            +++|
-  |          -I/opt/local/include -o atlas-lapack-getrf lapack-getrf.cc   +++|
+  |          -o atlas-lapack-getrf lapack-getrf.cc                        +++|
+  |          -L/usr/local/atlas/lib                                       +++|
   |          -latlas -lcblas                                                 |
   |  ./atlas-lapack-getrf 2>&1 | grep CXXBLAS | sort -u                      |
   |                                                                          |

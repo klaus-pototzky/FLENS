@@ -49,14 +49,14 @@ template <typename T, typename I, typename A>
     class ConstArrayView;
 
 template <typename T, StorageOrder Order, typename I, typename A>
-    class FullStorageView;
-    
+    class FullStorage;
+
 template <typename T, StorageOrder Order, typename I, typename A>
     class FullStorageView;
-    
+
 template <typename T, StorageOrder Order, typename I, typename A>
     class ConstFullStorageView;
-    
+
 template <typename T, StorageOrder Order, typename I, typename A>
     class BandStorage;
 
@@ -87,10 +87,10 @@ class BandStorageView
         typedef flens::ConstArrayView<T, I, A>        ConstArrayView;
         typedef flens::ArrayView<T, I, A>             ArrayView;
         typedef flens::Array<T, I, A>                 Array;
-    
-        typedef flens::ConstFullStorageView<T, Order, I, A>    ConstFullStorageView;
-        typedef flens::FullStorageView<T, Order, I, A>         FullStorageView;
-        typedef flens::FullStorage<T, Order, I, A>             FullStorage;
+
+        typedef flens::ConstFullStorageView<T,Order,I,A>   ConstFullStorageView;
+        typedef flens::FullStorageView<T,Order,I,A>        FullStorageView;
+        typedef flens::FullStorage<T,Order,I,A>            FullStorage;
 
         BandStorageView(IndexType numRows, IndexType numCols,
                         IndexType numSubDiags, IndexType numSuperDiags,
@@ -155,7 +155,7 @@ class BandStorageView
 
         IndexType
         strideRow() const;
-    
+
         IndexType
         strideCol() const;
 
@@ -209,44 +209,44 @@ class BandStorageView
 
         View
         viewDiags(IndexType fromDiag, IndexType toDiag);
-    
+
         // view of single row
         const ConstArrayView
         viewRow(IndexType row,
                 IndexType firstViewIndex = I::defaultIndexBase) const;
-    
+
         ArrayView
         viewRow(IndexType row,
                 IndexType firstViewIndex = I::defaultIndexBase);
-    
+
         const ConstArrayView
         viewRow(IndexType row,
                 IndexType firstCol, IndexType lastCol,
                 IndexType stride,
                 IndexType firstViewIndex = I::defaultIndexBase) const;
-    
+
         ArrayView
         viewRow(IndexType row,
                 IndexType firstCol, IndexType lastCol,
                 IndexType stride,
                 IndexType firstViewIndex = I::defaultIndexBase);
-    
-    
+
+
         // view of single col
         const ConstArrayView
         viewCol(IndexType col,
                 IndexType firstViewIndex = I::defaultIndexBase) const;
-    
+
         ArrayView
         viewCol(IndexType col,
                 IndexType firstViewIndex = I::defaultIndexBase);
-    
-    
+
+
         const ConstArrayView
         viewCol(IndexType firstRow, IndexType lastRow,
                 IndexType stride, IndexType col,
                 IndexType firstViewIndex = I::defaultIndexBase) const;
-    
+
         ArrayView
         viewCol(IndexType firstRow, IndexType lastRow,
                 IndexType stride, IndexType col,

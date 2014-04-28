@@ -51,25 +51,11 @@
 namespace flens { namespace lapack {
 
 //== potf2 =====================================================================
-//
-//  Real variant
-//
 template <typename MA>
-    typename SyMatrix<MA>::IndexType
-    potf2(SyMatrix<MA> &A);
-    
-//
-//  Real variant
-//
-template <typename MA>
-    typename HeMatrix<MA>::IndexType
-    potf2(HeMatrix<MA> &A);
-
-//-- forwarding ----------------------------------------------------------------
-template <typename MA>
-    typename MA::IndexType
+    typename RestrictTo<IsRealSyMatrix<MA>::value
+                     || IsHeMatrix<MA>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
     potf2(MA &&A);
-
 
 } } // namespace lapack, flens
 

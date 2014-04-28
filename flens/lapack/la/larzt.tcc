@@ -56,7 +56,7 @@ namespace generic {
 //-- larzt [real variant] ------------------------------------------------------
 
 template <typename MV, typename VTAU, typename MT>
-typename 
+typename
 RestrictTo<IsRealGeMatrix<GeMatrix<MV> >::value,
            void>::Type
 larzt_impl(Direction                 direction,
@@ -76,7 +76,9 @@ larzt_impl(Direction                 direction,
 //  Check for currently supported options
 //
     ASSERT(storeVectors==RowWise);
+    FAKE_USE_NDEBUG(storeVectors);
     ASSERT(direction==Backward);
+    FAKE_USE_NDEBUG(direction);
 
     const IndexType k = T.dim();
 
@@ -109,7 +111,7 @@ larzt_impl(Direction                 direction,
 //-- larzt [complex variant] ---------------------------------------------------
 
 template <typename MV, typename VTAU, typename MT>
-typename 
+typename
 RestrictTo<IsComplexGeMatrix<GeMatrix<MV> >::value,
            void>::Type
 larzt_impl(Direction                 direction,
@@ -129,11 +131,13 @@ larzt_impl(Direction                 direction,
 //  Check for currently supported options
 //
     ASSERT(storeVectors==RowWise);
+    FAKE_USE_NDEBUG(storeVectors);
     ASSERT(direction==Backward);
+    FAKE_USE_NDEBUG(direction);
 
     const IndexType k = T.dim();
     const IndexType n = V.numCols();
-    
+
     for (IndexType i=k; i>=1; --i) {
         if (tau(i)==Zero) {
 //
@@ -220,12 +224,18 @@ larzt(Direction      direction,
 //
 //  Test the input parameters
 //
-#   ifndef NDEBUG
+
+#if defined(CHECK_CXXLAPACK) || !defined(NDEBUG)
 
 //
 //  Remove references from rvalue types
 //
     typedef typename RemoveRef<MV>::Type    MatrixV;
+
+#endif
+
+#   ifndef NDEBUG
+
     typedef typename MatrixV::IndexType     IndexType;
 
 
@@ -251,7 +261,7 @@ larzt(Direction      direction,
 #   ifdef CHECK_CXXLAPACK
 
     typedef typename RemoveRef<MT>::Type    MatrixT;
-    
+
     typename MatrixV::NoView        V_org = V;
     typename MatrixT::NoView        T_org = T;
 #   endif

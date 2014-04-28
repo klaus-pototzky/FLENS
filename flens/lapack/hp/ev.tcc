@@ -100,7 +100,7 @@ ev_impl(bool                  computeZ,
 
 #ifdef USE_CXXLAPACK
 
-//-- (hp)ev [complex variant] -----------------------------------------------------
+//-- (hp)ev [complex variant] --------------------------------------------------
 template <typename MA, typename VW, typename MZ, typename VWORK,
           typename VRWORK>
 typename RestrictTo<IsHpMatrix<MA>::value
@@ -123,6 +123,7 @@ ev(bool     computeZ,
 //
     typedef typename RemoveRef<MA>::Type      MatrixA;
     typedef typename MatrixA::IndexType       IndexType;
+
     const IndexType n = A.dim();
 
 //

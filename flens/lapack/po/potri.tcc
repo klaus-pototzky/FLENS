@@ -107,7 +107,7 @@ potri_impl(HeMatrix<MA> &A)
     info = tri(T);
     if (info==0) {
 //
-//      Form inv(U) * inv(U)**H or inv(L)**H * inv(L).
+//      Form inv(U) * inv(U)**T or inv(L)**T * inv(L).
 //
         lauum(T);
     }
@@ -230,7 +230,7 @@ potri(MA &&A)
     return info;
 }
 
-//-- potri [complex variant] ------------------------------------------------------
+//-- potri [complex variant] ---------------------------------------------------
 
 template <typename MA>
 typename RestrictTo<IsHeMatrix<MA>::value,
@@ -299,7 +299,6 @@ potri(MA &&A)
 
     return info;
 }
-
 
 } } // namespace lapack, flens
 

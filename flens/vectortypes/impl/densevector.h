@@ -122,17 +122,25 @@ class DenseVector
             DenseVector &
             operator-=(const Vector<RHS> &rhs);
 
-        DenseVector &
-        operator+=(const ElementType &rhs);
+        template <typename T>
+            typename RestrictTo<IsConvertible<T,ElementType>::value,
+                                DenseVector>::Type &
+            operator+=(const T &rhs);
 
-        DenseVector &
-        operator-=(const ElementType &rhs);
+        template <typename T>
+            typename RestrictTo<IsConvertible<T,ElementType>::value,
+                                DenseVector>::Type &
+            operator-=(const T &rhs);
 
-        DenseVector &
-        operator*=(const ElementType &alpha);
+        template <typename T>
+            typename RestrictTo<IsConvertible<T,ElementType>::value,
+                                DenseVector>::Type &
+            operator*=(const T &alpha);
 
-        DenseVector &
-        operator/=(const ElementType &alpha);
+        template <typename T>
+            typename RestrictTo<IsConvertible<T,ElementType>::value,
+                                DenseVector>::Type &
+            operator/=(const T &alpha);
 
         const ElementType &
         operator()(IndexType index) const;
@@ -286,6 +294,18 @@ struct IsIntegerDenseVector
                            && IsInteger<typename TT::ElementType>::value;
 };
 
+//
+//  IsBooleanDenseVector
+//
+
+template <typename T>
+struct IsBooleanDenseVector
+{
+    typedef typename std::remove_reference<T>::type  TT;
+
+    static const bool value = IsDenseVector<TT>::value
+                           && IsSame<typename TT::ElementType, bool>::value;
+};
 
 //
 //  IsRealDenseVector

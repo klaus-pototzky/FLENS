@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2014, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,46 +30,28 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Based on
- *
-       SUBROUTINE DTREXC( COMPQ, N, T, LDT, Q, LDQ, IFST, ILST, WORK,
-      $                   INFO )
- *
- *  -- LAPACK routine (version 3.2) --
- *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
- *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
- *     November 2006
- */
+#ifndef FLENS_SCALAROPERATIONS_SQRT_H
+#define FLENS_SCALAROPERATIONS_SQRT_H 1
 
-#ifndef FLENS_LAPACK_GE_TREXC_H
-#define FLENS_LAPACK_GE_TREXC_H 1
+#include <cxxblas/auxiliary/complex.h>
+#include <flens/auxiliary/auxiliary.h>
+#include <flens/scalartypes/impl/scalarclosure.h>
 
-#include <flens/lapack/typedefs.h>
-#include <flens/matrixtypes/matrixtypes.h>
-#include <flens/vectortypes/vectortypes.h>
+namespace flens {
 
-namespace flens { namespace lapack {
+struct ScalarOpSqrt {};
 
-//== trexc =====================================================================
-template <typename MT, typename MQ, typename IndexType, typename VWORK>
-    IndexType
-    trexc(bool                          computeQ,
-          GeMatrix<MT>                  &T,
-          GeMatrix<MQ>                  &Q,
-          IndexType                     &iFirst,
-          IndexType                     &iLast,
-          DenseVector<VWORK>            &work);
+template <typename S>
+    const typename ScalarClosure<ScalarOpSqrt, S, S>::ElementType
+    evalScalarClosure(const ScalarClosure<ScalarOpSqrt, S, S> &exp);
 
-//-- forwarding ----------------------------------------------------------------
-template <typename MT, typename MQ, typename IndexType, typename VWORK>
-    IndexType
-    trexc(bool                          computeQ,
-          MT                            &&T,
-          MQ                            &&Q,
-          IndexType                     &iFirst,
-          IndexType                     &iLast,
-          VWORK                         &&work);
+//-- operator overloading
+template <typename S>
+    const ScalarClosure<ScalarOpSqrt,
+                        typename S::Impl,
+                        typename S::Impl>
+    Sqrt(const Scalar<S> &s);
 
-} } // namespace lapack, flens
+} // namespace flens
 
-#endif // FLENS_LAPACK_GE_TREXC_H
+#endif // FLENS_SCALAROPERATIONS_SQRT_H

@@ -52,12 +52,15 @@ namespace flens { namespace lapack {
 
 //== (ge)tri ===================================================================
 //
-//  Real variant
+//  Real and complex variant
 //
 template <typename MA, typename VPIV, typename VWORK>
-    typename RestrictTo<IsGeMatrix<MA>::value
-                     && IsIntegerDenseVector<VPIV>::value
-                     && IsDenseVector<VWORK>::value,
+    typename RestrictTo<(IsRealGeMatrix<MA>::value
+                      && IsIntegerDenseVector<VPIV>::value
+                      && IsRealDenseVector<VWORK>::value)
+                   ||   (IsComplexGeMatrix<MA>::value
+                      && IsIntegerDenseVector<VPIV>::value
+                      && IsComplexDenseVector<VWORK>::value),
              typename RemoveRef<MA>::Type::IndexType>::Type
     tri(MA          &&A,
         const VPIV  &piv,

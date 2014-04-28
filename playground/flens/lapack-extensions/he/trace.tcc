@@ -35,13 +35,17 @@
 #define PLAYGROUND_FLENS_LAPACKEXTENSIONS_HE_TRACE_TCC 1
 
 #include <playground/cxxblas/cxxblas.h>
+#include <playground/flens/blas-extensions/blas-extensions.h>
+#include <playground/flens/lapack-extensions/he/trace.h>
 
 namespace flens { namespace lapack { namespace extensions {
 
 //-- trace(he)
 template <typename MA>
 typename RestrictTo<IsHeMatrix<MA>::value,
-typename ComplexTrait<typename RemoveRef<MA>::Type::ElementType>::PrimitiveType>::Type
+         typename ComplexTrait<
+                typename RemoveRef<MA>::Type::ElementType>::PrimitiveType
+                >::Type
 trace(MA &&A)
 {
     return blas::extensions::sum(real(A.diag(0)));

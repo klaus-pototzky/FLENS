@@ -204,7 +204,8 @@ axpySwitch(const ALPHA &alpha, const Vector<VX> &x, Vector<VY> &y)
 
 template <typename ALPHA, typename L, typename R, typename VY>
 void
-axpySwitch(const ALPHA &alpha, const VectorClosure<OpConj, L, R> &x, Vector<VY> &y)
+axpySwitch(const ALPHA &alpha, const VectorClosure<OpConj, L, R> &x,
+           Vector<VY> &y)
 {
 //
 //  No need to add another log-entry as we simply pass-through to the
@@ -304,7 +305,8 @@ raxpySwitch(const ALPHA &alpha, const Vector<VX> &x, Vector<VY> &y)
 //
 template <typename ALPHA, typename L, typename R, typename VY>
 void
-raxpySwitch(const ALPHA &alpha, const VectorClosure<OpConj, L, R> &x, Vector<VY> &y)
+raxpySwitch(const ALPHA &alpha, const VectorClosure<OpConj, L, R> &x,
+            Vector<VY> &y)
 {
 //  No need to add another log-entry as we simply pass-through to the
 //  BLAS implementation
@@ -486,9 +488,12 @@ axpy(const ALPHA &alpha, const VectorClosure<OpMult, VL, MR> &xA, Vector<VY> &y)
 //
 template <typename ALPHA, typename Op, typename VL, typename VR, typename VY>
 void
-axpy(const ALPHA &alpha, const VectorClosure<Op, VL, VR> &x, Vector<VY> &y)
+axpy(const ALPHA                      &FLENS_BLASLOG_VARDECL(alpha),
+     const VectorClosure<Op, VL, VR>  &FLENS_BLASLOG_VARDECL(x),
+     Vector<VY>                       &FLENS_BLASLOG_VARDECL(y))
 {
     FLENS_BLASLOG_ERROR_AXPY(alpha, x, y);
+
     ASSERT(0);
 }
 
@@ -935,11 +940,14 @@ axpy(Transpose, const ALPHA &, const MatrixClosure<Op, ML, MR> &, Matrix<MB> &)
 
 template <typename ALPHA, typename MA, typename MB>
 void
-axpy(Transpose trans, const ALPHA &alpha,
-     const Matrix<MA> &A, Matrix<MB> &B)
+axpy(Transpose          FLENS_BLASLOG_VARDECL(trans),
+     const ALPHA        &FLENS_BLASLOG_VARDECL(alpha),
+     const Matrix<MA>   &FLENS_BLASLOG_VARDECL(A),
+     Matrix<MB>         &FLENS_BLASLOG_VARDECL(B))
 {
     FLENS_BLASLOG_ERROR_MAXPY(trans, alpha, A, B);
     ERROR_MSG("B += Some Matrix");
+
     ASSERT(0);
 }
 

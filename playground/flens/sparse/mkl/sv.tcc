@@ -33,8 +33,14 @@
 #ifndef PLAYGROUND_FLENS_SPARSE_MKL_SV_TCC
 #define PLAYGROUND_FLENS_SPARSE_MKL_SV_TCC 1
 
-#include "mkl_dss.h"
-#include "mkl_types.h"
+#ifdef WITH_MKLDSS
+
+#include <mkl_dss.h>
+#include <mkl_types.h>
+
+#include<flens/auxiliary/auxiliary.h>
+#include<flens/matrixtypes/matrixtypes.h>
+#include<flens/vectortypes/vectortypes.h>
 
 namespace flens { namespace mkldss {
 
@@ -127,16 +133,16 @@ sv(Transpose transA,
     }
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
-
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
         error = dss_solve_real (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
-
     } else {
-
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_real (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_real(handle, opt, B.data()+i*B.leadingDimension(),
+                                   one, X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -149,7 +155,6 @@ sv(Transpose transA,
 
     error = dss_delete (handle, opt);
     ASSERT(error==MKL_DSS_SUCCESS);
-
 }
 
 template <typename MA, typename MX, typename MB>
@@ -240,7 +245,9 @@ sv(Transpose transA,
     }
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_real (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -249,7 +256,10 @@ sv(Transpose transA,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_real (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_real (handle, opt,
+                                    B.data()+i*B.leadingDimension(),
+                                    one,
+                                    X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -276,8 +286,8 @@ sv(Transpose transA,
    MX        &&X,
    const MB  &B)
 {
-    transA = Transpose(transA^Trans); 
-    
+    transA = Transpose(transA^Trans);
+
     typedef typename RemoveRef<MA>::Type    MatrixA;
     typedef typename MatrixA::IndexType     IndexType;
     typedef typename MatrixA::ElementType     ElementType;
@@ -359,7 +369,9 @@ sv(Transpose transA,
     }
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_complex (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -368,7 +380,10 @@ sv(Transpose transA,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_complex (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_complex (handle, opt,
+                                       B.data()+i*B.leadingDimension(),
+                                       one,
+                                       X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -476,7 +491,9 @@ sv(Transpose transA,
     }
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_complex (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -485,7 +502,10 @@ sv(Transpose transA,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_complex (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_complex(handle, opt,
+                                      B.data()+i*B.leadingDimension(),
+                                      one,
+                                      X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -584,7 +604,9 @@ sv(MA        &&A,
     ASSERT(error==MKL_DSS_SUCCESS);
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_real (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -593,7 +615,10 @@ sv(MA        &&A,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_real (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_real(handle, opt,
+                                   B.data()+i*B.leadingDimension(),
+                                   one,
+                                   X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -686,7 +711,9 @@ sv(MA        &&A,
     ASSERT(error==MKL_DSS_SUCCESS);
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_real (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -695,7 +722,10 @@ sv(MA        &&A,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_real (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_real(handle, opt,
+                                   B.data()+i*B.leadingDimension(),
+                                   one,
+                                   X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -786,7 +816,9 @@ sv(MA        &&A,
     ASSERT(error==MKL_DSS_SUCCESS);
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_complex (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -795,7 +827,10 @@ sv(MA        &&A,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_complex (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_complex(handle, opt,
+                                      B.data()+i*B.leadingDimension(),
+                                      one,
+                                      X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -885,7 +920,9 @@ sv(MA        &&A,
     ASSERT(error==MKL_DSS_SUCCESS);
 
     IndexType nRhs = B.numCols();
-    if (B.leadingDimension()!=B.numRows() || X.leadingDimension() != X.numRows()) {
+    if (B.leadingDimension()!=B.numRows()
+     || X.leadingDimension() != X.numRows())
+    {
 
         error = dss_solve_complex (handle, opt, B.data(), nRhs, X.data());
         ASSERT(error==MKL_DSS_SUCCESS);
@@ -894,7 +931,10 @@ sv(MA        &&A,
 
         IndexType one(1);
         for (IndexType i=0; i<nRhs; ++i) {
-            error = dss_solve_complex (handle, opt, B.data()+i*B.leadingDimension(), one, X.data()+i*X.leadingDimension());
+            error = dss_solve_complex(handle, opt,
+                                      B.data()+i*B.leadingDimension(),
+                                      one,
+                                      X.data()+i*X.leadingDimension());
             ASSERT(error==MKL_DSS_SUCCESS);
         }
     }
@@ -965,5 +1005,7 @@ sv(MA  &&A,
 }
 
 } } // namespace mkldss, flens
+
+#endif // WITH_MKLDSS
 
 #endif // PLAYGROUND_FLENS_SPARSE_MKL_SV_TCC

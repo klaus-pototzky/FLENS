@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2014, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,13 +30,26 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FLENS_LAPACK_AUXILIARY_POW_TCC
-#define FLENS_LAPACK_AUXILIARY_POW_TCC 1
+#ifndef CXXBLAS_AUXILIARY_POW_TCC
+#define CXXBLAS_AUXILIARY_POW_TCC 1
 
 #include <cmath>
-#include <flens/lapack/auxiliary/pow.h>
+#include <cxxblas/auxiliary/complextrait.h>
+#include <cxxblas/auxiliary/pow.h>
+#include <external/real.hpp>
 
-namespace flens {
+namespace cxxblas {
+
+/*
+template <typename B, typename E>
+typename RestrictTo<IsMpfrReal<B>::value
+                 || IsMpfrReal<E>::value,
+         typename mpfr::result_type2<B, E>::type>::Type
+pow(const B &base, const E &exponent)
+{
+    mpfr::pow(base, exponent);
+}
+*/
 
 template <typename T>
 typename RestrictTo<IsSame<T,int>::value,
@@ -46,25 +59,27 @@ pow(const T &base, const T &exponent)
     ASSERT( exponent>=0 );
     if ( exponent==0 ) {
         return 1;
-    } else if ( exponent==1 ) { 
+    } else if ( exponent==1 ) {
         return base;
     }
-    int value = flens::pow(base, exponent/2 );
-  
+    int value = cxxblas::pow(base, exponent/2 );
+
     if ( exponent%2==0 ) {
         return value*value;
-    } 
+    }
     return base*value*value;
 }
 
 template <typename T>
-typename RestrictTo<!IsSame<T,int>::value,
-                    T>::Type
+typename RestrictTo<!IsSame<T,int>::value
+                 && !IsComplex<T>::value
+                 && !IsMpfrReal<T>::value,
+         T>::Type
 pow(const T &base, int exponent)
 {
     typedef typename ComplexTrait<T>::PrimitiveType PT;
     using std::pow;
-    
+
 //
 //  TODO: Make this more general and call an external Fortran routine
 //        that computes 'pow(base, exponent)' for comparison
@@ -74,9 +89,27 @@ pow(const T &base, int exponent)
         return base*base;
     }
 #   endif
-    return pow(base, PT(exponent));
+    return std::pow(base, PT(exponent));
 }
 
-} // namespace flens
+template <typename T>
+std::complex<T>
+pow(const std::complex<T> &base, int exponent)
+{
+    typedef typename ComplexTrait<T>::PrimitiveType PT;
+    using std::pow;
+//
+//  TODO: Make this more general and call an external Fortran routine
+//        that computes 'pow(base, exponent)' for comparison
+//
+#   ifdef CHECK_CXXLAPACK
+    if (exponent==2) {
+        return base*base;
+    }
+#   endif
+    return std::pow(base, PT(exponent));
+}
 
-#endif // FLENS_LAPACK_AUXILIARY_POW_TCC
+} // namespace cxxblas
+
+#endif // CXXBLAS_AUXILIARY_POW_TCC

@@ -121,7 +121,6 @@ template <typename MA, typename MC>
               MA            &&A,
               MC            &&C);
 
-
 } } // namespace lapack, flens
 
 #endif // FLENS_LAPACK_IMPL_UNMQR_H

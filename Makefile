@@ -1,10 +1,19 @@
-all :
+all:
+	@echo
+	@echo "FLENS is header only.  Just include -I 'PATH_TO_FLENS' in your"
+	@echo "compile command, e.g.:"
+	@echo
+	@echo "   g++ -Wall -std=c++11 -I $(PWD) tut01-page01-example.cc"
+	@echo
+	@echo
+
+install: all
+
+check :
 	$(MAKE) -C cxxblas/netlib
 	$(MAKE) -C cxxlapack/netlib
 	$(MAKE) -C flens/blas/interface
 	$(MAKE) -C flens/lapack
-
-check :
 	$(MAKE) -C flens/blas/interface check
 	$(MAKE) -C flens/lapack check
 

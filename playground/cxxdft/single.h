@@ -35,97 +35,60 @@
 
 #define HAVE_CXXDFT_SINGLE 1
 
-#include <cxxblas/typedefs.h>
-#include <cxxblas/drivers/drivers.h>
+#include <complex>
 #include <playground/cxxdft/direction.h>
 
 namespace cxxdft {
 
 template <typename IndexType, typename VIN, typename VOUT>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    void
     dft_single(IndexType n,
                const VIN *x, IndexType incX,
                VOUT *y, IndexType incY,
                DFTDirection direction);
-    
+
 #ifdef HAVE_FFTW
-    
+
 #ifdef HAVE_FFTW_FLOAT
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    template <typename IndexType>
+    void
     dft_single(IndexType n,
-               cxxblas::ComplexFloat *x, IndexType incX,
-               cxxblas::ComplexFloat *y, IndexType incY,
+               std::complex<float> *x, IndexType incX,
+               std::complex<float> *y, IndexType incY,
                DFTDirection direction);
 #endif // HAVE_FFTW_FLOAT
-    
+
 #ifdef HAVE_FFTW_DOUBLE
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    template <typename IndexType>
+    void
     dft_single(IndexType n,
-               cxxblas::ComplexDouble *x, IndexType incX,
-               cxxblas::ComplexDouble *y, IndexType incY,
+               std::complex<double> *x, IndexType incX,
+               std::complex<double> *y, IndexType incY,
                DFTDirection direction);
-    
+
 #endif // HAVE_FFTW_DOUBLE
-    
+
 #ifdef HAVE_FFTW_LONGDOUBLE
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    template <typename IndexType>
+    void
     dft_single(IndexType n,
                std::complex<long double> *x, IndexType incX,
                std::complex<long double> *y, IndexType incY,
                DFTDirection direction);
-    
+
 #endif // HAVE_FFTW_LONGDOUBLE
 
 #ifdef HAVE_FFTW_QUAD
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
+    template <typename IndexType>
+    void
     dft_single(IndexType n,
                std::complex<__float128> *x, IndexType incX,
                std::complex<__float128> *y, IndexType incY,
                DFTDirection direction);
-    
+
 #endif // HAVE_FFTW_QUAD
-    
-#endif // HAVE_FFTW
-    
-#ifdef HAVE_CLFFT
-    
- template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
-    dft_single(IndexType n, 
-               flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::OpenCL> x, IndexType incX, 
-               flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::OpenCL> y, IndexType incY,
-               DFTDirection direction);
-    
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
-    dft_single(IndexType n, 
-               flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::OpenCL> x, IndexType incX, 
-               flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::OpenCL> y, IndexType incY,
-               DFTDirection direction);   
-    
-#endif // HAVE_CLFFT
-    
-#ifdef HAVE_CUFFT
-    
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
-    dft_single(IndexType n, 
-               flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::CUDA> x, IndexType incX, 
-               flens::device_ptr<cxxblas::ComplexFloat, flens::StorageType::CUDA> y, IndexType incY,
-               DFTDirection direction);
-    
-template <typename IndexType>
-    typename cxxblas::If<IndexType>::isBlasCompatibleInteger
-    dft_single(IndexType n, 
-               flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::CUDA> x, IndexType incX, 
-               flens::device_ptr<cxxblas::ComplexDouble, flens::StorageType::CUDA> y, IndexType incY,
-               DFTDirection direction);
-#endif // HAVE_CUFFT
-    
+
+#endif
 
 } // namespace cxxdft
 

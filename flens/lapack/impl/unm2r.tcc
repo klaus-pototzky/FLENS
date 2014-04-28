@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2013, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -70,8 +70,9 @@ unm2r_impl(Side side, Transpose trans, GeMatrix<MA> &A,
     const IndexType n = C.numCols();
     const IndexType k = A.numCols();
 
-    const bool noTrans = ((trans==Trans) || (trans==ConjTrans)) ? false
-                                                                : true;
+    const bool noTrans = (trans==ConjTrans) ? false : true;
+
+    const T One(1);
 //
 //  nq is the order of Q
 //
@@ -117,9 +118,9 @@ unm2r_impl(Side side, Transpose trans, GeMatrix<MA> &A,
 //
 //      Apply H(i)
 //
-        const T Aii = A(i,i);
-        A(i,i) = T(1);
         const T taui = (noTrans) ? tau(i) : conj(tau(i));
+        const T Aii  = A(i,i);
+        A(i,i) = One;
         larf(side, A(_(i,nq), i), taui, C(rows, cols), work);
         A(i,i) = Aii;
     }
@@ -161,19 +162,29 @@ unm2r_impl(Side side, Transpose trans, GeMatrix<MA> &A,
 //== public interface ==========================================================
 
 template <typename MA, typename VTAU, typename MC, typename VWORK>
-void
-unm2r(Side side, Transpose trans, GeMatrix<MA> &A,
-      const DenseVector<VTAU> &tau, GeMatrix<MC> &C,
-      DenseVector<VWORK> &work)
+typename RestrictTo<IsComplexGeMatrix<MA>::value
+                 && IsComplexDenseVector<VTAU>::value
+                 && IsComplexGeMatrix<MC>::value
+                 && IsComplexDenseVector<VWORK>::value,
+         void>::Type
+unm2r(Side side, Transpose trans, MA &&A, const VTAU &tau, MC &&C,
+      VWORK &&work)
 {
+//
+//  Remove references from rvalue types
+//
+#   ifdef CHECK_CXXLAPACK
+    typedef typename RemoveRef<MA>::Type     MatrixA;
+    typedef typename RemoveRef<MC>::Type     MatrixC;
+    typedef typename RemoveRef<VWORK>::Type  VectorWork;
+#   endif
 
 //
 //  Test the input parameters
 //
 #   ifndef NDEBUG
+    typedef typename RemoveRef<MC>::Type::IndexType  IndexType;
 
-    typedef typename GeMatrix<MC>::IndexType    IndexType;
-    
     const IndexType m = C.numRows();
     const IndexType n = C.numCols();
     const IndexType k = A.numCols();
@@ -185,6 +196,8 @@ unm2r(Side side, Transpose trans, GeMatrix<MA> &A,
     } else {
         ASSERT(A.numRows()==n);
     }
+
+    ASSERT(trans==NoTrans || trans==ConjTrans);
 
     if (work.length()>0) {
         if (side==Left) {
@@ -198,9 +211,9 @@ unm2r(Side side, Transpose trans, GeMatrix<MA> &A,
 //  Make copies of output arguments
 //
 #   ifdef CHECK_CXXLAPACK
-    typename GeMatrix<MA>::NoView       A_org      = A;
-    typename GeMatrix<MC>::NoView       C_org      = C;
-    typename DenseVector<VWORK>::NoView work_org   = work;
+    typename MatrixA::NoView      A_org      = A;
+    typename MatrixC::NoView      C_org      = C;
+    typename VectorWork::NoView   work_org   = work;
 #   endif
 
 //
@@ -212,9 +225,9 @@ unm2r(Side side, Transpose trans, GeMatrix<MA> &A,
 //
 //  Make copies of results computed by the generic implementation
 //
-    typename GeMatrix<MA>::NoView       A_generic       = A;
-    typename GeMatrix<MC>::NoView       C_generic       = C;
-    typename DenseVector<VWORK>::NoView work_generic    = work;
+    typename MatrixA::NoView      A_generic       = A;
+    typename MatrixC::NoView      C_generic       = C;
+    typename VectorWork::NoView   work_generic    = work;
 
 //
 //  restore output arguments
@@ -254,18 +267,6 @@ unm2r(Side side, Transpose trans, GeMatrix<MA> &A,
 #   endif
 
 }
-
-//-- forwarding ----------------------------------------------------------------
-template <typename MA, typename VTAU, typename MC, typename VWORK>
-void
-unm2r(Side side, Transpose trans, MA &&A, const VTAU &tau, MC &&C,
-      VWORK &&work)
-{
-    CHECKPOINT_ENTER;
-    unm2r(side, trans, A, tau, C, work);
-    CHECKPOINT_LEAVE;
-}
-
 
 } } // namespace lapack, flens
 

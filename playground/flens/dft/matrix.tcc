@@ -33,10 +33,10 @@
 #ifndef PLAYGROUND_FLENS_DFT_MATRIX_TCC
 #define PLAYGROUND_FLENS_DFT_MATRIX_TCC 1
 
-#include<playground/cxxdft/direction.h>
+#include<playground/cxxdft/cxxdft.h>
+#include<playground/flens/dft/matrix.h>
 
-namespace flens {
-namespace dft {
+namespace flens { namespace dft {
 
 template <typename AIN, typename AOUT>
 typename RestrictTo<IsComplexGeMatrix<AIN>::value &&
@@ -47,24 +47,32 @@ dft_col_forward(AIN &&Ain, AOUT &&Aout)
 
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::IndexType             IndexType;
-    
+
     if (Aout.numCols()==0 || Aout.numRows()==0 ) {
         Aout.resize(Ain);
-    }    
-    
+    }
+
     ASSERT( Ain.numCols()==Aout.numCols() );
     ASSERT( Ain.numRows()==Aout.numRows() );
 
     const IndexType numRows = Ain.numRows();
     const IndexType numCols = Ain.numCols();
 
-    const IndexType AinStride = ( Ain.order()==StorageOrder::ColMajor ? 1 : Ain.leadingDimension() );
-    const IndexType AinDist   = ( Ain.order()==StorageOrder::RowMajor ? 1 : Ain.leadingDimension() );
+    const IndexType AinStride  = Ain.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
+    const IndexType AinDist    = Ain.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
 
-    const IndexType AoutStride = ( Aout.order()==StorageOrder::ColMajor ? 1 : Aout.leadingDimension() );
-    const IndexType AoutDist   = ( Aout.order()==StorageOrder::RowMajor ? 1 : Aout.leadingDimension() );
-    
-    cxxdft::dft_multiple(numRows, numCols, 
+    const IndexType AoutStride = Aout.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+    const IndexType AoutDist   = Aout.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+
+    cxxdft::dft_multiple(numRows, numCols,
                          Ain.data(), AinStride, AinDist,
                          Aout.data(), AoutStride, AoutDist,
                          cxxdft::DFTDirection::Forward);
@@ -80,30 +88,37 @@ dft_col_backward(AIN &&Ain, AOUT &&Aout)
 
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::IndexType             IndexType;
-    
+
     if (Aout.numCols()==0 || Aout.numRows()==0 ) {
         Aout.resize(Ain);
-    }    
-    
+    }
+
     ASSERT( Ain.numCols()==Aout.numCols() );
     ASSERT( Ain.numRows()==Aout.numRows() );
 
     const IndexType numRows = Ain.numRows();
     const IndexType numCols = Ain.numCols();
 
-    const IndexType AinStride = ( Ain.order()==StorageOrder::ColMajor ? 1 : Ain.leadingDimension() );
-    const IndexType AinDist   = ( Ain.order()==StorageOrder::RowMajor ? 1 : Ain.leadingDimension() );
+    const IndexType AinStride  = Ain.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
+    const IndexType AinDist    = Ain.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
+    const IndexType AoutStride = Aout.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+    const IndexType AoutDist   = Aout.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
 
-    const IndexType AoutStride = ( Aout.order()==StorageOrder::ColMajor ? 1 : Aout.leadingDimension() );
-    const IndexType AoutDist   = ( Aout.order()==StorageOrder::RowMajor ? 1 : Aout.leadingDimension() );
-    
-    cxxdft::dft_multiple(numRows, numCols, 
+    cxxdft::dft_multiple(numRows, numCols,
                          Ain.data(), AinStride, AinDist,
                          Aout.data(), AoutStride, AoutDist,
                          cxxdft::DFTDirection::Backward);
 
 }
-    
+
 template <typename AIN, typename AOUT>
 typename RestrictTo<IsComplexGeMatrix<AIN>::value &&
                     IsComplexGeMatrix<AOUT>::value,
@@ -113,24 +128,32 @@ dft_row_forward(AIN &&Ain, AOUT &&Aout)
 
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::IndexType             IndexType;
-    
+
     if (Aout.numCols()==0 || Aout.numRows()==0 ) {
         Aout.resize(Ain);
     }
-    
+
     ASSERT( Ain.numCols()==Aout.numCols() );
     ASSERT( Ain.numRows()==Aout.numRows() );
 
     const IndexType numRows = Ain.numRows();
     const IndexType numCols = Ain.numCols();
 
-    const IndexType AinStride = ( Ain.order()==StorageOrder::RowMajor ? 1 : Ain.leadingDimension() );
-    const IndexType AinDist   = ( Ain.order()==StorageOrder::ColMajor ? 1 : Ain.leadingDimension() );
+    const IndexType AinStride  = Ain.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
+    const IndexType AinDist    = Ain.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
 
-    const IndexType AoutStride = ( Aout.order()==StorageOrder::RowMajor ? 1 : Aout.leadingDimension() );
-    const IndexType AoutDist   = ( Aout.order()==StorageOrder::ColMajor ? 1 : Aout.leadingDimension() );
-    
-    cxxdft::dft_multiple(numCols, numRows, 
+    const IndexType AoutStride = Aout.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+    const IndexType AoutDist   = Aout.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+
+    cxxdft::dft_multiple(numCols, numRows,
                          Ain.data(), AinStride, AinDist,
                          Aout.data(), AoutStride, AoutDist,
                          cxxdft::DFTDirection::Forward);
@@ -146,24 +169,32 @@ dft_row_backward(AIN &&Ain, AOUT &&Aout)
 
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::IndexType             IndexType;
-    
+
     if (Aout.numCols()==0 || Aout.numRows()==0 ) {
         Aout.resize(Ain);
     }
-    
+
     ASSERT( Ain.numCols()==Aout.numCols() );
     ASSERT( Ain.numRows()==Aout.numRows() );
 
     const IndexType numRows = Ain.numRows();
     const IndexType numCols = Ain.numCols();
 
-    const IndexType AinStride = ( Ain.order()==StorageOrder::RowMajor ? 1 : Ain.leadingDimension() );
-    const IndexType AinDist   = ( Ain.order()==StorageOrder::ColMajor ? 1 : Ain.leadingDimension() );
+    const IndexType AinStride  = Ain.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
+    const IndexType AinDist    = Ain.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Ain.leadingDimension();
 
-    const IndexType AoutStride = ( Aout.order()==StorageOrder::RowMajor ? 1 : Aout.leadingDimension() );
-    const IndexType AoutDist   = ( Aout.order()==StorageOrder::ColMajor ? 1 : Aout.leadingDimension() );
-    
-    cxxdft::dft_multiple(numCols, numRows, 
+    const IndexType AoutStride = Aout.order()==StorageOrder::RowMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+    const IndexType AoutDist   = Aout.order()==StorageOrder::ColMajor
+                                 ? 1
+                                 : Aout.leadingDimension();
+
+    cxxdft::dft_multiple(numCols, numRows,
                          Ain.data(), AinStride, AinDist,
                          Aout.data(), AoutStride, AoutDist,
                          cxxdft::DFTDirection::Backward);
@@ -178,14 +209,14 @@ typename RestrictTo<IsComplexGeMatrix<AIN>::value &&
                     void>::Type
 dft_col_forward_normalized(AIN &&Ain, AOUT &&Aout)
 {
-    
+
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::ElementType           T;
     typedef typename ComplexTrait<T>::PrimitiveType PT;
-    
+
     dft_col_forward(Ain, Aout);
     Aout /= PT(Ain.numRows());
-    
+
 }
 
 template <typename AIN, typename AOUT>
@@ -194,14 +225,14 @@ typename RestrictTo<IsComplexGeMatrix<AIN>::value &&
                     void>::Type
 dft_col_backward_normalized(AIN &&Ain, AOUT &&Aout)
 {
-    
+
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::ElementType           T;
     typedef typename ComplexTrait<T>::PrimitiveType PT;
-    
+
     dft_col_backward(Ain, Aout);
     Aout /= PT(Ain.numRows());
-    
+
 }
 
 template <typename AIN, typename AOUT>
@@ -210,14 +241,14 @@ typename RestrictTo<IsComplexGeMatrix<AIN>::value &&
                     void>::Type
 dft_row_forward_normalized(AIN &&Ain, AOUT &&Aout)
 {
-    
+
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::ElementType           T;
     typedef typename ComplexTrait<T>::PrimitiveType PT;
-    
+
     dft_row_forward(Ain, Aout);
     Aout /= PT(Ain.numCols());
-    
+
 }
 
 template <typename AIN, typename AOUT>
@@ -226,17 +257,16 @@ typename RestrictTo<IsComplexGeMatrix<AIN>::value &&
                     void>::Type
 dft_row_backward_normalized(AIN &&Ain, AOUT &&Aout)
 {
-    
+
     typedef typename RemoveRef<AOUT>::Type          MatrixA;
     typedef typename MatrixA::ElementType           T;
     typedef typename ComplexTrait<T>::PrimitiveType PT;
-    
+
     dft_row_backward(Ain, Aout);
     Aout /= PT(Ain.numCols());
-    
+
 }
-    
-} // namespace dft
-} // namespace flens
+
+} } // namespace dft, flens
 
 #endif // PLAYGROUND_FLENS_DFT_MATRIX_TCC

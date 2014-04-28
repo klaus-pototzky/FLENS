@@ -68,7 +68,6 @@ template <typename MA>
     potri(MA &&A);
 
 
-
 } } // namespace lapack, flens
 
 #endif // FLENS_LAPACK_PO_POTRI_H

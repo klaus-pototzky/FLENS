@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2014, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,30 +30,41 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CXXLAPACK_INTERFACE_ILADLR_TCC
-#define CXXLAPACK_INTERFACE_ILADLR_TCC 1
+#ifndef CXXBLAS_AUXILIARY_POW_H
+#define CXXBLAS_AUXILIARY_POW_H 1
 
-#include <iostream>
-#include <cxxlapack/interface/interface.h>
-#include <cxxlapack/netlib/netlib.h>
+#include <cxxblas/auxiliary/iscomplex.h>
+#include <cxxblas/auxiliary/ismpfrreal.h>
+#include <cxxblas/auxiliary/issame.h>
+#include <cxxblas/auxiliary/restrictto.h>
+#include <external/real.hpp>
 
-namespace cxxlapack {
+namespace cxxblas {
 
-template <typename IndexType>
-IndexType
-iladlr(IndexType             m,
-       IndexType             n,
-       const double          *A,
-       IndexType             ldA)
-{
-    CXXLAPACK_DEBUG_OUT("iladlr");
+/*
+template <typename B, typename E>
+    typename RestrictTo<IsMpfrReal<B>::value
+                     || IsMpfrReal<E>::value,
+             typename mpfr::result_type2<B, E>::type>::Type
+    pow(const B &base, const E &exponent);
+*/
 
-    return LAPACK_IMPL(iladlr)(&m,
-                               &n,
-                               A,
-                               &ldA);
-}
+template <typename T>
+    typename RestrictTo<IsSame<T,int>::value,
+             T>::Type
+    pow(const T &base, const T &exponent);
 
-} // namespace cxxlapack
+template <typename T>
+    typename RestrictTo<!IsSame<T,int>::value
+                     && !IsComplex<T>::value
+                     && !IsMpfrReal<T>::value,
+             T>::Type
+    pow(const T &base, int exponent);
 
-#endif // CXXLAPACK_INTERFACE_ILADLR_TCC
+template <typename T>
+    std::complex<T>
+    pow(const std::complex<T> &base, int exponent);
+
+} // namespace cxxblas
+
+#endif // CXXBLAS_AUXILIARY_POW_H

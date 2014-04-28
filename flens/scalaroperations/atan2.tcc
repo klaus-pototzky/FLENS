@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Michael Lehn, Klaus Pototzky
+ *   Copyright (c) 2014, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,20 +30,32 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CXXLAPACK_INTERFACE_ILADLC_H
-#define CXXLAPACK_INTERFACE_ILADLC_H 1
+#ifndef FLENS_SCALAROPERATIONS_ATAN2_TCC
+#define FLENS_SCALAROPERATIONS_ATAN2_TCC 1
 
-#include <complex>
+#include <flens/scalaroperations/atan2.h>
 
-namespace cxxlapack {
+namespace flens {
 
-template <typename IndexType>
-    IndexType
-    iladlc(IndexType             m,
-           IndexType             n,
-           const double          *A,
-           IndexType             ldA);
+template <typename Y, typename X>
+const typename ScalarClosure<ScalarOpATan2, Y, X>::ElementType
+evalScalarClosure(const ScalarClosure<ScalarOpATan2, Y, X> &exp)
+{
+    return atan2(exp.left().value(), exp.right().value());
+}
 
-} // namespace cxxlapack
+//-- operator overloading
+template <typename Y, typename X>
+const ScalarClosure<ScalarOpATan2,
+                    typename Y::Impl,
+                    typename X::Impl>
+ATan2(const Scalar<Y> &y, const Scalar<X> &x)
+{
+    typedef ScalarClosure<ScalarOpATan2, typename Y::Impl, typename X::Impl> SC;
+    return SC(y.impl(), x.impl());
+}
 
-#endif // CXXLAPACK_INTERFACE_ILADLC_H
+} // namespace flens
+
+#endif // FLENS_SCALAROPERATIONS_ATAN2_TCC
+
