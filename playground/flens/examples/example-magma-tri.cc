@@ -1,7 +1,8 @@
 ///
-/// Enable features for CUBLAS
+/// Enable PLAYGROUND of FLENS
 ///
 #define USE_PLAYGROUND
+
 ///
 /// Enable features for CUBLAS
 ///
@@ -40,6 +41,8 @@ int main() {
     ///
     typedef GeMatrix<FullStorage<T> >           HostMatrix;
     typedef GeMatrix<DeviceFullStorage<T> >     DeviceMatrix;
+    typedef DenseVector<Array<T> >              HostVector;
+    typedef DenseVector<DeviceArray<T> >        DeviceVector;
     typedef HostMatrix::IndexType               IndexType;
     typedef DenseVector<Array<IndexType> >      IndexVector;
 
@@ -50,11 +53,12 @@ int main() {
 
     HostMatrix         A_host(n,n);
     DeviceMatrix       A_device(n,n);
+    HostVector         work_host;
+    DeviceVector       work_device;
 
     ///
     /// Initialize MAGMA
     ///
-
     magma_init();
 
     ///
@@ -70,6 +74,7 @@ int main() {
     /// (1) Calculate it with lapack
     ///
     lapack::trf(A_host, piv_for_host);
+    lapack::tri(A_host, piv_for_host, work_host);
 
     cout << "A = " << A_host << endl;
 
@@ -78,31 +83,16 @@ int main() {
     A_host = T(1, 0), T( 1,-1), T(  2,20),
              T(0, 1), T( 1, 2), T(-10, 8),
              T(0,-1), T(-1, 1), T( 40, 6);
-
 
     ///
     /// (2) Solve the problem on the GPU and
-    ///     and let MAGMA do the transfers
-    ///
-
-    magma::trf(A_host, piv_for_host);
-
-    cout << "A = " << A_host << endl;
-
-    // Restore Matrix
-
-    A_host = T(1, 0), T( 1,-1), T(  2,20),
-             T(0, 1), T( 1, 2), T(-10, 8),
-             T(0,-1), T(-1, 1), T( 40, 6);
-
-    ///
-    /// (3) Solve the problem on the GPU and
-    ///     and do the transfers manually (already done above)
+    ///     and do the transfers manually
     ///
 
     A_device = A_host;
 
     magma::trf(A_device, piv_for_device);
+    magma::tri(A_device, piv_for_device, work_device);
 
     // copy result to host
     A_host = A_device;

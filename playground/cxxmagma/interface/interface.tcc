@@ -60,22 +60,22 @@
 // #include <playground/cxxmagma/interface/geequ.tcc>
 // #include <playground/cxxmagma/interface/gees.tcc>
 // #include <playground/cxxmagma/interface/geesx.tcc>
-// #include <playground/cxxmagma/interface/geev.tcc>
+#include <playground/cxxmagma/interface/geev.tcc>
 // #include <playground/cxxmagma/interface/geevx.tcc>
 // #include <playground/cxxmagma/interface/gegs.tcc>
 // #include <playground/cxxmagma/interface/gegv.tcc>
 // #include <playground/cxxmagma/interface/gehd2.tcc>
-// #include <playground/cxxmagma/interface/gehrd.tcc>
+#include <playground/cxxmagma/interface/gehrd.tcc>
 // #include <playground/cxxmagma/interface/gejsv.tcc>
 // #include <playground/cxxmagma/interface/gelq2.tcc>
-// #include <playground/cxxmagma/interface/gelqf.tcc>
+#include <playground/cxxmagma/interface/gelqf.tcc>
 // #include <playground/cxxmagma/interface/gelsd.tcc>
 // #include <playground/cxxmagma/interface/gels.tcc>
 // #include <playground/cxxmagma/interface/gelss.tcc>
 // #include <playground/cxxmagma/interface/gelsx.tcc>
 // #include <playground/cxxmagma/interface/gelsy.tcc>
 // #include <playground/cxxmagma/interface/geql2.tcc>
-// #include <playground/cxxmagma/interface/geqlf.tcc>
+#include <playground/cxxmagma/interface/geqlf.tcc>
 // #include <playground/cxxmagma/interface/geqp3.tcc>
 // #include <playground/cxxmagma/interface/geqpf.tcc>
 // #include <playground/cxxmagma/interface/geqr2.tcc>
@@ -87,7 +87,7 @@
 // #include <playground/cxxmagma/interface/gerqf.tcc>
 // #include <playground/cxxmagma/interface/gesc2.tcc>
 // #include <playground/cxxmagma/interface/gesdd.tcc>
-// #include <playground/cxxmagma/interface/gesvd.tcc>
+#include <playground/cxxmagma/interface/gesvd.tcc>
 #include <playground/cxxmagma/interface/gesv.tcc>
 // #include <playground/cxxmagma/interface/gesvj.tcc>
 // #include <playground/cxxmagma/interface/gesvx.tcc>
@@ -393,8 +393,8 @@
 // #include <playground/cxxmagma/interface/ormhr.tcc>
 // #include <playground/cxxmagma/interface/orml2.tcc>
 // #include <playground/cxxmagma/interface/ormlq.tcc>
-// #include <playground/cxxmagma/interface/ormql.tcc>
-// #include <playground/cxxmagma/interface/ormqr.tcc>
+#include <playground/cxxmagma/interface/ormql.tcc>
+#include <playground/cxxmagma/interface/ormqr.tcc>
 // #include <playground/cxxmagma/interface/ormr2.tcc>
 // #include <playground/cxxmagma/interface/ormr3.tcc>
 // #include <playground/cxxmagma/interface/ormrq.tcc>
@@ -416,11 +416,11 @@
 // #include <playground/cxxmagma/interface/poequb.tcc>
 // #include <playground/cxxmagma/interface/poequ.tcc>
 // #include <playground/cxxmagma/interface/porfs.tcc>
-// #include <playground/cxxmagma/interface/posv.tcc>
+#include <playground/cxxmagma/interface/posv.tcc>
 // #include <playground/cxxmagma/interface/posvx.tcc>
 // #include <playground/cxxmagma/interface/potf2.tcc>
-// #include <playground/cxxmagma/interface/potrf.tcc>
-// #include <playground/cxxmagma/interface/potri.tcc>
+#include <playground/cxxmagma/interface/potrf.tcc>
+#include <playground/cxxmagma/interface/potri.tcc>
 // #include <playground/cxxmagma/interface/potrs.tcc>
 // #include <playground/cxxmagma/interface/ppcon.tcc>
 // #include <playground/cxxmagma/interface/ppequ.tcc>
@@ -561,8 +561,8 @@
 // #include <playground/cxxmagma/interface/unmhr.tcc>
 // #include <playground/cxxmagma/interface/unml2.tcc>
 // #include <playground/cxxmagma/interface/unmlq.tcc>
-// #include <playground/cxxmagma/interface/unmql.tcc>
-// #include <playground/cxxmagma/interface/unmqr.tcc>
+#include <playground/cxxmagma/interface/unmql.tcc>
+#include <playground/cxxmagma/interface/unmqr.tcc>
 // #include <playground/cxxmagma/interface/unmr2.tcc>
 // #include <playground/cxxmagma/interface/unmr3.tcc>
 // #include <playground/cxxmagma/interface/unmrq.tcc>

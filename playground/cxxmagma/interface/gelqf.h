@@ -30,8 +30,8 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXMAGMA_INTERFACE_GEQRF_H
-#define PLAYGROUND_CXXMAGMA_INTERFACE_GEQRF_H 1
+#ifndef PLAYGROUND_CXXMAGMA_INTERFACE_GELQF_H
+#define PLAYGROUND_CXXMAGMA_INTERFACE_GELQF_H 1
 
 #include <complex>
 
@@ -39,11 +39,11 @@ namespace cxxmagma {
   
 template <typename IndexType, typename DataType>
     IndexType
-    geqrf_nb_query(IndexType   m);
+    gelqf_nb_query(IndexType   m);
 
 template <typename IndexType>
     IndexType
-    geqrf(IndexType   m,
+    gelqf(IndexType   m,
           IndexType   n,
           float       *A,
           IndexType   ldA,
@@ -53,7 +53,7 @@ template <typename IndexType>
 
 template <typename IndexType>
     IndexType
-    geqrf(IndexType   m,
+    gelqf(IndexType   m,
           IndexType   n,
           double      *A,
           IndexType   ldA,
@@ -63,7 +63,7 @@ template <typename IndexType>
 
 template <typename IndexType>
     IndexType
-    geqrf(IndexType             m,
+    gelqf(IndexType             m,
           IndexType             n,
           std::complex<float>   *A,
           IndexType             ldA,
@@ -73,7 +73,7 @@ template <typename IndexType>
 
 template <typename IndexType>
     IndexType
-    geqrf(IndexType             m,
+    gelqf(IndexType             m,
           IndexType             n,
           std::complex<double>  *A,
           IndexType             ldA,
@@ -85,42 +85,42 @@ template <typename IndexType>
     
 template <typename IndexType>
     IndexType
-    geqrf_gpu(IndexType                                                         m,
+    gelqf_gpu(IndexType                                                         m,
               IndexType                                                         n,
               flens::device_ptr<float, flens::StorageType::CUDA>                A,
               IndexType                                                         ldA,
               float                                                             *tau,
-              flens::device_ptr<float, flens::StorageType::CUDA>                work,
+              float                                                             *work,
               IndexType                                                         lWork);
 
 template <typename IndexType>
     IndexType
-    geqrf_gpu(IndexType                                                         m,
+    gelqf_gpu(IndexType                                                         m,
               IndexType                                                         n,
               flens::device_ptr<double, flens::StorageType::CUDA>               A,
               IndexType                                                         ldA,
               double                                                            *tau,
-              flens::device_ptr<double, flens::StorageType::CUDA>               work,
+              double                                                            *work,
               IndexType                                                         lWork);
 
 template <typename IndexType>
     IndexType
-    geqrf_gpu(IndexType                                                         m,
+    gelqf_gpu(IndexType                                                         m,
               IndexType                                                         n,
               flens::device_ptr<std::complex<float>, flens::StorageType::CUDA>  A,
               IndexType                                                         ldA,
               std::complex<float>                                               *tau,
-              flens::device_ptr<std::complex<float>, flens::StorageType::CUDA>  work,
+              std::complex<float>                                               *work,
               IndexType                                                         lWork);
 
 template <typename IndexType>
     IndexType
-    geqrf_gpu(IndexType                                                         m,
+    gelqf_gpu(IndexType                                                         m,
               IndexType                                                         n,
               flens::device_ptr<std::complex<double>, flens::StorageType::CUDA> A,
               IndexType                                                         ldA,
               std::complex<double>                                              *tau,
-              flens::device_ptr<std::complex<double>, flens::StorageType::CUDA> work,
+              std::complex<double>                                              *work,
               IndexType                                                         lWork);
     
 #endif
@@ -128,4 +128,4 @@ template <typename IndexType>
 
 } // namespace cxxlapack
 
-#endif // PLAYGROUND_CXXMAGMA_INTERFACE_GEQRF_H
+#endif // PLAYGROUND_CXXMAGMA_INTERFACE_GELQF_H

@@ -40,6 +40,8 @@ int main() {
     ///
     typedef GeMatrix<FullStorage<T> >           HostMatrix;
     typedef GeMatrix<DeviceFullStorage<T> >     DeviceMatrix;
+    typedef DenseVector<Array<T> >              HostVector;
+    typedef DenseVector<DeviceArray<T> >        DeviceVector;
     typedef HostMatrix::IndexType               IndexType;
     typedef DenseVector<Array<IndexType> >      IndexVector;
 
@@ -50,6 +52,8 @@ int main() {
 
     HostMatrix         A_host(n,n);
     DeviceMatrix       A_device(n,n);
+    HostVector         b_host(n);
+    DeviceVector       b_device(n);
 
     ///
     /// Initialize MAGMA
@@ -66,48 +70,46 @@ int main() {
              T(0, 1), T( 1, 2), T(-10, 8),
              T(0,-1), T(-1, 1), T( 40, 6);
 
+    b_host = T( 1, 0),
+             T(-1, 1),
+             T(-2,-1);
+
+
+
     ///
     /// (1) Calculate it with lapack
     ///
     lapack::trf(A_host, piv_for_host);
+    lapack::trs(NoTrans, A_host, piv_for_host, b_host);
 
-    cout << "A = " << A_host << endl;
+    cout << "b = " << b_host << endl;
 
-    // Restore Matrix
+    // Restore Matrix and Vector
 
     A_host = T(1, 0), T( 1,-1), T(  2,20),
              T(0, 1), T( 1, 2), T(-10, 8),
              T(0,-1), T(-1, 1), T( 40, 6);
+
+    b_host = T( 1, 0),
+             T(-1, 1),
+             T(-2,-1);
 
 
     ///
     /// (2) Solve the problem on the GPU and
-    ///     and let MAGMA do the transfers
-    ///
-
-    magma::trf(A_host, piv_for_host);
-
-    cout << "A = " << A_host << endl;
-
-    // Restore Matrix
-
-    A_host = T(1, 0), T( 1,-1), T(  2,20),
-             T(0, 1), T( 1, 2), T(-10, 8),
-             T(0,-1), T(-1, 1), T( 40, 6);
-
-    ///
-    /// (3) Solve the problem on the GPU and
-    ///     and do the transfers manually (already done above)
+    ///     and do the transfers manually
     ///
 
     A_device = A_host;
+    b_device = b_host;
 
     magma::trf(A_device, piv_for_device);
+    magma::trs(NoTrans, A_device, piv_for_device, b_device);
 
     // copy result to host
-    A_host = A_device;
+    b_host = b_device;
 
-    cout << "A = " << A_host << endl;
+    cout << "b = " << b_host << endl;
 
     ///
     /// Finalize MAGMA

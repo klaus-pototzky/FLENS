@@ -30,32 +30,50 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
-#define PLAYGROUND_FLENS_MAGMA_MAGMA_TCC 1
+
+#ifndef PLAYGROUND_FLENS_MAGMA_GE_LQF_H
+#define PLAYGROUND_FLENS_MAGMA_GE_LQF_H 1
+
+#include <flens/matrixtypes/matrixtypes.h>
+#include <flens/vectortypes/vectortypes.h>
+
+namespace flens { namespace magma {
 
 #ifdef USE_CXXMAGMA
-#   include <playground/cxxmagma/cxxmagma.tcc>
-#endif
 
-#include <flens/lapack/auxiliary/getf77char.tcc>
+//== (ge)lqf ===================================================================
+//
+//  Variant for CPU 
+//
+template <typename MA, typename VTAU, typename VWORK>
+    typename RestrictTo<IsHostGeMatrix<MA>::value
+                     && IsHostDenseVector<VTAU>::value
+                     && IsHostDenseVector<VWORK>::value,
+             void>::Type
+    lqf(MA &&A, VTAU &&tau, VWORK &&work);
 
-#include <playground/flens/magma/ge/ev.tcc>
-#include <playground/flens/magma/ge/lqf.tcc>
-#include <playground/flens/magma/ge/qlf.tcc>
-#include <playground/flens/magma/ge/qrf.tcc>
-#include <playground/flens/magma/ge/sv.tcc>
-#include <playground/flens/magma/ge/svd.tcc>
-#include <playground/flens/magma/ge/trf.tcc>
-#include <playground/flens/magma/ge/tri.tcc>
-#include <playground/flens/magma/ge/trs.tcc>
+//
+//  Variant for GPU 
+//
+template <typename MA, typename VTAU, typename VWORK>
+    typename RestrictTo<IsDeviceGeMatrix<MA>::value
+                     && IsHostDenseVector<VTAU>::value
+                     && IsHostDenseVector<VWORK>::value,
+             void>::Type
+    lqf(MA &&A, VTAU &&tau, VWORK &&work);
 
-#include <playground/flens/magma/impl/ormql.tcc>
-#include <playground/flens/magma/impl/ormqr.tcc>
-#include <playground/flens/magma/impl/unmql.tcc>
-#include <playground/flens/magma/impl/unmqr.tcc>
 
-#include <playground/flens/magma/po/posv.tcc>
-#include <playground/flens/magma/po/potrf.tcc>
-#include <playground/flens/magma/po/potri.tcc>
+//
+//  Real/complex variant with temporary workspace
+//
+template <typename MA, typename VTAU>
+    typename RestrictTo<IsGeMatrix<MA>::value
+                     && IsDenseVector<VTAU>::value,
+             void>::Type
+    lqf(MA &&A, VTAU &&tau);
 
-#endif // PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
+#endif // USE_CXXMAGMA
+    
+} } // namespace magma, flens
+
+#endif // PLAYGROUND_FLENS_MAGMA_GE_LQF_H

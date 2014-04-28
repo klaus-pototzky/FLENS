@@ -1,5 +1,7 @@
+///
+/// Enable features for CUBLAS
+///
 #define USE_PLAYGROUND
-
 ///
 /// Enable features for CUBLAS
 ///
@@ -96,7 +98,7 @@ int main() {
     ///     and let MAGMA do the transfers
     ///
 
-    lapack::sv(A_host, piv_for_host, b_host);
+    magma::sv(A_host, piv_for_host, b_host);
 
     cout << "b = " << b_host << endl;
 

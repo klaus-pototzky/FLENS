@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2012, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,32 +30,33 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
-#define PLAYGROUND_FLENS_MAGMA_MAGMA_TCC 1
+#ifndef PLAYGROUND_CXXMAGMA_INTERFACE_GEHRD_TCC
+#define PLAYGROUND_CXXMAGMA_INTERFACE_GEHRD_TCC 1
 
-#ifdef USE_CXXMAGMA
-#   include <playground/cxxmagma/cxxmagma.tcc>
-#endif
+#include <iostream>
+#include <playground/cxxmagma/interface/interface.h>
 
-#include <flens/lapack/auxiliary/getf77char.tcc>
 
-#include <playground/flens/magma/ge/ev.tcc>
-#include <playground/flens/magma/ge/lqf.tcc>
-#include <playground/flens/magma/ge/qlf.tcc>
-#include <playground/flens/magma/ge/qrf.tcc>
-#include <playground/flens/magma/ge/sv.tcc>
-#include <playground/flens/magma/ge/svd.tcc>
-#include <playground/flens/magma/ge/trf.tcc>
-#include <playground/flens/magma/ge/tri.tcc>
-#include <playground/flens/magma/ge/trs.tcc>
+namespace cxxmagma {
 
-#include <playground/flens/magma/impl/ormql.tcc>
-#include <playground/flens/magma/impl/ormqr.tcc>
-#include <playground/flens/magma/impl/unmql.tcc>
-#include <playground/flens/magma/impl/unmqr.tcc>
+template <typename IndexType, typename DataType>
+IndexType
+gehrd_nb_query(IndexType m)
+{
+    if (cxxblas::IsSame<DataType, float>::value) {
+        return magma_get_sgehrd_nb(m); 
+    } else if (cxxblas::IsSame<DataType, double>::value) {
+        return magma_get_dgehrd_nb(m); 
+    } else if (cxxblas::IsSame<DataType, std::complex<float> >::value) {
+        return magma_get_cgehrd_nb(m); 
+    } else if (cxxblas::IsSame<DataType, std::complex<double> >::value) {
+        return magma_get_zgehrd_nb(m); 
+    }
+    ASSERT(0);
+    
+    return 0;
+}
 
-#include <playground/flens/magma/po/posv.tcc>
-#include <playground/flens/magma/po/potrf.tcc>
-#include <playground/flens/magma/po/potri.tcc>
+} // namespace cxxlapack
 
-#endif // PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
+#endif // PLAYGROUND_CXXMAGMA_INTERFACE_GETRI_TCC

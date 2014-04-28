@@ -62,22 +62,22 @@
 // #include <playground/cxxmagma/interface/geequ.h>
 // #include <playground/cxxmagma/interface/gees.h>
 // #include <playground/cxxmagma/interface/geesx.h>
-// #include <playground/cxxmagma/interface/geev.h>
+#include <playground/cxxmagma/interface/geev.h>
 // #include <playground/cxxmagma/interface/geevx.h>
 // #include <playground/cxxmagma/interface/gegs.h>
 // #include <playground/cxxmagma/interface/gegv.h>
 // #include <playground/cxxmagma/interface/gehd2.h>
-// #include <playground/cxxmagma/interface/gehrd.h>
+#include <playground/cxxmagma/interface/gehrd.h>
 // #include <playground/cxxmagma/interface/gejsv.h>
 // #include <playground/cxxmagma/interface/gelq2.h>
-// #include <playground/cxxmagma/interface/gelqf.h>
+#include <playground/cxxmagma/interface/gelqf.h>
 // #include <playground/cxxmagma/interface/gelsd.h>
 // #include <playground/cxxmagma/interface/gels.h>
 // #include <playground/cxxmagma/interface/gelss.h>
 // #include <playground/cxxmagma/interface/gelsx.h>
 // #include <playground/cxxmagma/interface/gelsy.h>
 // #include <playground/cxxmagma/interface/geql2.h>
-// #include <playground/cxxmagma/interface/geqlf.h>
+#include <playground/cxxmagma/interface/geqlf.h>
 // #include <playground/cxxmagma/interface/geqp3.h>
 // #include <playground/cxxmagma/interface/geqpf.h>
 // #include <playground/cxxmagma/interface/geqr2.h>
@@ -89,7 +89,7 @@
 // #include <playground/cxxmagma/interface/gerqf.h>
 // #include <playground/cxxmagma/interface/gesc2.h>
 // #include <playground/cxxmagma/interface/gesdd.h>
-// #include <playground/cxxmagma/interface/gesvd.h>
+#include <playground/cxxmagma/interface/gesvd.h>
 #include <playground/cxxmagma/interface/gesv.h>
 // #include <playground/cxxmagma/interface/gesvj.h>
 // #include <playground/cxxmagma/interface/gesvx.h>
@@ -395,8 +395,8 @@
 // #include <playground/cxxmagma/interface/ormhr.h>
 // #include <playground/cxxmagma/interface/orml2.h>
 // #include <playground/cxxmagma/interface/ormlq.h>
-// #include <playground/cxxmagma/interface/ormql.h>
-// #include <playground/cxxmagma/interface/ormqr.h>
+#include <playground/cxxmagma/interface/ormql.h>
+#include <playground/cxxmagma/interface/ormqr.h>
 // #include <playground/cxxmagma/interface/ormr2.h>
 // #include <playground/cxxmagma/interface/ormr3.h>
 // #include <playground/cxxmagma/interface/ormrq.h>
@@ -418,11 +418,11 @@
 // #include <playground/cxxmagma/interface/poequb.h>
 // #include <playground/cxxmagma/interface/poequ.h>
 // #include <playground/cxxmagma/interface/porfs.h>
-// #include <playground/cxxmagma/interface/posv.h>
+#include <playground/cxxmagma/interface/posv.h>
 // #include <playground/cxxmagma/interface/posvx.h>
 // #include <playground/cxxmagma/interface/potf2.h>
-// #include <playground/cxxmagma/interface/potrf.h>
-// #include <playground/cxxmagma/interface/potri.h>
+#include <playground/cxxmagma/interface/potrf.h>
+#include <playground/cxxmagma/interface/potri.h>
 // #include <playground/cxxmagma/interface/potrs.h>
 // #include <playground/cxxmagma/interface/ppcon.h>
 // #include <playground/cxxmagma/interface/ppequ.h>
@@ -563,8 +563,8 @@
 // #include <playground/cxxmagma/interface/unmhr.h>
 // #include <playground/cxxmagma/interface/unml2.h>
 // #include <playground/cxxmagma/interface/unmlq.h>
-// #include <playground/cxxmagma/interface/unmql.h>
-// #include <playground/cxxmagma/interface/unmqr.h>
+#include <playground/cxxmagma/interface/unmql.h>
+#include <playground/cxxmagma/interface/unmqr.h>
 // #include <playground/cxxmagma/interface/unmr2.h>
 // #include <playground/cxxmagma/interface/unmr3.h>
 // #include <playground/cxxmagma/interface/unmrq.h>

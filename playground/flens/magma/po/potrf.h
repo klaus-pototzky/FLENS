@@ -30,32 +30,54 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
-#define PLAYGROUND_FLENS_MAGMA_MAGMA_TCC 1
+
+#ifndef PLAYGROUND_FLENS_MAGMA_PO_POTRF_H
+#define PLAYGROUND_FLENS_MAGMA_PO_POTRF_H 1
+
+#include <flens/matrixtypes/matrixtypes.h>
+#include <flens/vectortypes/vectortypes.h>
+
+namespace flens { namespace magma {
 
 #ifdef USE_CXXMAGMA
-#   include <playground/cxxmagma/cxxmagma.tcc>
-#endif
+  
+//== potrf =====================================================================
+//
+//  Real variant [CPU Variant]
+//
+template <typename MA>
+    typename RestrictTo<IsHostRealSyMatrix<MA>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    potrf(MA &&A);
 
-#include <flens/lapack/auxiliary/getf77char.tcc>
+//
+//  Real variant [GPU Variant]
+//
+template <typename MA>
+    typename RestrictTo<IsDeviceRealSyMatrix<MA>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    potrf(MA &&A);
 
-#include <playground/flens/magma/ge/ev.tcc>
-#include <playground/flens/magma/ge/lqf.tcc>
-#include <playground/flens/magma/ge/qlf.tcc>
-#include <playground/flens/magma/ge/qrf.tcc>
-#include <playground/flens/magma/ge/sv.tcc>
-#include <playground/flens/magma/ge/svd.tcc>
-#include <playground/flens/magma/ge/trf.tcc>
-#include <playground/flens/magma/ge/tri.tcc>
-#include <playground/flens/magma/ge/trs.tcc>
+//
+//  Complex variant [CPU Variant]
+//
+template <typename MA>
+    typename RestrictTo<IsHostHeMatrix<MA>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    potrf(MA &&A);
+    
+//
+//  Complex variant [GPU Variant]
+//
+template <typename MA>
+    typename RestrictTo<IsDeviceHeMatrix<MA>::value,
+             typename RemoveRef<MA>::Type::IndexType>::Type
+    potrf(MA &&A);
 
-#include <playground/flens/magma/impl/ormql.tcc>
-#include <playground/flens/magma/impl/ormqr.tcc>
-#include <playground/flens/magma/impl/unmql.tcc>
-#include <playground/flens/magma/impl/unmqr.tcc>
 
-#include <playground/flens/magma/po/posv.tcc>
-#include <playground/flens/magma/po/potrf.tcc>
-#include <playground/flens/magma/po/potri.tcc>
+#endif // USE_CXXMAGMA  
+  
 
-#endif // PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
+} } // namespace lapack, magma
+
+#endif // PLAYGROUND_FLENS_MAGMA_PO_POTRF_H

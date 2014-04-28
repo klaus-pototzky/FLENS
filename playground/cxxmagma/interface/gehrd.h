@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2012, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,32 +30,17 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
-#define PLAYGROUND_FLENS_MAGMA_MAGMA_TCC 1
+#ifndef PLAYGROUND_CXXMAGMA_INTERFACE_GEHRD_H
+#define PLAYGROUND_CXXMAGMA_INTERFACE_GEHRD_H 1
 
-#ifdef USE_CXXMAGMA
-#   include <playground/cxxmagma/cxxmagma.tcc>
-#endif
+#include <complex>
 
-#include <flens/lapack/auxiliary/getf77char.tcc>
+namespace cxxmagma {
+  
+ template <typename IndexType, typename DataType>
+    IndexType
+    gehrd_nb_query(IndexType m);
 
-#include <playground/flens/magma/ge/ev.tcc>
-#include <playground/flens/magma/ge/lqf.tcc>
-#include <playground/flens/magma/ge/qlf.tcc>
-#include <playground/flens/magma/ge/qrf.tcc>
-#include <playground/flens/magma/ge/sv.tcc>
-#include <playground/flens/magma/ge/svd.tcc>
-#include <playground/flens/magma/ge/trf.tcc>
-#include <playground/flens/magma/ge/tri.tcc>
-#include <playground/flens/magma/ge/trs.tcc>
+} // namespace cxxlapack
 
-#include <playground/flens/magma/impl/ormql.tcc>
-#include <playground/flens/magma/impl/ormqr.tcc>
-#include <playground/flens/magma/impl/unmql.tcc>
-#include <playground/flens/magma/impl/unmqr.tcc>
-
-#include <playground/flens/magma/po/posv.tcc>
-#include <playground/flens/magma/po/potrf.tcc>
-#include <playground/flens/magma/po/potri.tcc>
-
-#endif // PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
+#endif // PLAYGROUND_CXXMAGMA_INTERFACE_GEHRD_H

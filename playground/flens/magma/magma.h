@@ -53,12 +53,22 @@
 
 #include <flens/lapack/auxiliary/getf77char.h>
 
+#include <playground/flens/magma/ge/ev.h>
+#include <playground/flens/magma/ge/lqf.h>
+#include <playground/flens/magma/ge/qlf.h>
 #include <playground/flens/magma/ge/qrf.h>
 #include <playground/flens/magma/ge/sv.h>
+#include <playground/flens/magma/ge/svd.h>
 #include <playground/flens/magma/ge/trf.h>
 #include <playground/flens/magma/ge/tri.h>
 #include <playground/flens/magma/ge/trs.h>
 
+#include <playground/flens/magma/impl/ormql.h>
+#include <playground/flens/magma/impl/ormqr.h>
+#include <playground/flens/magma/impl/unmql.h>
+#include <playground/flens/magma/impl/unmqr.h>
 
-
+#include <playground/flens/magma/po/posv.h>
+#include <playground/flens/magma/po/potrf.h>
+#include <playground/flens/magma/po/potri.h>
 #endif // FLENS_LAPACK_LAPACK_H

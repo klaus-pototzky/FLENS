@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2011, Michael Lehn
+ *   Copyright (c) 2012, Michael Lehn
  *
  *   All rights reserved.
  *
@@ -30,32 +30,43 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
-#define PLAYGROUND_FLENS_MAGMA_MAGMA_TCC 1
+#ifndef PLAYGROUND_CXXMAGMA_INTERFACE_UNMQL_H
+#define PLAYGROUND_CXXMAGMA_INTERFACE_UNMQL_H 1
 
-#ifdef USE_CXXMAGMA
-#   include <playground/cxxmagma/cxxmagma.tcc>
-#endif
+#include <complex>
 
-#include <flens/lapack/auxiliary/getf77char.tcc>
+namespace cxxmagma {
 
-#include <playground/flens/magma/ge/ev.tcc>
-#include <playground/flens/magma/ge/lqf.tcc>
-#include <playground/flens/magma/ge/qlf.tcc>
-#include <playground/flens/magma/ge/qrf.tcc>
-#include <playground/flens/magma/ge/sv.tcc>
-#include <playground/flens/magma/ge/svd.tcc>
-#include <playground/flens/magma/ge/trf.tcc>
-#include <playground/flens/magma/ge/tri.tcc>
-#include <playground/flens/magma/ge/trs.tcc>
+template <typename IndexType>
+    IndexType
+    unmql(char                        side,
+          char                        trans,
+          IndexType                   m,
+          IndexType                   n,
+          IndexType                   k,
+          std::complex<float>         *A,
+          IndexType                   ldA,
+          const std::complex<float>   *tau,
+          std::complex<float>         *C,
+          IndexType                   ldC,
+          std::complex<float>         *work,
+          IndexType                   lWork);
 
-#include <playground/flens/magma/impl/ormql.tcc>
-#include <playground/flens/magma/impl/ormqr.tcc>
-#include <playground/flens/magma/impl/unmql.tcc>
-#include <playground/flens/magma/impl/unmqr.tcc>
+template <typename IndexType>
+    IndexType
+    unmql(char                        side,
+          char                        trans,
+          IndexType                   m,
+          IndexType                   n,
+          IndexType                   k,
+          std::complex<double>        *A,
+          IndexType                   ldA,
+          const std::complex<double>  *tau,
+          std::complex<double>        *C,
+          IndexType                   ldC,
+          std::complex<double>        *work,
+          IndexType                   lWork);
 
-#include <playground/flens/magma/po/posv.tcc>
-#include <playground/flens/magma/po/potrf.tcc>
-#include <playground/flens/magma/po/potri.tcc>
+} // namespace cxxmagma
 
-#endif // PLAYGROUND_FLENS_MAGMA_MAGMA_TCC
+#endif // PLAYGROUND_CXXMAGMA_INTERFACE_UNMQL_H
