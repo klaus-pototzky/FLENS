@@ -31,7 +31,7 @@
  */
 
 #ifndef PLAYGROUND_FLENS_SOLVER_CGS_H
-#define PLAYGROUND_FLENS_SOLVER_CGs_H 1
+#define PLAYGROUND_FLENS_SOLVER_CGS_H 1
 
 #include <limits>
 
