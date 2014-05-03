@@ -41,7 +41,8 @@
 
 namespace flens { namespace magma {
 
-
+#ifdef USE_CXXMAGMA
+    
 //== (ge)ev ====================================================================
 //
 //  Real variant
@@ -142,7 +143,8 @@ template <typename MA, typename VW, typename MVL, typename MVR>
        MVL      &&VL,
        MVR      &&VR);
 
-
+#endif // #ifdef USE_CXXMAGMA
+    
 } } // namespace magma, flens
 
 #endif // PLAYGROUND_FLENS_MAGMA_GE_EV_H
