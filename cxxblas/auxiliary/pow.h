@@ -37,7 +37,6 @@
 #include <cxxblas/auxiliary/ismpfrreal.h>
 #include <cxxblas/auxiliary/issame.h>
 #include <cxxblas/auxiliary/restrictto.h>
-#include <external/real.hpp>
 
 namespace cxxblas {
 

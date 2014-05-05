@@ -36,7 +36,6 @@
 #include <cmath>
 #include <cxxblas/auxiliary/complextrait.h>
 #include <cxxblas/auxiliary/pow.h>
-#include <external/real.hpp>
 
 namespace cxxblas {
 

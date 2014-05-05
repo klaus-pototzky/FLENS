@@ -34,7 +34,6 @@
 #define CXXBLAS_AUXILIARY_ISMPFRREAL_H 1
 
 #include <complex>
-#include <external/real.hpp>
 
 namespace cxxblas {
 
@@ -44,12 +43,16 @@ struct IsMpfrReal
     static const bool value = false;
 };
 
+#ifdef MPFR_REAL_HPP
+    
 template <mpfr::real_prec_t prec, mpfr::real_rnd_t rnd>
 struct IsMpfrReal<mpfr::real<prec, rnd> >
 {
     static const bool value = true;
 };
 
+#endif // MPFR_REAL_HPP
+    
 } // namespace cxxblas
 
 #endif // CXXBLAS_AUXILIARY_ISMPFRREAL_H
