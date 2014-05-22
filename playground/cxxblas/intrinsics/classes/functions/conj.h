@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2012, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -30,36 +30,35 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_CONJ_H
+#define PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_CONJ_H 1
 
-#include <cxxblas/typedefs.h>
-#include <flens/auxiliary/iscomplex.h>
-#include <flens/auxiliary/isreal.h>
-#include <flens/auxiliary/restrictto.h>
+#include <playground/cxxblas/intrinsics/includes.h>
 
-namespace cxxblas {
+#ifdef HAVE_SSE
 
-#ifdef USE_INTRINSIC
+//--- conjugate 
 
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                               flens::IsReal<T>::value,
-                               void>::Type
-    racxpy(IndexType n, const T &alpha, const T *x,
-           IndexType incX, T *y, IndexType incY);
+Intrinsics<std::complex<float>, IntrinsicsLevel::SSE>
+inline _conj(const Intrinsics<std::complex<float>, IntrinsicsLevel::SSE> &x);
 
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                               flens::IsComplex<T>::value,
-                               void>::Type
-    racxpy(IndexType n, const T &alpha, const T *x,
-           IndexType incX, T *y, IndexType incY);
+Intrinsics<std::complex<double>, IntrinsicsLevel::SSE>
+inline _conj(const Intrinsics<std::complex<double>, IntrinsicsLevel::SSE> &x);
+
+#endif // HAVE_SSE
 
 
 
-#endif // USE_INTRINSIC
+#ifdef HAVE_AVX
 
-} // namespace cxxblas
+//--- conjugate 
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H
+Intrinsics<std::complex<float>, IntrinsicsLevel::AVX>
+inline _conj(const Intrinsics<std::complex<float>, IntrinsicsLevel::AVX> &x);
+
+Intrinsics<std::complex<double>, IntrinsicsLevel::AVX>
+inline _conj(const Intrinsics<std::complex<double>, IntrinsicsLevel::AVX> &x);
+
+#endif // HAVE_AVX
+
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_CONJ_H

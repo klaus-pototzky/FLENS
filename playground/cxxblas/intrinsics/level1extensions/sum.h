@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -30,8 +30,8 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_SUM_H
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_SUM_H 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_SUM_H
+#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_SUM_H 1
 
 #include <cxxblas/typedefs.h>
 #include <flens/auxiliary/iscomplex.h>
@@ -45,12 +45,14 @@ namespace cxxblas {
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
+    inline
     typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
     sum(IndexType n, const T *y, IndexType incY, T &sum);
+
 
 #endif // USE_INTRINSIC
 
 } // namespace cxxblas
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_SUM_H
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_SUM_H

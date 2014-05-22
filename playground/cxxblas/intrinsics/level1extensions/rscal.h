@@ -30,8 +30,8 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RSCAL_H
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RSCAL_H 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_RSCAL_H
+#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_RSCAL_H 1
 
 #include <cxxblas/typedefs.h>
 #include <flens/auxiliary/iscomplex.h>
@@ -45,19 +45,13 @@ namespace cxxblas {
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
+    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
     rscal(IndexType n, const T &alpha, T *y, IndexType incY);
 
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
-                               void>::Type
-    rscal(IndexType n, const T &alpha, T *y, IndexType incY);
 
 #endif // USE_INTRINSIC
 
 } // namespace cxxblas
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RSCAL_H
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_RSCAL_H

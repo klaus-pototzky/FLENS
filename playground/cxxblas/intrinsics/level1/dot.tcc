@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -41,6 +41,152 @@ namespace cxxblas {
 
 #ifdef USE_INTRINSIC
 
+template <typename T, typename S, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
+                           void>::Type
+dot_kernel(const T *x, const T *y, S &_result) 
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const int numElements = IntrinsicType::numElements;
+    IntrinsicType _x, _y;
+
+    for (int i=0; i<N; ++i) {
+
+        _x.load(x);
+        _y.load(y);
+        _result = _intrinsic_add(_result, _intrinsic_mul(_x, _y));
+        x+=numElements;
+        y+=numElements;
+   }
+}
+
+template <typename T, typename S, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
+                           void>::Type
+dot_kernel(const T *x, const T *y, S &_result_real, S &_result_imag) 
+{
+    using std::real;
+    using std::imag;
+
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    typedef typename IntrinsicType::PrimitiveDataType PT;
+    typedef Intrinsics<PT, IntrinsicsLevel::SSE> IntrinsicPrimitiveType;
+    const int numElements = IntrinsicType::numElements;
+
+    IntrinsicType          _x;
+    IntrinsicPrimitiveType _y;
+
+    for (int i=0; i<N; ++i) {
+
+        _x.load(x);
+        _y.load(reinterpret_cast<const PT*>(y));
+
+        _result_real = _intrinsic_add(_result_real, _intrinsic_mul(_x, _y));
+
+        _x = _intrinsic_swap_real_imag(_x);
+
+        _result_imag = _intrinsic_add(_result_imag, _intrinsic_mul(_x, _y));
+
+        x+=numElements;
+        y+=numElements;
+   }
+}
+
+template <typename IndexType, typename T, typename S,
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+dot_unroller(IndexType length, const T *x, const T *y, S &_result)
+{
+
+}
+
+template <typename IndexType, typename T, typename S,
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+dot_unroller(IndexType length, const T *x, const T *y, S &_result_real, S &_result_imag) 
+{
+
+}
+
+template <typename IndexType, typename T, typename S,
+          int N = 16, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+dot_unroller(IndexType length, const T *x, const T *y, S &_result) 
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+        _result.setZero();
+        for (IndexType i=0; i<=length-N*numElements; i+=N*numElements) {
+
+            dot_kernel<T,IntrinsicType,N>(x, y, _result); 
+
+            x+=N*numElements; 
+            y+=N*numElements;
+
+        }
+        dot_unroller<IndexType, T, IntrinsicType, N/2, false>(length%(N*numElements), x, y, _result);
+
+    } else {
+        if (length>=N*numElements) {
+
+            dot_kernel<T,IntrinsicType,N>(x, y, _result); 
+
+            x+=N*numElements; 
+            y+=N*numElements;
+
+            length-=N*numElements;
+        }
+        dot_unroller<IndexType, T, IntrinsicType, N/2, false>(length, x, y, _result);
+    }
+}
+
+template <typename IndexType, typename T, typename S,
+          int N = 16, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+dot_unroller(IndexType length, const T *x, const T *y, S &_result_real, S &_result_imag)
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+        _result_real.setZero();
+        _result_imag.setZero();
+        for (IndexType i=0; i<=length-N*numElements; i+=N*numElements) {
+
+            dot_kernel<T,IntrinsicType,N>(x, y, _result_real, _result_imag);
+
+            x+=N*numElements;
+            y+=N*numElements;
+
+        }
+        dot_unroller<IndexType, T, IntrinsicType, N/2, false>(length%(N*numElements), x, y, _result_real, _result_imag);
+
+    } else {
+        if (length>=N*numElements) {
+
+            dot_kernel<T,IntrinsicType,N>(x, y, _result_real, _result_imag);
+
+            x+=N*numElements;
+            y+=N*numElements;
+
+            length-=N*numElements;
+        }
+        dot_unroller<IndexType, T, IntrinsicType, N/2, false>(length, x, y, _result_real, _result_imag);
+    }
+}
+
 template <typename IndexType, typename T>
 typename flens::RestrictTo<flens::IsReal<T>::value &&
                            flens::IsIntrinsicsCompatible<T>::value,
@@ -50,38 +196,29 @@ dotu(IndexType n,
      const T *y, IndexType incY,
      T &result)
 {
-    CXXBLAS_DEBUG_OUT("dotu_intrinsic [real, " INTRINSIC_NAME "]");
+    CXXBLAS_DEBUG_OUT("dotu_intrinsic [ real, " INTRINSIC_NAME "]");
 
     if (incX==1 && incY==1) {
 
         result = T(0);
 
-        typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
+        typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
         const int numElements = IntrinsicType::numElements;
 
-        IndexType i=0;
+        int n_rest = n%numElements;
 
-        IntrinsicType _x, _y;
+        if (n_rest>=2) {
+            result += (*y++)*(*x++);
+            result += (*y++)*(*x++);
+            n_rest-=2;
+        }
+        if (n_rest==1) {
+            result += (*y++)*(*x++);
+        }
+
         IntrinsicType _result;
-        _result.setZero();
-
-        for (; i+numElements-1<n; i+=numElements) {
-            _x.loadu(x+i);
-            _y.loadu(y+i);
-
-            _result = _intrinsic_add(_result, _intrinsic_mul(_x, _y));
-        }
-
-        T tmp_result[numElements];
-        _result.storeu(tmp_result);
-
-        for (IndexType k=0; k<numElements; ++k) {
-            result += tmp_result[k];
-        }
-
-        for (;i<n; ++i) {
-            result += x[i]*y[i];
-        }
+        dot_unroller<IndexType, T, IntrinsicType>(n-n%numElements, x, y, _result);
+        result += _intrinsic_hsum(_result);
 
     } else {
 
@@ -99,52 +236,39 @@ dotu(IndexType n,
      const T *y, IndexType incY,
      T &result)
 {
-
-    CXXBLAS_DEBUG_OUT("dotu_intrinsic [complex, " INTRINSIC_NAME "]");
+    CXXBLAS_DEBUG_OUT("dotu_intrinsic [ complex, " INTRINSIC_NAME "]");
 
     if (incX==1 && incY==1) {
 
         result = T(0);
 
-        typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
-        typedef typename IntrinsicType::PrimitiveDataType  PT;
-
-        typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>  IntrinsicPrimitiveType;
-
+        typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+        typedef typename IntrinsicType::PrimitiveDataType PT;
+        typedef Intrinsics<PT, IntrinsicsLevel::SSE> IntrinsicPrimitiveType;
         const int numElements = IntrinsicType::numElements;
 
-        IndexType i=0;
+        int n_rest = n%numElements;
 
-        IntrinsicType _x, _y;
-        IntrinsicPrimitiveType _real_y, _imag_y;
-        IntrinsicType _result;
-        _result.setZero();
-
-        for (; i+numElements-1<n; i+=numElements) {
-
-            _x.loadu(x+i);
-            _y.loadu(y+i);
-
-            _real_y = _intrinsic_real(_y);
-            _imag_y = _intrinsic_imag(_y);
-
-            _result = _intrinsic_add(_result, _intrinsic_mul(_x, _real_y));
-
-            _x = _intrinsic_swap_real_imag(_x);
-
-            _result = _intrinsic_addsub(_result, _intrinsic_mul(_x, _imag_y));
+        if (n_rest>=2) {
+            result += (*y++)*(*x++); 
+            result += (*y++)*(*x++); 
+            n_rest-=2;
+        }
+        if (n_rest==1) { 
+            result += (*y++)*(*x++); 
         }
 
-        T tmp_result[numElements];
-        _result.storeu(tmp_result);
+        IntrinsicType _result_real, _result_imag;
+        dot_unroller<IndexType, T, IntrinsicType>(n-n%numElements, x, y, _result_real, _result_imag);
+
+        PT tmp_result_real[2*numElements], tmp_result_imag[2*numElements];
+        _result_real.store(reinterpret_cast<T*>(tmp_result_real));
+        _result_imag.store(reinterpret_cast<T*>(tmp_result_imag));
 
         for (IndexType k=0; k<numElements; ++k) {
-            result += tmp_result[k];
+            result += T(tmp_result_real[2*k]-tmp_result_real[2*k+1], tmp_result_imag[2*k]+tmp_result_imag[2*k+1]);
         }
 
-        for (;i<n; ++i) {
-            result += x[i]*y[i];
-        }
 
     } else {
 
@@ -154,7 +278,7 @@ dotu(IndexType n,
 }
 
 template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsReal<T>::value &&
+typename flens::RestrictTo<flens::IsReal<T>::value && 
                            flens::IsIntrinsicsCompatible<T>::value,
                            void>::Type
 dot(IndexType n,
@@ -163,13 +287,11 @@ dot(IndexType n,
     T &result)
 {
     CXXBLAS_DEBUG_OUT("dot_intrinsic [real, " INTRINSIC_NAME "]");
-
-    cxxblas::dotu(n, x, incX, y, incY, result);
-
+    dotu(n, x, incX, y, incY, result);
 }
 
 template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsComplex<T>::value &&
+typename flens::RestrictTo<flens::IsComplex<T>::value && 
                            flens::IsIntrinsicsCompatible<T>::value,
                            void>::Type
 dot(IndexType n,
@@ -181,54 +303,40 @@ dot(IndexType n,
 
     using std::conj;
 
-    result = T(0);
 
     if (incX==1 && incY==1) {
 
-        typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
-        typedef typename IntrinsicType::PrimitiveDataType  PT;
-
-        typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>  IntrinsicPrimitiveType;
-
+        typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+        typedef typename IntrinsicType::PrimitiveDataType PT;
+        typedef Intrinsics<PT, IntrinsicsLevel::SSE> IntrinsicPrimitiveType;
         const int numElements = IntrinsicType::numElements;
 
-        IndexType i=0;
+        int n_rest = n%numElements;
 
-        IntrinsicType _x, _y;
-        IntrinsicPrimitiveType _real_y, _imag_y;
-        IntrinsicType _result;
-        _result.setZero();
-
-        for (; i+numElements-1<n; i+=numElements) {
-
-            _x.loadu(x+i);
-            _y.loadu(y+i);
-
-            _real_y = _intrinsic_real(_y);
-            _imag_y = _intrinsic_imag(_y);
-
-
-            _result = _intrinsic_addsub(_result, _intrinsic_mul(_x, _real_y));
-
-            _x = _intrinsic_swap_real_imag(_x);
-
-            _result = _intrinsic_sub(_result, _intrinsic_mul(_x, _imag_y));
+        if (n_rest>=2) {
+            result += (*y++)*conj(*x++);
+            result += (*y++)*conj(*x++);
+            n_rest-=2;
+        }
+        if (n_rest==1) {
+            result += (*y++)*conj(*x++);
         }
 
-        T tmp_result[numElements];
-        _result.storeu(tmp_result);
+        IntrinsicType _result_real, _result_imag;
+        dot_unroller<IndexType, T, IntrinsicType>(n-n%numElements, x, y, _result_real, _result_imag);
+
+        PT tmp_result_real[2*numElements], tmp_result_imag[2*numElements];
+        _result_real.store(reinterpret_cast<T*>(tmp_result_real));
+        _result_imag.store(reinterpret_cast<T*>(tmp_result_imag));
 
         for (IndexType k=0; k<numElements; ++k) {
-            result -= tmp_result[k];
+            result += T(tmp_result_real[2*k]+tmp_result_real[2*k+1], -tmp_result_imag[2*k]+tmp_result_imag[2*k+1]);
         }
-
-        for (;i<n; ++i) {
-            result += conj(x[i])*y[i];
-        }
-
 
     } else {
+
         cxxblas::dot<IndexType, T, T ,T>(n, x, incX, y, incY, result);
+
     }
 }
 

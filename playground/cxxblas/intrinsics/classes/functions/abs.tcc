@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2012, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -30,36 +30,52 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_ABS_TCC
+#define PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_ABS_TCC 1
 
-#include <cxxblas/typedefs.h>
-#include <flens/auxiliary/iscomplex.h>
-#include <flens/auxiliary/isreal.h>
-#include <flens/auxiliary/restrictto.h>
+#include <playground/cxxblas/intrinsics/includes.h>
 
-namespace cxxblas {
-
-#ifdef USE_INTRINSIC
-
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                               flens::IsReal<T>::value,
-                               void>::Type
-    racxpy(IndexType n, const T &alpha, const T *x,
-           IndexType incX, T *y, IndexType incY);
-
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                               flens::IsComplex<T>::value,
-                               void>::Type
-    racxpy(IndexType n, const T &alpha, const T *x,
-           IndexType incX, T *y, IndexType incY);
+#ifdef HAVE_SSE
 
 
 
-#endif // USE_INTRINSIC
+//--- Change all sign
+Intrinsics<float, IntrinsicsLevel::SSE>
+inline _abs(const Intrinsics<float, IntrinsicsLevel::SSE> &x)
+{
+        const __m128 _mask = _mm_set1_ps(float(-0.0));
+        return Intrinsics<float, IntrinsicsLevel::SSE>(_mm_andnot_ps(_mask, x.get()));
 
-} // namespace cxxblas
+}
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H
+Intrinsics<double, IntrinsicsLevel::SSE>
+inline _abs(const Intrinsics<double, IntrinsicsLevel::SSE> &x)
+{
+        const __m128d _mask = _mm_set1_pd(double(-0.0));
+        return Intrinsics<double, IntrinsicsLevel::SSE>(_mm_andnot_pd(_mask, x.get()));
+}
+
+
+#endif // HAVE_SSE
+
+
+
+#ifdef HAVE_AVX
+
+//--- Add
+Intrinsics<float, IntrinsicsLevel::AVX>
+inline _abs(const Intrinsics<float, IntrinsicsLevel::AVX> &x)
+{
+        const __m256 _mask = _mm256_set1_ps(float(-0.0));
+        return Intrinsics<float, IntrinsicsLevel::AVX>(_mm256_andnot_ps(_mask, x.get()));
+}
+
+Intrinsics<double, IntrinsicsLevel::AVX>
+inline _abs(const Intrinsics<double, IntrinsicsLevel::AVX> &x)
+{
+    return Intrinsics<double, IntrinsicsLevel::AVX>(_mm256_max_pd(x.get(), _swap_sign(x).get()));
+}
+
+#endif // HAVE_AVX
+
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_ABS_TCC

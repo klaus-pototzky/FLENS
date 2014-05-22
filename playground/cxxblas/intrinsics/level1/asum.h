@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -30,36 +30,36 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ASUM_H
+#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ASUM_H 1
 
 #include <cxxblas/typedefs.h>
 #include <flens/auxiliary/iscomplex.h>
 #include <flens/auxiliary/isreal.h>
+#include <flens/auxiliary/issame.h>
 #include <flens/auxiliary/restrictto.h>
+
 
 namespace cxxblas {
 
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                               flens::IsReal<T>::value,
+    inline
+    typename flens::RestrictTo<flens::IsReal<T>::value && 
+                               flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
-    racxpy(IndexType n, const T &alpha, const T *x,
-           IndexType incX, T *y, IndexType incY);
+    asum(IndexType n, const T *y, IndexType incY, T &absSum);
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                               flens::IsComplex<T>::value,
+    inline
+    typename flens::RestrictTo<flens::IsReal<T>::value && 
+                               flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
-    racxpy(IndexType n, const T &alpha, const T *x,
-           IndexType incX, T *y, IndexType incY);
-
-
+    asum(IndexType n, const std::complex<T> *y, IndexType incY, T &absSum);
 
 #endif // USE_INTRINSIC
 
 } // namespace cxxblas
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_RACXPY_H
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ASUM_H

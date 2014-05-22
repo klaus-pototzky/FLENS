@@ -43,18 +43,7 @@ namespace cxxblas {
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
-                               void>::Type
-    trmv(StorageOrder order, StorageUpLo upLo,
-         Transpose transA, Diag diag,
-         IndexType n,
-         const T *A, IndexType ldA,
-         T *x, IndexType incX);
-
-    template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
+    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
     trmv(StorageOrder order, StorageUpLo upLo,
          Transpose transA, Diag diag,
@@ -63,6 +52,7 @@ template <typename IndexType, typename T>
          T *x, IndexType incX);
 
 #endif // USE_INTRINSIC
+
 } // namespace cxxblas
 
 #endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL2_TRMV_H

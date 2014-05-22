@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -30,8 +30,8 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ACXPY_H
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ACXPY_H 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_ACXPY_H
+#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_ACXPY_H 1
 
 #include <cxxblas/typedefs.h>
 #include <flens/auxiliary/iscomplex.h>
@@ -43,15 +43,17 @@ namespace cxxblas {
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
+    inline
+    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
+                               flens::IsReal<T>::value,
                                void>::Type
     acxpy(IndexType n, const T &alpha, const T *x,
           IndexType incX, T *y, IndexType incY);
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
+    inline
+    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
+                               flens::IsComplex<T>::value,
                                void>::Type
     acxpy(IndexType n, const T &alpha, const T *x,
           IndexType incX, T *y, IndexType incY);
@@ -60,4 +62,4 @@ template <typename IndexType, typename T>
 
 } // namespace cxxblas
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ACXPY_H
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_AXPY_H

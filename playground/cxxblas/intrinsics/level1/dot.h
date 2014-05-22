@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -43,7 +43,7 @@ namespace cxxblas {
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value &&
+    typename flens::RestrictTo<flens::IsReal<T>::value && 
                                flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
     dotu(IndexType n,
@@ -51,9 +51,8 @@ template <typename IndexType, typename T>
          const T *y, IndexType incY,
          T &result);
 
-
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value &&
+    typename flens::RestrictTo<flens::IsComplex<T>::value && 
                                flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
     dotu(IndexType n,
@@ -70,9 +69,8 @@ template <typename IndexType, typename T>
         const T *y, IndexType incY,
         T &result);
 
-
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value &&
+    typename flens::RestrictTo<flens::IsComplex<T>::value && 
                                flens::IsIntrinsicsCompatible<T>::value,
                                void>::Type
     dot(IndexType n,

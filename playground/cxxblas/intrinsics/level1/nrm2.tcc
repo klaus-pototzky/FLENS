@@ -30,8 +30,8 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_SUM_TCC
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_SUM_TCC 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_NRM2_TCC
+#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_NRM2_TCC 1
 
 #include <algorithm>    
 
@@ -45,26 +45,43 @@ namespace cxxblas {
 
 template <typename T, typename S, int N>
 inline
-void
-sum_kernel(const T *x, S &_result) 
+typename flens::RestrictTo<flens::IsReal<T>::value,
+                           void>::Type
+nrm2_kernel(const T *x, S &_ssq, S &_scale) 
 {
+
     typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
     const int numElements = IntrinsicType::numElements;
-    IntrinsicType _x;
 
+    IntrinsicType _Xi, _absXi, _absXiMax, _tmp;
+    IntrinsicType _zero(T(0));
     for (int i=0; i<N; ++i) {
-        _x.load(x);
-        _result = _intrinsic_add(_result, _x);
+        _Xi.load(x);
+        _absXi = _abs(_Xi);
         x+=numElements;
-   }
+        if(!(_absXi<=_zero)) {
+            if (!(_scale>=_absXi)) {
+                _tmp   = _absXi.max();
+                _scale = _intrinsic_div(_scale, _tmp) ;
+                _scale = _intrinsic_mul(_scale, _scale) ;
+                _ssq   = _intrinsic_mul(_ssq, _scale) ;
+                _scale = _tmp;
+            } 
+
+            _absXi = _intrinsic_div(_absXi, _scale);
+            _absXi = _intrinsic_mul(_absXi, _absXi);
+            _ssq   = _intrinsic_add(_ssq, _absXi) ; 
+        }
+    }
 }
+
 
 template <typename IndexType, typename T, typename S,
           int N, bool firstCall>
 inline
 typename flens::RestrictTo<IsSameInt<N,0>::value,
                            void>::Type
-sum_unroller(IndexType length, const T *x, S &_result)
+nrm2_unroller(IndexType length, const T *x, S &_ssq, S &_scale)
 {
 
 }
@@ -74,81 +91,108 @@ template <typename IndexType, typename T, typename S,
 inline
 typename flens::RestrictTo<!IsSameInt<N,0>::value,
                            void>::Type
-sum_unroller(IndexType length, const T *x, S &_result) 
+nrm2_unroller(IndexType length, const T *x, S &_ssq, S &_scale) 
 {
     typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
     const IndexType numElements = IntrinsicType::numElements;
 
     if (firstCall==true) {
-        _result.setZero();
         for (IndexType i=0; i<=length-N*numElements; i+=N*numElements) {
 
-            sum_kernel<T,IntrinsicType,N>(x, _result); 
+            nrm2_kernel<T,IntrinsicType,N>(x, _ssq, _scale); 
 
             x+=N*numElements; 
 
         }
-        sum_unroller<IndexType, T, IntrinsicType, N/2, false>(length%(N*numElements), x, _result);
+        nrm2_unroller<IndexType, T, IntrinsicType, N/2, false>(length%(N*numElements), x, _ssq, _scale);
 
 
     } else {
         if (length>=N*numElements) {
 
-            sum_kernel<T,IntrinsicType,N>(x, _result); 
+            nrm2_kernel<T,IntrinsicType,N>(x, _ssq, _scale);
 
             x+=N*numElements; 
 
             length-=N*numElements;
         }
-        sum_unroller<IndexType, T, IntrinsicType, N/2, false>(length, x, _result);
+        nrm2_unroller<IndexType, T, IntrinsicType, N/2, false>(length, x, _ssq, _scale);
     }
 }
 
 
 template <typename IndexType, typename T>
 inline
-typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
+typename flens::RestrictTo<flens::IsReal<T>::value && 
+                           flens::IsIntrinsicsCompatible<T>::value,
                            void>::Type
-sum(IndexType n, const T *y, IndexType incY, T &sum)
+nrm2(IndexType n, const T *x, IndexType incX, T &norm)
 {
-    CXXBLAS_DEBUG_OUT("sum_intrinsics [" INTRINSIC_NAME "]");
+    CXXBLAS_DEBUG_OUT("nrm2_intrinsics [" INTRINSIC_NAME "]");
 
     using std::abs;
 
     typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
 
-    if (incY==1) {
+    if (incX==1) {
 
         const int numElements = IntrinsicType::numElements;
-
+        T One(1), Zero(0);
+        T scale = 0;
+        T ssq   = 0;
         IndexType i=0;
-        sum = T(0);
 
-	int n_rest = n%numElements;
+        for (; i<n%numElements; ++i) {
+            T absXi = abs(*x++);
+            if (absXi>Zero) {
+                if (scale<absXi) {
+                    ssq = ssq * pow(scale/absXi, 2);
+                    scale = absXi;
+                } 
 
-        if (n_rest>=4) {
-	    sum += (*y++);
-	    sum += (*y++);
-	    sum += (*y++);
-	    sum += (*y++);
-	    n_rest-=4;
+                ssq += pow(absXi/scale, 2);
+            }
         }
 
-        if (n_rest>=2) {
-	    sum += (*y++);
-	    sum += (*y++);
-	    n_rest-=2;
-        }
-        if (n_rest==1) { 
-	    sum += (*y++);
-	}
 
-        IntrinsicType _result;
-	sum_unroller<IndexType, T>(n-n%numElements, y, _result);
-        sum += _intrinsic_hsum(_result);
+        IntrinsicType _ssq, _scale;
+        IntrinsicType _Xi, _absXi, _tmp;
+
+        _ssq.setZero();
+        _ssq.load_partial(&ssq,1);
+        _scale.fill(scale);
+
+        nrm2_unroller(n-(n%numElements), x, _ssq, _scale);
+
+        T tmp[numElements];
+        _ssq.store(tmp);
+        ssq = T(0);
+        for (int j=0; j<numElements; ++j) {
+            ssq += tmp[j];
+        }
+
+        _scale.store_partial(&scale, 1);
+        norm = scale*sqrt(ssq);
+
 
     } else {
-        cxxblas::sum<IndexType, T, T>(n, y, incY, sum);
+        cxxblas::nrm2<IndexType, T, T>(n, x, incX, norm);
+    }
+}
+
+template <typename IndexType, typename T>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value && 
+                           flens::IsIntrinsicsCompatible<T>::value,
+                           void>::Type
+nrm2(IndexType n, const std::complex<T> *y, IndexType incY, T &norm)
+{
+    CXXBLAS_DEBUG_OUT("asum_intrinsics [complex, " INTRINSIC_NAME "]");
+
+    if (incY==1) {
+        nrm2(2*n, reinterpret_cast<const T*>(y), 1, norm);
+    } else {
+        cxxblas::nrm2<IndexType, std::complex<T>, T>(n, y, incY, norm);
     }
 }
 
@@ -156,4 +200,4 @@ sum(IndexType n, const T *y, IndexType incY, T &sum)
 
 } // namespace cxxblas
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1EXTENSIONS_SUM_TCC
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_NRM2_TCC

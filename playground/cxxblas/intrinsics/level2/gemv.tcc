@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -33,6 +33,7 @@
 #ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL2_GEMV_TCC
 #define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL2_GEMV_TCC 1
 
+#include <array>
 #include <cxxblas/cxxblas.h>
 #include <playground/cxxblas/intrinsics/auxiliary/auxiliary.h>
 #include <playground/cxxblas/intrinsics/includes.h>
@@ -41,734 +42,540 @@ namespace cxxblas {
 
 #ifdef USE_INTRINSIC
 
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value, void>::Type
-    gemv_real_n(IndexType m, IndexType n,
-                const T &alpha,
-                const T *A, IndexType ldA,
-                const T *x, IndexType incX,
-                const T &beta,
-                T *y, IndexType incY)
-
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
+                           void>::Type
+gemv_n_kernel(IndexType n, const T & alpha, const T *x, const T *A, IndexType ldA, T *y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("gemv_real_n");
-
-    ASSERT( incX==1 );
-
     typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
-    const int numElements = IntrinsicType::numElements;
+    const IndexType numElements = IntrinsicType::numElements;
 
-    scal(m, beta, y, incY);
+    std::array<IntrinsicType, N> _y;
+    IntrinsicType _A, _x;
 
-    if (incY<0) {
-        y -= incY*(m-1);
+    for (IndexType k=0; k<N; ++k) {
+        _y[k].setZero();
+    }
+    
+    for (IndexType j=0; j<=n-numElements; j+=numElements) {
+        _x.load(x);
+        for(IndexType k=0; k<N; ++k) {
+            _A.load(A+k*ldA);
+            _y[k] = _intrinsic_add(_y[k], _intrinsic_mul(_A, _x));
+        }
+        x+=numElements;
+        A+=numElements;
     }
 
-    IndexType i=0;
-    IndexType iY=0;
+    const IndexType n_rest = n%numElements;
+    _A.setZero();
+    _x.setZero();
+    _x.load_partial(x, n_rest);
 
-    T tmp_result[4][numElements];
-
-     for (; i+3<m; i+=4, iY+=4*incY) {
-
-        IntrinsicType _A0, _A1, _A2, _A3, _A4;
-        IntrinsicType _x;
-        IntrinsicType _y0, _y1, _y2, _y3;
-
-        _y0.setZero();
-        _y1.setZero();
-        _y2.setZero();
-        _y3.setZero();
-
-
-        IndexType j=0;
-
-        for (; j+numElements-1<n; j+=numElements) {
-            _A0.loadu(A+i*ldA+j      );
-            _A1.loadu(A+i*ldA+j+  ldA);
-            _A2.loadu(A+i*ldA+j+2*ldA);
-            _A3.loadu(A+i*ldA+j+3*ldA);
-
-            _x.loadu(x+j);
-            _y0 = _intrinsic_add(_y0, _intrinsic_mul(_A0, _x));
-            _y1 = _intrinsic_add(_y1, _intrinsic_mul(_A1, _x));
-            _y2 = _intrinsic_add(_y2, _intrinsic_mul(_A2, _x));
-            _y3 = _intrinsic_add(_y3, _intrinsic_mul(_A3, _x));
-
-        }
-
-        _y0.storeu(&tmp_result[0][0]);
-        _y1.storeu(&tmp_result[1][0]);
-        _y2.storeu(&tmp_result[2][0]);
-        _y3.storeu(&tmp_result[3][0]);
-
-        for (;j<n;++j) {
-            tmp_result[0][0] += A[i*ldA+j      ]*x[j];
-            tmp_result[1][0] += A[i*ldA+j+  ldA]*x[j];
-            tmp_result[2][0] += A[i*ldA+j+2*ldA]*x[j];
-            tmp_result[3][0] += A[i*ldA+j+3*ldA]*x[j];
-        }
-        for (IndexType k=0; k+1<numElements; ++k) {
-            tmp_result[0][0] += tmp_result[0][k+1];
-            tmp_result[1][0] += tmp_result[1][k+1];
-            tmp_result[2][0] += tmp_result[2][k+1];
-            tmp_result[3][0] += tmp_result[3][k+1];
-        }
-
-        y[iY       ] += alpha*tmp_result[0][0];
-        y[iY+  incY] += alpha*tmp_result[1][0];
-        y[iY+2*incY] += alpha*tmp_result[2][0];
-        y[iY+3*incY] += alpha*tmp_result[3][0];
+    for(IndexType k=0; k<N; ++k) {
+        _A.load_partial(A+k*ldA, n_rest);
+        _y[k] = _intrinsic_add(_y[k], _intrinsic_mul(_A, _x));
     }
 
-
-    for (; i<m; ++i, iY+=incY) {
-
-        IntrinsicType _A, _x, _y;
-        _y.setZero();
-
-        IndexType j=0;
-
-        for (; j+numElements-1<n; j+=numElements) {
-            _A.loadu(A+i*ldA+j);
-            _x.loadu(x+j);
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A, _x));
-        }
-        T tmp_result[numElements];
-        _y.storeu(tmp_result);
-        for (;j<n;++j) {
-            tmp_result[0] += A[i*ldA+j]*x[j];
-        }
-        for (IndexType k=0; k+1<numElements; ++k) {
-            tmp_result[0] += tmp_result[k+1];
-        }
-        y[iY] += alpha*tmp_result[0];
+    for (IndexType k=0; k<N; ++k) {
+        (*y) += alpha*_intrinsic_hsum(_y[k]);
+        y+=incY;
     }
-
 }
 
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value, void>::Type
-    gemv_real_t(IndexType m, IndexType n,
-                const T &alpha,
-                const T *A, IndexType ldA,
-                const T *x, IndexType incX,
-                const T &beta,
-                T *y, IndexType incY)
-
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
+                           void>::Type
+gemv_n_kernel(IndexType n, const T & alpha, const T *x, const T *A, IndexType ldA, T *y, IndexType incY)
 {
-
-    CXXBLAS_DEBUG_OUT("gemv_real_t");
-
-    ASSERT( incY==1);
-
     typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
-    const int numElements = IntrinsicType::numElements;
-
-
-    IntrinsicType _y;
-    IntrinsicType _beta(beta);
-
-    IntrinsicType _A0, _A1, _A2, _A3;
-
-    IntrinsicType _x0, _x1, _x2, _x3;
-
-    scal(n, beta, y, 1);
-
-    if (incX<0) {
-        x -= incX*(m-1);
-    }
-
-    IndexType j=0, jX=0;
-
-    for (; j+3<m; j+=4, jX+=4*incX) {
-
-        _x0.fill(alpha*x[jX       ]);
-        _x1.fill(alpha*x[jX+1*incX]);
-        _x2.fill(alpha*x[jX+2*incX]);
-        _x3.fill(alpha*x[jX+3*incX]);
-
-        for (IndexType i=0, ii=0; i+numElements-1<n; i+=numElements, ++ii) {
-            _y.loadu(y+i);
-
-            _A0.loadu(A+i+j*ldA      );
-            _A1.loadu(A+i+j*ldA+  ldA);
-            _A2.loadu(A+i+j*ldA+2*ldA);
-            _A3.loadu(A+i+j*ldA+3*ldA);
-
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A0, _x0));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A1, _x1));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A2, _x2));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A3, _x3));
-
-            _y.storeu(y+i);
-        }
-    }
-
-    for (; j<m; ++j, jX+=incX) {
-
-        _x0.fill(alpha*x[jX]);
-
-        for (IndexType i=0, ii=0; i+numElements-1<n; i+=numElements, ++ii) {
-            _y.loadu(y+i);
-
-            _A0.loadu(A+i+j*ldA      );
-
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A0, _x0));
-
-            _y.storeu(y+i);
-        }
-    }
-
-    IndexType i=n-(n%numElements);
-
-    for (; i<n; ++i) {
-        T _y;
-        dot(m, A+i, ldA, x, incX, _y);
-        y[i] += alpha*_y;
-    }
-
-}
-
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value, void>::Type
-    gemv_complex_n(IndexType m, IndexType n,
-                   const T &alpha,
-                   const T *A, IndexType ldA,
-                   const T *x, IndexType incX,
-                   const T &beta,
-                   T *y, IndexType incY)
-
-{
-    CXXBLAS_DEBUG_OUT("gemv_complex_n");
-
-    using std::imag;
-    using std::real;
-
-    ASSERT( incX==1 );
-
-    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
     typedef typename IntrinsicType::PrimitiveDataType  PT;
     typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
-    const int numElements = IntrinsicType::numElements;
+    const IndexType numElements = IntrinsicType::numElements;
 
-    scal(m, beta, y, incY);
-
-    if (incY<0) {
-        y -= incY*(m-1);
-    }
-
-    IntrinsicType _A0, _A1, _A2, _A3;
-    IntrinsicType  _x;
-    IntrinsicType  _y0, _y1, _y2, _y3;
+    std::array<IntrinsicType, N> _y;
+    IntrinsicType _A, _x;
     IntrinsicPrimitiveType _real_x, _imag_x;
 
-    T tmp_result[8][numElements];
+    for (IndexType k=0; k<N; ++k) {
+        _y[k].setZero();
+    }
 
-    IndexType i=0, iY=0;
-    for (; i+3<m; i+=4, iY+=4*incY) {
-
-
-    _y0.setZero();
-    _y1.setZero();
-    _y2.setZero();
-    _y3.setZero();
-
-    IndexType j=0;
-    for (; j+numElements-1<n; j+=numElements) {
-
-        _A0.loadu(A+i*ldA+j);
-        _A1.loadu(A+i*ldA+j+ldA);
-        _A2.loadu(A+i*ldA+j+2*ldA);
-        _A3.loadu(A+i*ldA+j+3*ldA);
-
-        _x.loadu(x+j);
-
+    for (IndexType j=0; j<=n-numElements; j+=numElements) {
+        _x.load(x);
         _real_x = _intrinsic_real(_x);
         _imag_x = _intrinsic_imag(_x);
 
-        _y0 = _intrinsic_add(_y0, _intrinsic_mul(_A0, _real_x));
-        _y1 = _intrinsic_add(_y1, _intrinsic_mul(_A1, _real_x));
-        _y2 = _intrinsic_add(_y2, _intrinsic_mul(_A2, _real_x));
-        _y3 = _intrinsic_add(_y3, _intrinsic_mul(_A3, _real_x));
-
-
-        _A0 = _intrinsic_swap_real_imag(_A0);
-        _A1 = _intrinsic_swap_real_imag(_A1);
-        _A2 = _intrinsic_swap_real_imag(_A2);
-        _A3 = _intrinsic_swap_real_imag(_A3);
-
-        _y0 = _intrinsic_addsub(_y0, _intrinsic_mul(_A0, _imag_x));
-        _y1 = _intrinsic_addsub(_y1, _intrinsic_mul(_A1, _imag_x));
-        _y2 = _intrinsic_addsub(_y2, _intrinsic_mul(_A2, _imag_x));
-        _y3 = _intrinsic_addsub(_y3, _intrinsic_mul(_A3, _imag_x));
-
+        for(IndexType k=0; k<N; ++k) {
+            _A.load(A+k*ldA);
+            _y[k] = _intrinsic_add(_y[k], _intrinsic_mul(_A, _real_x));
+            _A    = _intrinsic_swap_real_imag(_A);
+            _y[k] = _intrinsic_addsub(_y[k], _intrinsic_mul(_A, _imag_x));
         }
-
-        _y0.storeu(&tmp_result[0][0]);
-        _y1.storeu(&tmp_result[1][0]);
-        _y2.storeu(&tmp_result[2][0]);
-        _y3.storeu(&tmp_result[3][0]);
-
-        for (;j<n;++j) {
-            tmp_result[0][0] += A[i*ldA+j      ]*x[j];
-            tmp_result[1][0] += A[i*ldA+j+  ldA]*x[j];
-            tmp_result[2][0] += A[i*ldA+j+2*ldA]*x[j];
-            tmp_result[3][0] += A[i*ldA+j+3*ldA]*x[j];
-        }
-        for (IndexType k=0; k+1<numElements; ++k) {
-            tmp_result[0][0] += tmp_result[0][k+1];
-            tmp_result[1][0] += tmp_result[1][k+1];
-            tmp_result[2][0] += tmp_result[2][k+1];
-            tmp_result[3][0] += tmp_result[3][k+1];
-        }
-
-        y[iY       ] += alpha*tmp_result[0][0];
-        y[iY+1*incY] += alpha*tmp_result[1][0];
-        y[iY+2*incY] += alpha*tmp_result[2][0];
-        y[iY+3*incY] += alpha*tmp_result[3][0];
-
+        x+=numElements;
+        A+=numElements;
     }
 
+    const IndexType n_rest = n%numElements;
+    _A.setZero();
+    _x.setZero();
+    _x.load_partial(x, n_rest);
+    _real_x = _intrinsic_real(_x);
+    _imag_x = _intrinsic_imag(_x);
+    for(IndexType k=0; k<N; ++k) {
+        _A.load_partial(A+k*ldA, n_rest);
 
-
-    for (; i<m; ++i, iY+=incY) {
-
-        _y0.setZero();
-        IndexType j=0;
-        for (; j+numElements-1<n; j+=numElements) {
-
-            _A0.loadu(A+i*ldA+j);
-            _x.loadu(x+j);
-
-            _real_x = _intrinsic_real(_x);
-            _imag_x = _intrinsic_imag(_x);
-
-
-            _y0 = _intrinsic_add(_y0, _intrinsic_mul(_A0, _real_x));
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-
-            _y0 = _intrinsic_addsub(_y0, _intrinsic_mul(_A0, _imag_x));
-        }
-
-        _y0.storeu(&tmp_result[0][0]);
-
-        for (;j<n;++j) {
-            tmp_result[0][0] += A[i*ldA+j    ]*x[j];
-        }
-        for (IndexType k=0; k+1<numElements; ++k) {
-            tmp_result[0][0] += tmp_result[0][k+1];
-        }
-        y[iY] += alpha*tmp_result[0][0];
+        _y[k] = _intrinsic_add(_y[k], _intrinsic_mul(_A, _real_x));
+        _A    = _intrinsic_swap_real_imag(_A);
+        _y[k] = _intrinsic_addsub(_y[k], _intrinsic_mul(_A, _imag_x));
     }
 
-
+    for (IndexType k=0; k<N; ++k) {
+        (*y) += alpha*_intrinsic_hsum(_y[k]);
+        y+=incY;
+    }
 }
 
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value, void>::Type
-    gemv_complex_c(IndexType m, IndexType n,
-                   const T &alpha,
-                   const T *A, IndexType ldA,
-                   const T *x, IndexType incX,
-                   const T &beta,
-                   T *y, IndexType incY)
 
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
+                           void>::Type
+gemv_c_kernel(IndexType n, const T & alpha, const T *x, const T *A, IndexType ldA, T *y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("gemv_complex_c");
+    gemv_n_kernel<IndexType, T,N>(n, alpha, x, A, ldA, y, incY);
+}
 
-    using std::imag;
-    using std::real;
-
-    ASSERT( incX==1 );
-
-    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
+                           void>::Type
+gemv_c_kernel(IndexType n, const T & alpha, const T *x, const T *A, IndexType ldA, T *y, IndexType incY)
+{
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
     typedef typename IntrinsicType::PrimitiveDataType  PT;
     typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
-    const int numElements = IntrinsicType::numElements;
+    const IndexType numElements = IntrinsicType::numElements;
 
-    scal(m, beta, y, incY);
+    std::array<IntrinsicType, N> _y;
+    IntrinsicType _A, _x;
+    IntrinsicPrimitiveType _real_x, _imag_x;
 
-    if (incY<0) {
-        y -= incY*(m-1);
+    for (IndexType k=0; k<N; ++k) {
+        _y[k].setZero();
     }
 
-    IntrinsicType _A0, _A1, _A2, _A3;
-    IntrinsicType  _x;
-    IntrinsicType  _y0, _y1, _y2, _y3;
-    IntrinsicPrimitiveType _real_x, _imag_x, _minusOne;
+    for (IndexType j=0; j<=n-numElements; j+=numElements) {
+        _x.load(x);
+        _x = _x;
+        _real_x = _swap_sign(_intrinsic_real(_x));
+        _imag_x = _intrinsic_imag(_x);
 
-    PT minusOne(-1);
-    _minusOne.fill(minusOne);
-
-    T tmp_result[4][numElements];
-
-    IndexType i=0, iY=0;
-    for (; i+3<m; i+=4, iY+=4*incY) {
-
-
-        _y0.setZero();
-        _y1.setZero();
-        _y2.setZero();
-        _y3.setZero();
-
-        IndexType j=0;
-        for (; j+numElements-1<n; j+=numElements) {
-
-            _A0.loadu(A+i*ldA+j);
-            _A1.loadu(A+i*ldA+j+ldA);
-            _A2.loadu(A+i*ldA+j+2*ldA);
-            _A3.loadu(A+i*ldA+j+3*ldA);
-
-            _x.loadu(x+j);
-
-            _real_x = _intrinsic_mul(_minusOne, _intrinsic_real(_x));
-            _imag_x = _intrinsic_imag(_x);
-
-            _y0 = _intrinsic_addsub(_y0, _intrinsic_mul(_A0, _real_x));
-            _y1 = _intrinsic_addsub(_y1, _intrinsic_mul(_A1, _real_x));
-            _y2 = _intrinsic_addsub(_y2, _intrinsic_mul(_A2, _real_x));
-            _y3 = _intrinsic_addsub(_y3, _intrinsic_mul(_A3, _real_x));
-
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-            _A1 = _intrinsic_swap_real_imag(_A1);
-            _A2 = _intrinsic_swap_real_imag(_A2);
-            _A3 = _intrinsic_swap_real_imag(_A3);
-
-            _y0 = _intrinsic_add(_y0, _intrinsic_mul(_A0, _imag_x));
-            _y1 = _intrinsic_add(_y1, _intrinsic_mul(_A1, _imag_x));
-            _y2 = _intrinsic_add(_y2, _intrinsic_mul(_A2, _imag_x));
-            _y3 = _intrinsic_add(_y3, _intrinsic_mul(_A3, _imag_x));
-
+        for(IndexType k=0; k<N; ++k) {
+            _A.load(A+k*ldA);
+            _y[k] = _intrinsic_addsub(_y[k], _intrinsic_mul(_A, _real_x));
+            _A    = _intrinsic_swap_real_imag(_A);
+            _y[k] = _intrinsic_add(_y[k], _intrinsic_mul(_A, _imag_x));
         }
-
-        _y0.storeu(&tmp_result[0][0]);
-        _y1.storeu(&tmp_result[1][0]);
-        _y2.storeu(&tmp_result[2][0]);
-        _y3.storeu(&tmp_result[3][0]);
-
-        for (;j<n;++j) {
-            tmp_result[0][0] += conj(A[i*ldA+j      ])*x[j];
-            tmp_result[1][0] += conj(A[i*ldA+j+  ldA])*x[j];
-            tmp_result[2][0] += conj(A[i*ldA+j+2*ldA])*x[j];
-            tmp_result[3][0] += conj(A[i*ldA+j+3*ldA])*x[j];
-        }
-        for (IndexType k=0; k+1<numElements; ++k) {
-            tmp_result[0][0] += tmp_result[0][k+1];
-            tmp_result[1][0] += tmp_result[1][k+1];
-            tmp_result[2][0] += tmp_result[2][k+1];
-            tmp_result[3][0] += tmp_result[3][k+1];
-        }
-
-        y[iY       ] += alpha*tmp_result[0][0];
-        y[iY+1*incY] += alpha*tmp_result[1][0];
-        y[iY+2*incY] += alpha*tmp_result[2][0];
-        y[iY+3*incY] += alpha*tmp_result[3][0];
-
+        x+=numElements;
+        A+=numElements;
     }
 
-
-
-    for (; i<m; ++i, iY+=incY) {
-
-        _y0.setZero();
-        IndexType j=0;
-        for (; j+numElements-1<n; j+=numElements) {
-
-            _A0.loadu(A+i*ldA+j);
-            _x.loadu(x+j);
-
-            _real_x = _intrinsic_mul(_minusOne, _intrinsic_real(_x));
-            _imag_x = _intrinsic_imag(_x);
-
-
-            _y0 = _intrinsic_addsub(_y0, _intrinsic_mul(_A0, _real_x));
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-
-            _y0 = _intrinsic_add(_y0, _intrinsic_mul(_A0, _imag_x));
-        }
-
-        _y0.storeu(&tmp_result[0][0]);
-
-        for (;j<n;++j) {
-            tmp_result[0][0] += conj(A[i*ldA+j    ])*x[j];
-        }
-        for (IndexType k=0; k+1<numElements; ++k) {
-            tmp_result[0][0] += tmp_result[0][k+1];
-        }
-        y[iY] += alpha*tmp_result[0][0];
+    const IndexType n_rest = n%numElements;
+    _A.setZero();
+    _x.setZero();
+    _x.load_partial(x, n_rest);
+    _real_x = _swap_sign(_intrinsic_real(_x));
+    _imag_x = _intrinsic_imag(_x);
+    for(IndexType k=0; k<N; ++k) {
+        _A.load_partial(A+k*ldA, n_rest);
+        _y[k] = _intrinsic_addsub(_y[k], _intrinsic_mul(_A, _real_x));
+        _A    = _intrinsic_swap_real_imag(_A);
+        _y[k] = _intrinsic_add(_y[k], _intrinsic_mul(_A, _imag_x));
     }
 
-
+    for (IndexType k=0; k<N; ++k) {
+        (*y) += alpha*_intrinsic_hsum(_y[k]);
+        y+=incY;
+    }
 }
 
-template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsComplex<T>::value, void>::Type
-gemv_complex_t(IndexType m, IndexType n,
-               const T &alpha,
-               const T *A, IndexType ldA,
-               const T *x, IndexType incX,
-               const T &beta,
-               T *y, IndexType incY)
-
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
+                           void>::Type
+gemv_t_kernel(IndexType n, const T & alpha, const T *x, IndexType incX, const T *A, IndexType ldA, T *y) 
 {
-    CXXBLAS_DEBUG_OUT("gemv_complex_t");
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
 
-    using std::imag;
-    using std::real;
+    std::array<IntrinsicType, N> _x;
+    IntrinsicType _A, _y;
 
-    ASSERT( incY==1 );
-
-    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
-    typedef typename IntrinsicType::PrimitiveDataType  PT;
-    typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
-    const int numElements = IntrinsicType::numElements;
-
-    scal(n, beta, y, 1);
-
-    if (incX<0) {
-        x -= incX*(m-1);
+    for (IndexType i=0; i<N; ++i) {
+        _x[i].fill(alpha*(*x)); 
+        x+=incX;
     }
 
-    IntrinsicType  _y;
-    IntrinsicType  _A0, _A1, _A2, _A3;
-    IntrinsicPrimitiveType _real_x0, _real_x1, _real_x2, _real_x3;
-    IntrinsicPrimitiveType _imag_x0, _imag_x1, _imag_x2, _imag_x3;
+    for (IndexType i=0; i<=n-numElements; i+=numElements) {
+        _y.load(y);
 
-    IndexType j=0, jX=0;
+        for (IndexType j=0; j<N; ++j) {
+            _A.load(A+j*ldA);
 
-    for (; j+4<m; j+=4, jX+=4*incX) {
-
-        _real_x0.fill(real(alpha*x[jX       ]));
-        _imag_x0.fill(imag(alpha*x[jX       ]));
-        _real_x1.fill(real(alpha*x[jX+  incX]));
-        _imag_x1.fill(imag(alpha*x[jX+  incX]));
-        _real_x2.fill(real(alpha*x[jX+2*incX]));
-        _imag_x2.fill(imag(alpha*x[jX+2*incX]));
-        _real_x3.fill(real(alpha*x[jX+3*incX]));
-        _imag_x3.fill(imag(alpha*x[jX+3*incX]));
-
-
-        for (IndexType i=0, ii=0; i+numElements-1<n; i+=numElements, ++ii) {
-            _y.loadu(y+i);
-
-            _A0.loadu(A+i+j*ldA      );
-            _A1.loadu(A+i+j*ldA+  ldA);
-            _A2.loadu(A+i+j*ldA+2*ldA);
-            _A3.loadu(A+i+j*ldA+3*ldA);
-
-
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A0, _real_x0));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A1, _real_x1));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A2, _real_x2));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A3, _real_x3));
-
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-            _A1 = _intrinsic_swap_real_imag(_A1);
-            _A2 = _intrinsic_swap_real_imag(_A2);
-            _A3 = _intrinsic_swap_real_imag(_A3);
-
-
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A0, _imag_x0));
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A1, _imag_x1));
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A2, _imag_x2));
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A3, _imag_x3));
-
-            _y.storeu(y+i);
+            _y = _intrinsic_add(_y, _intrinsic_mul(_A, _x[j]));
         }
+        _y.store(y);
+        A+=numElements;
+        y+=numElements;
     }
 
-
-    for (; j<m; ++j, jX+=incX) {
-
-        _real_x0.fill(real(alpha*x[jX  ]));
-        _imag_x0.fill(imag(alpha*x[jX  ]));
-
-        for (IndexType i=0, ii=0; i+numElements-1<n; i+=numElements, ++ii) {
-            _y.loadu(y+i);
-
-            _A0.loadu(A+i+j*ldA      );
-
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A0, _real_x0));
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A0, _imag_x0));
-
-            _y.storeu(y+i);
-        }
-    }
-
-    IndexType i=n-(n%numElements);
-
-    for (; i<n; ++i) {
-        T _y;
-        dotu(m, A+i, ldA, x, incX, _y);
-        y[i] += alpha*_y;
-    }
-
-}
-
-
-template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsComplex<T>::value, void>::Type
-gemv_complex_ct(IndexType m, IndexType n,
-                const T &alpha,
-                const T *A, IndexType ldA,
-                const T *x, IndexType incX,
-                const T &beta,
-                T *y, IndexType incY)
-
-{
-    CXXBLAS_DEBUG_OUT("gemv_complex_ct");
-
-    using std::imag;
-    using std::real;
-
-    ASSERT( incY==1 );
-
-    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
-    typedef typename IntrinsicType::PrimitiveDataType  PT;
-    typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
-    const int numElements = IntrinsicType::numElements;
-
-    scal(n, beta, y, 1);
-
-    if (incX<0) {
-        x -= incX*(m-1);
-    }
-
-    IntrinsicType  _y;
-    IntrinsicType  _A0, _A1, _A2, _A3;
-    IntrinsicPrimitiveType _real_x0, _real_x1, _real_x2, _real_x3;
-    IntrinsicPrimitiveType _imag_x0, _imag_x1, _imag_x2, _imag_x3;
-
-    IndexType j=0, jX=0;
-
-    for (; j+4<m; j+=4, jX+=4*incX) {
-
-        _real_x0.fill(-real(alpha*x[jX       ]));
-        _imag_x0.fill( imag(alpha*x[jX       ]));
-        _real_x1.fill(-real(alpha*x[jX+  incX]));
-        _imag_x1.fill( imag(alpha*x[jX+  incX]));
-        _real_x2.fill(-real(alpha*x[jX+2*incX]));
-        _imag_x2.fill( imag(alpha*x[jX+2*incX]));
-        _real_x3.fill(-real(alpha*x[jX+3*incX]));
-        _imag_x3.fill( imag(alpha*x[jX+3*incX]));
-
-
-        for (IndexType i=0, ii=0; i+numElements-1<n; i+=numElements, ++ii) {
-            _y.loadu(y+i);
-
-            _A0.loadu(A+i+j*ldA      );
-            _A1.loadu(A+i+j*ldA+  ldA);
-            _A2.loadu(A+i+j*ldA+2*ldA);
-            _A3.loadu(A+i+j*ldA+3*ldA);
-
-
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A0, _real_x0));
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A1, _real_x1));
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A2, _real_x2));
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A3, _real_x3));
-
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-            _A1 = _intrinsic_swap_real_imag(_A1);
-            _A2 = _intrinsic_swap_real_imag(_A2);
-            _A3 = _intrinsic_swap_real_imag(_A3);
-
-
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A0, _imag_x0));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A1, _imag_x1));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A2, _imag_x2));
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A3, _imag_x3));
-
-            _y.storeu(y+i);
-        }
-    }
-
-
-    for (; j<m; ++j, jX+=incX) {
-
-        _real_x0.fill(-real(alpha*x[jX  ]));
-        _imag_x0.fill( imag(alpha*x[jX  ]));
-
-        for (IndexType i=0, ii=0; i+numElements-1<n; i+=numElements, ++ii) {
-            _y.loadu(y+i);
-
-            _A0.loadu(A+i+j*ldA      );
-
-            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A0, _real_x0));
-
-            _A0 = _intrinsic_swap_real_imag(_A0);
-
-            _y = _intrinsic_add(_y, _intrinsic_mul(_A0, _imag_x0));
-
-            _y.storeu(y+i);
-        }
-    }
-
-    IndexType i=n-(n%numElements);
-
-    for (; i<n; ++i) {
-        T _y;
-        dot(m, A+i, ldA, x, incX, _y);
-        y[i] += alpha*_y;
-    }
-
-}
-
-
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
-                               void>::Type
-    gemv(StorageOrder order, Transpose transA,
-         IndexType m, IndexType n,
-         const T &alpha,
-         const T *A, IndexType ldA,
-         const T *x, IndexType incX,
-         const T &beta,
-         T *y, IndexType incY)
-{
-    CXXBLAS_DEBUG_OUT("gemv_intrinsics [real, " INTRINSIC_NAME "]");
-
-    if (order==ColMajor) {
-        transA = Transpose(transA^Trans);
-        gemv(RowMajor, transA, n, m, alpha, A, ldA,
-             x, incX, beta, y, incY);
+    const IndexType n_rest = n%numElements;
+    if ( n_rest==0 ) {
         return;
     }
+    _y.load_partial(y, n_rest);
 
-    if  ((transA==NoTrans || transA==Conj) && incX==1 ) {
+    for (IndexType j=0; j<N; ++j) {
+        _A.load_partial(A+j*ldA, n_rest);
 
-        gemv_real_n(m, n, alpha, A, ldA, x, 1, beta, y, incY);
+        _y = _intrinsic_add(_y, _intrinsic_mul(_A, _x[j]));
+    }
+    _y.store_partial(y, n_rest);
+    
+}
 
-    } else if ((transA==Trans || transA==ConjTrans) && incY==1 ) {
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
+                           void>::Type
+gemv_t_kernel(IndexType n, const T & alpha, const T *x, IndexType incX, const T *A, IndexType ldA, T *y)
+{
+    using std::imag;
+    using std::real;
 
-        gemv_real_t(m, n, alpha, A, ldA, x, incX, beta, y, 1);
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
+    typedef typename IntrinsicType::PrimitiveDataType  PT;
+    typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    std::array<IntrinsicPrimitiveType, N> _real_x, _imag_x;
+    IntrinsicType _A, _y;
+
+    for (IndexType i=0; i<N; ++i) {
+        _real_x[i].fill(real(alpha)*real(*x) - imag(alpha)*imag(*x));
+        _imag_x[i].fill(real(alpha)*imag(*x) + imag(alpha)*real(*x));
+        x+=incX;
+    }
+
+    for (IndexType i=0; i<=n-numElements; i+=numElements) {
+        _y.load(y);
+
+        for (IndexType j=0; j<N; ++j) {
+            _A.load(A+j*ldA);
+
+            _y = _intrinsic_add(_y, _intrinsic_mul(_A, _real_x[j]));
+            _A = _intrinsic_swap_real_imag(_A);
+            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A, _imag_x[j]));
+        }
+        _y.store(y);
+        A+=numElements;
+        y+=numElements;
+    }
+
+    const IndexType n_rest = n%numElements;
+    if ( n_rest==0 ) {
+        return;
+    }
+    _y.load_partial(y, n_rest);
+
+    for (IndexType j=0; j<N; ++j) {
+        _A.load_partial(A+j*ldA, n_rest);
+
+        _y = _intrinsic_add(_y, _intrinsic_mul(_A, _real_x[j]));
+        _A = _intrinsic_swap_real_imag(_A);
+        _y = _intrinsic_addsub(_y, _intrinsic_mul(_A, _imag_x[j]));
+    }
+    _y.store_partial(y, n_rest);
+
+}
+
+
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
+                           void>::Type
+gemv_ct_kernel(IndexType n, const T & alpha, const T *x, IndexType incX, const T *A, IndexType ldA, T *y)
+{
+    gemv_ct_kernel<IndexType, T, N>(n, alpha, x, incX, A, ldA, y);
+}
+
+template <typename IndexType, typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
+                           void>::Type
+gemv_ct_kernel(IndexType n, const T & alpha, const T *x, IndexType incX, const T *A, IndexType ldA, T *y)
+{
+    using std::imag;
+    using std::real;
+
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
+    typedef typename IntrinsicType::PrimitiveDataType  PT;
+    typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    std::array<IntrinsicPrimitiveType, N> _real_x, _imag_x;
+    IntrinsicType _A, _y;
+
+    for (IndexType i=0; i<N; ++i) {
+        _real_x[i].fill(-real(alpha)*real(*x) + imag(alpha)*imag(*x));
+        _imag_x[i].fill( real(alpha)*imag(*x) + imag(alpha)*real(*x));
+        x+=incX;
+    }
+
+    for (IndexType i=0; i<=n-numElements; i+=numElements) {
+        _y.load(y);
+
+        for (IndexType j=0; j<N; ++j) {
+            _A.loadu(A+j*ldA);
+
+            _y = _intrinsic_addsub(_y, _intrinsic_mul(_A, _real_x[j]));
+            _A = _intrinsic_swap_real_imag(_A);
+            _y = _intrinsic_add(_y, _intrinsic_mul(_A, _imag_x[j]));
+        }
+        _y.store(y);
+        A+=numElements;
+        y+=numElements;
+    }
+    const IndexType n_rest = n%numElements;
+    if ( n_rest==0 ) {
+        return;
+    }
+    _y.load_partial(y, n_rest);
+
+    for (IndexType j=0; j<N; ++j) {
+        _A.load_partial(A+j*ldA, n_rest);
+
+        _y = _intrinsic_addsub(_y, _intrinsic_mul(_A, _real_x[j]));
+        _A = _intrinsic_swap_real_imag(_A);
+        _y = _intrinsic_add(_y, _intrinsic_mul(_A, _imag_x[j]));
+    }
+    _y.store_partial(y, n_rest);
+}
+
+template <typename IndexType, typename T,
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+gemv_n_unroller(IndexType m, IndexType n, const T & alpha,
+                const T *x, const T *A, IndexType ldA, 
+                T *y, IndexType incY)
+{
+
+}
+
+template <typename IndexType, typename T,
+          int N, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+gemv_n_unroller(IndexType m, IndexType n, const T & alpha,
+                const T *x, const T *A, IndexType ldA, 
+                T *y, IndexType incY)
+{
+
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+
+        for (IndexType i=0; i<=m-N; i+=N) {
+            gemv_n_kernel<IndexType,T,N>(n, alpha, x, A, ldA, y, incY);
+
+            y+=N*incY;
+            A+=N*ldA;
+
+        }
+        gemv_n_unroller<IndexType, T, N/2, false>(m%N,n, alpha, x, A, ldA, y, incY);
 
     } else {
-        cxxblas::gemv<IndexType, T, T, T, T, T>(RowMajor, transA, m, n, alpha,
-                                                A, ldA, x, incX, beta, y, incY);
+        if (m>=N) {
+
+            gemv_n_kernel<IndexType,T,N>(n, alpha, x, A, ldA, y, incY);
+
+            y+=N*incY;
+            A+=N*ldA;
+
+            m-=N;
+        }
+        gemv_n_unroller<IndexType, T, N/2, false>(m, n, alpha, x, A, ldA, y, incY);
+    }
+}
+
+template <typename IndexType, typename T,
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+gemv_c_unroller(IndexType m, IndexType n, const T & alpha,
+                const T *x, const T *A, IndexType ldA,
+                T *y, IndexType incY)
+{
+
+}
+
+template <typename IndexType, typename T,
+          int N, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+gemv_c_unroller(IndexType m, IndexType n, const T & alpha,
+                const T *x, const T *A, IndexType ldA,
+                T *y, IndexType incY)
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+
+        for (IndexType i=0; i<=m-N; i+=N) {
+            gemv_c_kernel<IndexType,T,N>(n, alpha, x, A, ldA, y, incY);
+
+            y+=N*incY;
+            A+=N*ldA;
+
+        }
+        gemv_c_unroller<IndexType, T, N/2, false>(m%N,n, alpha, x, A, ldA, y, incY);
+
+    } else {
+        if (m>=N) {
+
+            gemv_c_kernel<IndexType,T,N>(n, alpha, x, A, ldA, y, incY);
+
+            y+=N*incY;
+            A+=N*ldA;
+
+            m-=N;
+        }
+        gemv_c_unroller<IndexType, T, N/2, false>(m, n, alpha, x, A, ldA, y, incY);
+    }
+}
+
+
+
+
+template <typename IndexType, typename T,
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+gemv_t_unroller(IndexType m, IndexType n, const T & alpha,
+                const T *x, IndexType incX,
+                const T *A, IndexType ldA, T *y)
+{
+
+}
+
+template <typename IndexType, typename T, 
+          int N, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+gemv_t_unroller(IndexType m, IndexType n, const T & alpha, 
+                const T *x, IndexType incX, 
+                const T *A, IndexType ldA, T *y) 
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+
+        for (IndexType i=0; i<=m-N; i+=N) {
+            gemv_t_kernel<IndexType,T,N>(n, alpha, x, incX, A, ldA, y); 
+
+            x+=N*incX; 
+            A+=N*ldA;
+
+        }
+        gemv_t_unroller<IndexType, T, N/2, false>(m%N,n, alpha, x, incX, A, ldA, y);
+
+    } else {
+        if (m>=N) {
+
+            gemv_t_kernel<IndexType,T,N>(n, alpha, x, incX, A, ldA, y); 
+
+            x+=N*incX; 
+            A+=N*ldA;
+
+            m-=N;
+        }
+        gemv_t_unroller<IndexType, T, N/2, false>(m, n, alpha, x, incX, A, ldA, y);
+    }
+}
+
+template <typename IndexType, typename T,
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+gemv_ct_unroller(IndexType m, IndexType n, const T & alpha,
+                 const T *x, IndexType incX,
+                 const T *A, IndexType ldA, T *y)
+{
+
+}
+
+template <typename IndexType, typename T,
+          int N, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+gemv_ct_unroller(IndexType m, IndexType n, const T & alpha,
+                 const T *x, IndexType incX,
+                 const T *A, IndexType ldA, T *y)
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+
+        for (IndexType i=0; i<=m-N; i+=N) {
+            gemv_ct_kernel<IndexType,T,N>(n, alpha, x, incX, A, ldA, y);
+
+            x+=N*incX;
+            A+=N*ldA;
+
+        }
+        gemv_ct_unroller<IndexType, T, N/2, false>(m%N,n, alpha, x, incX, A, ldA, y);
+
+    } else {
+        if (m>=N) {
+
+            gemv_ct_kernel<IndexType,T,N>(n, alpha, x, incX, A, ldA, y);
+
+            x+=N*incX;
+            A+=N*ldA;
+
+            m-=N;
+        }
+        gemv_ct_unroller<IndexType, T, N/2, false>(m, n, alpha, x, incX, A, ldA, y);
     }
 }
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value &&
-                               flens::IsIntrinsicsCompatible<T>::value,
-                               void>::Type
-    gemv(StorageOrder order, Transpose transA,
-         IndexType m, IndexType n,
-         const T &alpha,
-         const T *A, IndexType ldA,
-         const T *x, IndexType incX,
-         const T &beta,
-         T *y, IndexType incY)
+inline
+typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
+                           void>::Type
+gemv(StorageOrder order, Transpose transA,
+     IndexType m, IndexType n,
+     const T &alpha,
+     const T *A, IndexType ldA,
+     const T *x, IndexType incX,
+     const T &beta,
+     T *y, IndexType incY)
 {
     CXXBLAS_DEBUG_OUT("gemv_intrinsics [complex, " INTRINSIC_NAME "]");
 
@@ -779,26 +586,100 @@ template <typename IndexType, typename T>
         return;
     }
 
-    if  ( transA==NoTrans && incX==1 ) {
 
-        gemv_complex_n(m, n, alpha, A, ldA, x, 1, beta, y, incY);
+    scal(n, beta, y, incY);
 
-    } else if ( transA==Conj && incX==1 ) {
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+    
+    T *tmp_mem = NULL;
+   
+    if ( transA==NoTrans ) {
 
-        gemv_complex_c(m, n, alpha, A, ldA, x, 1, beta, y, incY);
+        if (incX==1) {
+	    if (incY<0) {
+		y -= incY*(m-1);
+	    }
+            
+            if (flens::IsReal<T>::value) {
+	        gemv_n_unroller<IndexType, T, 4>(m, n, alpha, x, A, ldA, y, incY);
+            } else {
+                gemv_n_unroller<IndexType, T, 4>(m, n, alpha, x, A, ldA, y, incY);
+            }
+        } else {
 
-    } else if ( transA==Trans && incY==1 ) {
+            tmp_mem = new T[n];
+            copy(n, x, incX, tmp_mem, 1);
+            gemv(RowMajor, NoTrans, m, n, alpha, A, ldA, tmp_mem, 1, T(1), y, incY);
+            delete[] tmp_mem; 
 
-        gemv_complex_t(m, n, alpha, A, ldA, x, incX, beta, y, 1);
+        }
 
-    } else if ( transA==ConjTrans && incY==1 ) {
+    } else if (transA==Conj) {
+  
+        if (incX==1) {
+	    if (incY<0) {
+		y -= incY*(m-1);
+	    }
 
-        gemv_complex_ct(m, n, alpha, A, ldA, x, incX, beta, y, 1);
+	    gemv_c_unroller<IndexType, T, 4>(m,n, alpha, x, A, ldA, y, incY);
 
-    } else {
-        cxxblas::gemv<IndexType, T, T, T, T, T>(RowMajor, transA, m, n, alpha,
-                                                A, ldA, x, incX, beta, y, incY);
-    }
+
+        } else {
+
+            tmp_mem = new T[n];
+            copy(n, x, incX, tmp_mem, 1);
+            gemv(RowMajor, Conj, m, n, alpha, A, ldA, tmp_mem, 1, T(1), y, incY);
+            delete[] tmp_mem; 
+        
+        }
+
+
+    } else if (transA==Trans) {
+
+        if (incY==1) {
+
+	    if (incX<0) {
+		x -= incX*(m-1);
+	    }
+            if ( flens::IsReal<T>::value ) {
+	        gemv_t_unroller<IndexType, T, 8>(m, n, alpha, x, incX, A, ldA, y);
+            } else {
+                gemv_t_unroller<IndexType, T, 4>(m, n, alpha, x, incX, A, ldA, y);
+            }
+
+        } else {
+
+            tmp_mem = new T[n];
+            std::fill_n(tmp_mem, n, T(0));
+            gemv(RowMajor, Trans, m, n, alpha, A, ldA, x, incX, T(1), tmp_mem, 1);
+            axpy(n, T(1), tmp_mem, 1, y, incY);
+            delete[] tmp_mem;
+
+        }
+
+    } else if (transA==ConjTrans) {
+
+        if (incY==1) {
+
+	    if (incX<0) {
+		x -= incX*(m-1);
+	    }
+
+	    gemv_ct_unroller<IndexType, T, 8>(m, n, alpha, x, incX, A, ldA, y);
+
+
+        } else {
+
+            tmp_mem = new T[n];
+            std::fill_n(tmp_mem, n, T(0));
+            gemv(RowMajor, ConjTrans, m, n, alpha, A, ldA, x, incX, T(1), tmp_mem, 1);
+            axpy(n, T(1), tmp_mem, 1, y, incY);
+            delete[] tmp_mem;
+        
+        }
+    } 
+    
 }
 
 #endif // USE_INTRINSIC

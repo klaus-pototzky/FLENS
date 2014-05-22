@@ -43,7 +43,7 @@ std::ostream& operator<<(std::ostream& output, Intrinsics<DataType, Level> &p)
     const int N = Intrinsics<DataType, Level>::numElements;
 
     DataType tmp[N];
-    p.store(tmp);
+    p.storeu(tmp);
     for (int k=0; k<N; ++k) {
         output << tmp[k] << " ";
     }

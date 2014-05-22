@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -42,107 +42,147 @@ namespace cxxblas {
 
 #ifdef USE_INTRINSIC
 
-template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsReal<T>::value &&
-                           flens::IsIntrinsicsCompatible<T>::value,
+template <typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
                            void>::Type
-axpy(IndexType n, const T &alpha, const T *x,
-     IndexType incX, T *y, IndexType incY)
+axpy_kernel(const T & alpha, const T *x, T *y) 
 {
-    CXXBLAS_DEBUG_OUT("axpy_intrinsics [real, " INTRINSIC_NAME "]");
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const int numElements = IntrinsicType::numElements;
+    IntrinsicType _x, _y;
+    IntrinsicType _alpha(alpha);  
 
-    if (alpha==T(0))
-        return;
+    for (int i=0; i<N; ++i){
+        _x.load(x);
+        _y.load(y);
+        _y = _intrinsic_add(_y, _intrinsic_mul(_alpha, _x));
+        _y.store(y);
+        x+=numElements;
+        y+=numElements;
+   }
 
-    if (incX==1 && incY==1) {
-        typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
-        const int numElements = IntrinsicType::numElements;
+}
 
-        IndexType i=0;
+template <typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
+                           void>::Type
+axpy_kernel(const T & alpha, const T *x, T *y) 
+{
+    using std::real;
+    using std::imag;
 
-        IntrinsicType _x, _y;
-        IntrinsicType _alpha(alpha);
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    typedef typename IntrinsicType::PrimitiveDataType PT;
+    typedef Intrinsics<PT, IntrinsicsLevel::SSE> IntrinsicPrimitiveType;
+    const int numElements = IntrinsicType::numElements;
 
-        for (; i+numElements-1<n; i+=numElements) {
-            _x.loadu(x+i);
-            _y.loadu(y+i);
-            _y = _intrinsic_add(_y, _intrinsic_mul(_alpha, _x));
-            _y.storeu(y+i);
+    IntrinsicType _x, _y;
+    IntrinsicPrimitiveType _real_alpha(real(alpha));
+    IntrinsicPrimitiveType _imag_alpha(imag(alpha)); 
+
+    for (int i=0; i<N; ++i){
+        _x.load(x);
+        _y.load(y);
+        _y = _intrinsic_add(_y, _intrinsic_mul(_real_alpha, _x));
+        _x = _intrinsic_swap_real_imag(_x);
+        _y = _intrinsic_addsub(_y, _intrinsic_mul(_imag_alpha, _x));
+        _y.store(y);
+        x+=numElements;
+        y+=numElements;
+   }
+}
+
+template <typename IndexType, typename T, 
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+axpy_unroller(IndexType length, const T & alpha, const T *x, T *y) 
+{
+
+}
+
+template <typename IndexType, typename T, 
+          int N = 16, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+axpy_unroller(IndexType length, const T & alpha, const T *x, T *y) 
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+
+        for (IndexType i=0; i<=length-N*numElements; i+=N*numElements) {
+
+            axpy_kernel<T,N>(alpha, x, y); 
+
+            x+=N*numElements; 
+            y+=N*numElements;
+
         }
-
-        for (; i<n; ++i) {
-            y[i] += alpha*x[i];
-        }
+        axpy_unroller<IndexType, T, N/2, false>(length%(N*numElements), alpha, x, y);
 
     } else {
+        if (length>=N*numElements) {
 
-        cxxblas::axpy<IndexType, T, T ,T>(n, alpha, x, incX, y, incY);
+            axpy_kernel<T,N>(alpha, x, y); 
 
+            x+=N*numElements; 
+            y+=N*numElements;
+
+            length-=N*numElements;
+        }
+        axpy_unroller<IndexType, T, N/2, false>(length, alpha, x, y);
     }
 }
 
 template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsComplex<T>::value &&
-                           flens::IsIntrinsicsCompatible<T>::value,
+inline
+typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
                            void>::Type
 axpy(IndexType n, const T &alpha, const T *x,
      IndexType incX, T *y, IndexType incY)
 {
-    CXXBLAS_DEBUG_OUT("axpy_intrinsics [complex, " INTRINSIC_NAME "]");
+    CXXBLAS_DEBUG_OUT("axpy_intrinsics [" INTRINSIC_NAME "]");
 
     using std::real;
     using std::imag;
-
-    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
     typedef typename IntrinsicType::PrimitiveDataType  PT;
-    typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
+    const int numElements = IntrinsicType::numElements;
+
 
     if (alpha==T(0))
         return;
 
     if (incX==1 && incY==1) {
-
-        if (imag(alpha)==PT(0)) {
+        
+        if (IsComplex<T>::value && imag(alpha)==PT(0)) {
             axpy(2*n, real(alpha),
                  reinterpret_cast<const PT*>(x), 1,
                  reinterpret_cast<PT*>(y), 1);
-           return;
+            return;
         }
-
-        const int numElements = IntrinsicType::numElements;
 
         IndexType i=0;
 
-        IntrinsicType _x, _y;
-        IntrinsicPrimitiveType _real_alpha(real(alpha));
-        IntrinsicPrimitiveType _imag_alpha(imag(alpha));
+        int n_rest = n%numElements;
 
-        if (real(alpha)==PT(0)) {
-
-            for (; i+numElements-1<n; i+=numElements) {
-                _x.loadu(x+i);
-                _y.loadu(y+i);
-                _x = _intrinsic_swap_real_imag(_x);
-                _y = _intrinsic_addsub(_y, _intrinsic_mul(_imag_alpha, _x));
-                _y.storeu(y+i);
-            }
-
-        } else {
-
-            for (; i+numElements-1<n; i+=numElements) {
-                _x.loadu(x+i);
-                _y.loadu(y+i);
-                _y = _intrinsic_add(_y, _intrinsic_mul(_real_alpha, _x));
-                _x = _intrinsic_swap_real_imag(_x);
-                _y = _intrinsic_addsub(_y, _intrinsic_mul(_imag_alpha, _x));
-                _y.storeu(y+i);
-            }
-
+        if (n_rest>=2) {
+            (*y++) += alpha*(*x++); 
+            (*y++) += alpha*(*x++);
+            n_rest-=2;
+        }
+        if (n_rest==1) { 
+	    (*y++) += alpha*(*x++);
         }
 
-        for (; i<n; ++i) {
-            y[i] += alpha*x[i];
-        }
+        axpy_unroller<IndexType, T>(n-n%numElements, alpha, x, y);
+        
 
     } else {
 

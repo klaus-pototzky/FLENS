@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012, Klaus Pototzky
+ *   Copyright (c) 2014, Klaus Pototzky
  *
  *   All rights reserved.
  *
@@ -33,6 +33,8 @@
 #ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_SCAL_TCC
 #define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_SCAL_TCC 1
 
+#include <algorithm>    
+
 #include <cxxblas/cxxblas.h>
 #include <playground/cxxblas/intrinsics/auxiliary/auxiliary.h>
 #include <playground/cxxblas/intrinsics/includes.h>
@@ -41,77 +43,124 @@ namespace cxxblas {
 
 #ifdef USE_INTRINSIC
 
-template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsReal<T>::value &&
-                           flens::IsIntrinsicsCompatible<T>::value,
+
+template <typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value,
                            void>::Type
-scal(IndexType n, const T &alpha, T *y, IndexType incY)
+scal_kernel(const T & alpha, T *y) 
 {
-    CXXBLAS_DEBUG_OUT("scal_intrinsics [real, " INTRINSIC_NAME "]");
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const int numElements = IntrinsicType::numElements;
+    IntrinsicType _y;
+    IntrinsicType _alpha(alpha);  
 
-    if (alpha==T(1))
-        return;
+    for (int i=0; i<N; ++i){
 
-    if (incY==1) {
-        typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
-        const int numElements = IntrinsicType::numElements;
+        _y.load(y);
+        _y = _intrinsic_mul(_alpha, _y);
+        _y.store(y);
+        y+=numElements;
+   }
 
-        IndexType i=0;
-
-        if (alpha==T(0)) {
-
-            IntrinsicType _zero(T(0));
-            for(;i+numElements-1<n;i+=numElements) {
-                _zero.storeu(y+i);
-            }
-
-            for (;i<n;++i) {
-                y[i] = T(0);
-            }
-
-
-        } else {
-
-            IntrinsicType _alpha(alpha);
-            IntrinsicType _y;
-            for(;i+numElements-1<n;i+=numElements) {
-                _y.loadu(y+i);
-                _y = _intrinsic_mul(_alpha, _y);
-                _y.storeu(y+i);
-            }
-
-
-            for (;i<n;++i) {
-                y[i] *= alpha;
-            }
-
-        }
-    } else {
-        cxxblas::scal<IndexType, T, T>(n, alpha, y, incY);
-    }
 }
 
-template <typename IndexType, typename T>
-typename flens::RestrictTo<flens::IsComplex<T>::value &&
-                           flens::IsIntrinsicsCompatible<T>::value,
+template <typename T, int N>
+inline
+typename flens::RestrictTo<flens::IsComplex<T>::value,
                            void>::Type
-scal(IndexType n, const T &alpha, T *y, IndexType incY)
+scal_kernel(const T & alpha, T *y) 
 {
-    CXXBLAS_DEBUG_OUT("scal_intrinsics [complex, " INTRINSIC_NAME "]");
-
     using std::real;
     using std::imag;
 
-    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    typedef typename IntrinsicType::PrimitiveDataType PT;
+    typedef Intrinsics<PT, IntrinsicsLevel::SSE> IntrinsicPrimitiveType;
+    const int numElements = IntrinsicType::numElements;
+
+    IntrinsicType _tmp, _y;
+    IntrinsicPrimitiveType _real_alpha(real(alpha));
+    IntrinsicPrimitiveType _imag_alpha(imag(alpha)); 
+
+    for (int i=0; i<N; ++i){
+
+        _y.loadu(y);
+        _tmp = _intrinsic_mul(_real_alpha, _y);
+        _y = _intrinsic_swap_real_imag(_y);
+        _y = _intrinsic_mul(_imag_alpha, _y);
+        _y = _intrinsic_addsub(_tmp, _y);
+        _y.store(y);
+        y+=numElements;
+   }
+}
+
+template <typename IndexType, typename T, 
+          int N, bool firstCall>
+inline
+typename flens::RestrictTo<IsSameInt<N,0>::value,
+                           void>::Type
+scal_unroller(IndexType length, const T & alpha, T *y) 
+{
+
+}
+
+template <typename IndexType, typename T, 
+          int N = 16, bool firstCall = true>
+inline
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
+                           void>::Type
+scal_unroller(IndexType length, const T & alpha, T *y) 
+{
+    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    const IndexType numElements = IntrinsicType::numElements;
+
+    if (firstCall==true) {
+
+        for (IndexType i=0; i<=length-N*numElements; i+=N*numElements) {
+
+            scal_kernel<T,N>(alpha, y); 
+
+            y+=N*numElements;
+
+        }
+        scal_unroller<IndexType, T, N/2, false>(length%(N*numElements), alpha, y);
+
+    } else {
+        if (length>=N*numElements) {
+
+            scal_kernel<T,N>(alpha, y); 
+
+            y+=N*numElements;
+
+            length-=N*numElements;
+        }
+        scal_unroller<IndexType, T, N/2, false>(length, alpha, y);
+    }
+}
+
+
+template <typename IndexType, typename T>
+typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value,
+                           void>::Type
+scal(IndexType n, const T &alpha, T *y, IndexType incY)
+{
+    CXXBLAS_DEBUG_OUT("scal_intrinsics [" INTRINSIC_NAME "]");
+
+    using std::real;
+    using std::imag;
+    using std::fill;
+
+    typedef Intrinsics<T, IntrinsicsLevel::SSE>     IntrinsicType;
     typedef typename IntrinsicType::PrimitiveDataType  PT;
-    typedef Intrinsics<PT, DEFAULT_INTRINSIC_LEVEL>    IntrinsicPrimitiveType;
+    typedef Intrinsics<PT, IntrinsicsLevel::SSE>    IntrinsicPrimitiveType;
 
     if (alpha==T(1))
         return;
 
     if (incY==1) {
 
-        if (imag(alpha) == PT(0)) {
+        if (imag(alpha) == PT(0) && IsComplex<T>::value) {
             scal(2*n, real(alpha), reinterpret_cast<PT*>(y), 1);
             return;
         }
@@ -121,35 +170,24 @@ scal(IndexType n, const T &alpha, T *y, IndexType incY)
         IndexType i=0;
 
         if (alpha==T(0)) {
-
-            IntrinsicType _zero(PT(0));
-            for(;i+numElements-1<n;i+=numElements) {
-                _zero.storeu(y+i);
-            }
-
-            for (;i<n;++i) {
-                y[i] = T(0);
-            }
+            const T zero(0);
+            std::fill_n(y, n, zero);
 
         } else {
+	    IndexType i=0;
 
-            IntrinsicPrimitiveType _real_alpha(real(alpha));
-            IntrinsicPrimitiveType _imag_alpha(imag(alpha));
-            IntrinsicType _y, _tmp;
+	    int n_rest = n%numElements;
 
-            for(;i+numElements-1<n;i+=numElements) {
-                _y.loadu(y+i);
-                _tmp = _intrinsic_mul(_real_alpha, _y);
-                _y = _intrinsic_swap_real_imag(_y);
-                _y = _intrinsic_mul(_imag_alpha, _y);
-                _y = _intrinsic_addsub(_tmp, _y);
-                _y.storeu(y+i);
-            }
+	    if (n_rest>=2) {
+	        (*y++) *= alpha; 
+	        (*y++) *= alpha;
+	        n_rest-=2;
+	    }
+	    if (n_rest==1) { 
+	        (*y++) *= alpha;
+	    }
 
-            for (;i<n;++i) {
-                y[i] *= alpha;
-            }
-
+	    scal_unroller<IndexType, T>(n-n%numElements, alpha, y);
         }
     } else {
         cxxblas::scal<IndexType, T, T>(n, alpha, y, incY);

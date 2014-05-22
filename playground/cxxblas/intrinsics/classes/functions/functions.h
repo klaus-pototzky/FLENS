@@ -33,15 +33,19 @@
 #ifndef PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_FUNCTIONS_H
 #define PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_FUNCTIONS_H 1
 
+#include <playground/cxxblas/intrinsics/classes/functions/abs.h>
 #include <playground/cxxblas/intrinsics/classes/functions/add.h>
 #include <playground/cxxblas/intrinsics/classes/functions/addsub.h>
+#include <playground/cxxblas/intrinsics/classes/functions/conj.h>
 #include <playground/cxxblas/intrinsics/classes/functions/div.h>
+#include <playground/cxxblas/intrinsics/classes/functions/hsum.h>
 #include <playground/cxxblas/intrinsics/classes/functions/imag.h>
 #include <playground/cxxblas/intrinsics/classes/functions/mul.h>
 #include <playground/cxxblas/intrinsics/classes/functions/out.h>
 #include <playground/cxxblas/intrinsics/classes/functions/real.h>
 #include <playground/cxxblas/intrinsics/classes/functions/sub.h>
 #include <playground/cxxblas/intrinsics/classes/functions/swaprealimag.h>
+#include <playground/cxxblas/intrinsics/classes/functions/swapSign.h>
 #include <playground/cxxblas/intrinsics/classes/functions/unpack.h>
 
 #endif // PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_FUNCTIONS_FUNCTIONS_H

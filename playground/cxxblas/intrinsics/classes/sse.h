@@ -42,30 +42,93 @@ template <>
 class Intrinsics<float, IntrinsicsLevel::SSE> {
 
 public:
-    typedef float                            DataType;
-    typedef float                            PrimitiveDataType;
-    typedef __m128                           IntrinsicsDataType;
-    static  const int                        numElements = 4;
+    typedef float                                     DataType;
+    typedef float                                     PrimitiveDataType;
+    typedef __m128                                    IntrinsicsDataType;
+    typedef Intrinsics<float, IntrinsicsLevel::SSE>   IntrinsicsType;
+    static  const int                                 numElements = 4;
 
-    Intrinsics(void)                         {}
-    Intrinsics(__m128 val)                   {v = val;}
-    Intrinsics(float *a)                     {this->load(a);}
-    Intrinsics(float a)                      {this->fill(a);}
+    Intrinsics()                                      {}
+    Intrinsics(const IntrinsicsDataType &val)         {v = val;}
+    Intrinsics(const float *a)                        {this->load(a);}
+    Intrinsics(const float a)                         {this->fill(a);}
 
-    void operator=(float *a)                 {this->load(a);}
-    void operator=(float a)                  {this->fill(a);}
-    void operator=(__m128 a)                 {v = a; }
+    void operator=(const IntrinsicsDataType &a)       {v = a; }
+    void operator=(const IntrinsicsType &a)           {v = a.get(); }
 
-    __m128 get(void) const                   {return v;}
+    IntrinsicsDataType get() const                    {return v;}
 
-    void fill(float a)                       { v = _mm_load1_ps(&a);}
-    void load(const float *a)                { v = _mm_load_ps(a);}
-    void loadu(const float *a)               { v = _mm_loadu_ps(a);}
-    void setZero()                           { v = _mm_setzero_ps();}
-    void store(float *a)                     { _mm_store_ps(a, v); }
-    void storeu(float *a)                    { _mm_storeu_ps(a, v); }
-    void stream(float *a)                    { _mm_stream_ps(a, v); }
+    void fill(const float a)                          { v = _mm_load1_ps(&a);}
+    void setZero()                                    { v = _mm_setzero_ps();}
+    void load(const float *a)                         { v = _mm_loadu_ps(a);}
+    void loadu(const float *a)                        { v = _mm_loadu_ps(a);}
+    void load_aligned(const float *a)                 { v = _mm_load_ps(a);}
+    void load_partial(const float *a, const int length)  
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            v = _mm_load_ss(a);   
+        } else if (length==2) {  
+            v = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double *>(a)));   
+        } else if (length==3) {
+            v = _mm_setr_ps(a[0], a[1], a[2], float(0));
+        } else if (length==4) {
+            v = _mm_loadu_ps(a);
+        } 
+    }
 
+    void store(float *a)                              { _mm_storeu_ps(a, v); }
+    void storeu(float *a)                             { _mm_storeu_ps(a, v); }
+    void store_aligned(float *a)                      { _mm_store_ps(a, v); }
+    void store_partial(float *a, const int length)  
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            _mm_store_ss(a, v);
+        } else if (length==2) {
+            _mm_store_sd(reinterpret_cast<double *>(a), _mm_castps_pd(v));
+        } else if (length==3) {
+            _mm_store_sd(reinterpret_cast<double *>(a), _mm_castps_pd(v));
+            _mm_store_ss(a+2, _mm_movehl_ps(v,v));
+        } else if (length==4) { 
+            _mm_storeu_ps(a, v);
+        } 
+    }
+    
+    bool operator< (const IntrinsicsType & b) const 
+    {
+        __m128 _c = _mm_cmplt_ps(v, b.get());     
+        return (_mm_movemask_ps(_c)==15);
+
+    }
+
+    bool operator<= (const IntrinsicsType & b) const 
+    {
+        __m128 _c = _mm_cmple_ps(v, b.get());     
+        return (_mm_movemask_ps(_c)==15);
+
+    }
+
+    bool operator> (const IntrinsicsType & b) const 
+    {
+        __m128 _c = _mm_cmpgt_ps(v, b.get());     
+        return (_mm_movemask_ps(_c)==15);
+
+    }
+
+    bool operator>= (const IntrinsicsType & b) const 
+    {
+        __m128 _c = _mm_cmpge_ps(v, b.get());     
+        return (_mm_movemask_ps(_c)==15);
+
+    }
+
+    IntrinsicsType max () const 
+    {
+        __m128  _tmp = _mm_max_ps(v, _mm_shuffle_ps(v,v,177));
+        __m128d _tmpd = _mm_permute_pd(_mm_castps_pd(_tmp),1);
+        return IntrinsicsType(_mm_max_ps(_tmp, _mm_castpd_ps(_tmpd)));
+    }
 private:
     __m128                                   v;
 
@@ -75,30 +138,92 @@ template <>
 class Intrinsics<double, IntrinsicsLevel::SSE> {
 
 public:
-    typedef double                           DataType;
-    typedef double                           PrimitiveDataType;
-    typedef __m128d                          IntrinsicsDataType;
-    static  const int                        numElements = 2;
-
-    Intrinsics(void)                         {}
-    Intrinsics(__m128d val)                  {v = val;}
-    Intrinsics(double *a)                    {this->load(a);}
-    Intrinsics(double a)                     {this->fill(a);}
-
-    void operator=(double *a)                {this->load(a);}
-    void operator=(double a)                 {this->fill(a);}
-    void operator=(__m128d a)                {v = a; }
+    typedef double                                    DataType;
+    typedef double                                    PrimitiveDataType;
+    typedef __m128d                                   IntrinsicsDataType;
+    typedef Intrinsics<double, IntrinsicsLevel::SSE>  IntrinsicsType;
+    static  const int                                 numElements = 2;
 
 
-    __m128d get(void) const                  {return v;}
+    Intrinsics()                                      {}
+    Intrinsics(const IntrinsicsDataType &val)         {v = val;}
+    Intrinsics(double *a)                             {this->load(a);}
+    Intrinsics(const double a)                        {this->fill(a);}
 
-    void fill(double a)                      { v = _mm_load1_pd(&a);}
-    void load(const double *a)               { v = _mm_load_pd(a);}
-    void loadu(const double *a)              { v = _mm_loadu_pd(a);}
-    void setZero()                           { v = _mm_setzero_pd();}
-    void store(double *a)                    { _mm_store_pd(a, v); }
-    void storeu(double *a)                   { _mm_storeu_pd(a, v); }
-    void stream(double *a)                   { _mm_stream_pd(a, v); }
+    void operator=(const IntrinsicsDataType &a)       {v = a; }
+    void operator=(const IntrinsicsType &a)           {v = a.get(); }
+
+    IntrinsicsDataType get() const                    {return v;}
+
+    void fill(double a)                               { v = _mm_load1_pd(&a);}
+    void setZero()                                    { v = _mm_setzero_pd();}
+    void load(const double *a)                        { v = _mm_loadu_pd(a);}
+    void loadu(const double *a)                       { v = _mm_loadu_pd(a);}
+    void load_aligned(const double *a)                { v = _mm_load_pd(a);}
+    void load_partial(const double *a, const int length)  
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            
+            v = _mm_load_sd(a);
+            
+        } else if (length==2) {
+            
+            v =  _mm_loadu_pd(a);
+            
+        } 
+    }
+
+    void store(double *a)                             { _mm_storeu_pd(a, v); }
+    void storeu(double *a)                            { _mm_storeu_pd(a, v); }
+    void store_aligned(double *a)                     { _mm_store_pd(a, v); }
+    void store_partial(double *a, const int length)
+    {
+        
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            
+           _mm_store_sd(a, v);
+            
+        } else if (length==2) {
+            
+            _mm_store_pd(a, v);
+            
+        } 
+    }
+
+    bool operator< (const IntrinsicsType & b) const 
+    {
+        __m128d _c = _mm_cmplt_pd(v, b.get());     
+        return (_mm_movemask_pd(_c)==3);
+
+    }
+
+    bool operator<= (const IntrinsicsType & b) const 
+    {
+        __m128d _c = _mm_cmple_pd(v, b.get());     
+        return (_mm_movemask_pd(_c)==3);
+
+    }
+
+    bool operator> (const IntrinsicsType & b) const 
+    {
+        __m128d _c = _mm_cmpgt_pd(v, b.get());     
+        return (_mm_movemask_pd(_c)==3);
+
+    }
+
+    bool operator>= (const IntrinsicsType & b) const 
+    {
+        __m128d _c = _mm_cmpge_pd(v, b.get());     
+        return (_mm_movemask_pd(_c)==3);
+
+    }
+
+    IntrinsicsType max () const 
+    {
+        return IntrinsicsType(_mm_max_pd(v, _mm_permute_pd(v,1)));
+    }
 private:
     __m128d                                  v;
 
@@ -124,11 +249,32 @@ public:
     __m128 get(void) const                   {return v;}
 
     void fill(float a)                       { v = _mm_load1_ps(&a); }
-    void load(const std::complex<float> *a)  { v = _mm_load_ps(reinterpret_cast<const float* >(a));}
+    void load(const std::complex<float> *a)  { v = _mm_loadu_ps(reinterpret_cast<const float* >(a));}
     void loadu(const std::complex<float> *a) { v = _mm_loadu_ps(reinterpret_cast<const float* >(a));}
+    void load_partial(const std::complex<float> *a, const int length)
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            v = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double *>(a)));
+        } else if (length==2) {
+            v = _mm_loadu_ps(reinterpret_cast<const float* >(a));
+        }
+
+    }
+
     void setZero()                           { v = _mm_setzero_ps();}
-    void store(std::complex<float> *a)       { _mm_store_ps(reinterpret_cast<float*>(a), v); }
+    void store(std::complex<float> *a)       { _mm_storeu_ps(reinterpret_cast<float*>(a), v); }
     void storeu(std::complex<float> *a)      { _mm_storeu_ps(reinterpret_cast<float*>(a), v); }
+    void store_partial(std::complex<float> *a, const int length)
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            _mm_store_sd(reinterpret_cast<double *>(a), _mm_castps_pd(v));
+        } else if (length==2) {
+            _mm_storeu_ps(reinterpret_cast<float*>(a), v); 
+        }
+    }
+
     void stream(std::complex<float> *a)      { _mm_stream_ps(reinterpret_cast<float*>(a), v); }
 private:
     __m128                                   v;
@@ -156,11 +302,26 @@ public:
     __m128d get(void) const                  {return v;}
 
     void fill(double a)                      { v = _mm_load1_pd(&a); }
-    void load(const std::complex<double> *a) { v = _mm_load_pd(reinterpret_cast<const double* >(a));}
+    void load(const std::complex<double> *a) { v = _mm_loadu_pd(reinterpret_cast<const double* >(a));}
     void loadu(const std::complex<double> *a){ v = _mm_loadu_pd(reinterpret_cast<const double* >(a));}
+    void load_partial(const std::complex<double> *a, const int length)
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            v = _mm_loadu_pd(reinterpret_cast<const double* >(a)); 
+        }
+    }
+
     void setZero()                           { v = _mm_setzero_pd();}
-    void store(std::complex<double> *a)      { _mm_store_pd(reinterpret_cast<double*>(a), v); }
+    void store(std::complex<double> *a)      { _mm_storeu_pd(reinterpret_cast<double*>(a), v); }
     void storeu(std::complex<double> *a)     { _mm_storeu_pd(reinterpret_cast<double*>(a), v); }
+    void store_partial(std::complex<double> *a, const int length)
+    {
+        ASSERT(length>=0 && length<=numElements);
+        if (length==1) {
+            _mm_storeu_pd(reinterpret_cast<double*>(a), v);
+        }
+    }
     void stream(std::complex<double> *a)     { _mm_stream_pd(reinterpret_cast<double* >(a), v); }
 private:
     __m128d                                  v;
@@ -170,3 +331,4 @@ private:
 #endif // HAVE_SSE
 
 #endif // PLAYGROUND_CXXBLAS_INTRINSICS_CLASSES_CLASSES_H
+

@@ -43,12 +43,8 @@ namespace cxxblas {
 #ifdef USE_INTRINSIC
 
 template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsReal<T>::value, void>::Type
-    raxpy(IndexType n, const T &alpha, const T *x,
-          IndexType incX, T *y, IndexType incY);
-
-template <typename IndexType, typename T>
-    typename flens::RestrictTo<flens::IsComplex<T>::value, void>::Type
+    typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value, 
+                               void>::Type
     raxpy(IndexType n, const T &alpha, const T *x,
           IndexType incX, T *y, IndexType incY);
 

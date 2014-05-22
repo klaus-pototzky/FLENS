@@ -33,9 +33,11 @@
 #ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_TCC
 #define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_TCC 1
 
+#include <playground/cxxblas/intrinsics/level1/asum.tcc>
 #include <playground/cxxblas/intrinsics/level1/axpy.tcc>
 #include <playground/cxxblas/intrinsics/level1/copy.tcc>
 #include <playground/cxxblas/intrinsics/level1/dot.tcc>
+#include <playground/cxxblas/intrinsics/level1/nrm2.tcc>
 #include <playground/cxxblas/intrinsics/level1/scal.tcc>
 
 #endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_TCC

@@ -30,136 +30,144 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ACXPY_TCC
-#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ACXPY_TCC 1
+#ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ASUM_TCC
+#define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ASUM_TCC 1
+
+#include <algorithm>    
 
 #include <cxxblas/cxxblas.h>
 #include <playground/cxxblas/intrinsics/auxiliary/auxiliary.h>
 #include <playground/cxxblas/intrinsics/includes.h>
-#include <playground/cxxblas/intrinsics/level1extensions/acxpy.h>
 
 namespace cxxblas {
 
 #ifdef USE_INTRINSIC
 
-template <typename T, int N>
+template <typename T, typename S, int N>
 inline
-typename flens::RestrictTo<flens::IsComplex<T>::value,
+typename flens::RestrictTo<flens::IsReal<T>::value,
                            void>::Type
-ccopy_kernel(const T *x, T *y) 
+asum_kernel(const T *x, S &_result) 
 {
-    using std::real;
-    using std::imag;
-
-    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
     const int numElements = IntrinsicType::numElements;
+    IntrinsicType _x;
 
-    IntrinsicType _x, _y;
-
-    for (int i=0; i<N; ++i){
+    for (int i=0; i<N; ++i) {
         _x.load(x);
-        _y = _conj(_x);
-        _y.store(y);
+        _result = _intrinsic_add(_result, _abs(_x));
         x+=numElements;
-        y+=numElements;
    }
 }
 
-template <typename IndexType, typename T, 
+
+template <typename IndexType, typename T, typename S,
           int N, bool firstCall>
 inline
-typename flens::RestrictTo<IsSameInt<N,0>::value &&
-                           flens::IsComplex<T>::value,
+typename flens::RestrictTo<IsSameInt<N,0>::value,
                            void>::Type
-ccopy_unroller(IndexType length, const T *x, T *y) 
+asum_unroller(IndexType length, const T *x, S &_result)
 {
 
 }
 
-template <typename IndexType, typename T, 
+template <typename IndexType, typename T, typename S,
           int N = 16, bool firstCall = true>
 inline
-typename flens::RestrictTo<!IsSameInt<N,0>::value &&
-                           flens::IsComplex<T>::value,
+typename flens::RestrictTo<!IsSameInt<N,0>::value,
                            void>::Type
-ccopy_unroller(IndexType length, const T *x, T *y) 
+asum_unroller(IndexType length, const T *x, S &_result) 
 {
-    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL> IntrinsicType;
     const IndexType numElements = IntrinsicType::numElements;
 
     if (firstCall==true) {
-
+        _result.setZero();
         for (IndexType i=0; i<=length-N*numElements; i+=N*numElements) {
 
-            ccopy_kernel<T,N>(x, y); 
+            asum_kernel<T,IntrinsicType,N>(x, _result); 
 
             x+=N*numElements; 
-            y+=N*numElements;
 
         }
-        ccopy_unroller<IndexType, T, N/2, false>(length%(N*numElements), x, y);
+        asum_unroller<IndexType, T, IntrinsicType, N/2, false>(length%(N*numElements), x, _result);
+
 
     } else {
         if (length>=N*numElements) {
 
-            ccopy_kernel<T,N>(x, y); 
+            asum_kernel<T,IntrinsicType,N>(x, _result); 
 
             x+=N*numElements; 
-            y+=N*numElements;
 
             length-=N*numElements;
         }
-        ccopy_unroller<IndexType, T, N/2, false>(length, x, y);
+        asum_unroller<IndexType, T, IntrinsicType, N/2, false>(length, x, _result);
+    }
+}
+
+
+template <typename IndexType, typename T>
+inline
+typename flens::RestrictTo<flens::IsReal<T>::value && 
+                           flens::IsIntrinsicsCompatible<T>::value,
+                           void>::Type
+asum(IndexType n, const T *y, IndexType incY, T &absSum)
+{
+    CXXBLAS_DEBUG_OUT("asum_intrinsics [real, " INTRINSIC_NAME "]");
+
+    using std::abs;
+
+    typedef Intrinsics<T, DEFAULT_INTRINSIC_LEVEL>     IntrinsicType;
+
+    if (incY==1) {
+
+        const int numElements = IntrinsicType::numElements;
+
+        IndexType i=0;
+        absSum = T(0);
+
+	int n_rest = n%numElements;
+
+        if (n_rest>=4) {
+	    absSum += abs(*y++);
+	    absSum += abs(*y++);
+	    absSum += abs(*y++);
+	    absSum += abs(*y++);
+	    n_rest-=4;
+        }
+
+        if (n_rest>=2) {
+	    absSum += abs(*y++);
+	    absSum += abs(*y++);
+	    n_rest-=2;
+        }
+        if (n_rest==1) { 
+	    absSum += abs(*y++);
+	}
+
+        IntrinsicType _result;
+	asum_unroller<IndexType, T>(n-n%numElements, y, _result);
+        absSum += _intrinsic_hsum(_result);
+
+    } else {
+        cxxblas::asum<IndexType, T, T>(n, y, incY, absSum);
     }
 }
 
 template <typename IndexType, typename T>
 inline
-typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                           flens::IsReal<T>::value,
+typename flens::RestrictTo<flens::IsReal<T>::value && 
+                           flens::IsIntrinsicsCompatible<T>::value,
                            void>::Type
-ccopy(IndexType n, const T *x, IndexType incX, T *y, IndexType incY)
+asum(IndexType n, const std::complex<T> *y, IndexType incY, T &absSum)
 {
-    CXXBLAS_DEBUG_OUT("ccopy_intrinsics [ real, " INTRINSIC_NAME "]");
+    CXXBLAS_DEBUG_OUT("asum_intrinsics [complex, " INTRINSIC_NAME "]");
 
-    copy(n, x, incX, y, incY);
-
-}
-
-template <typename IndexType, typename T>
-inline
-typename flens::RestrictTo<flens::IsIntrinsicsCompatible<T>::value &&
-                           flens::IsComplex<T>::value,
-                           void>::Type
-ccopy(IndexType n, const T *x, IndexType incX, T *y, IndexType incY)
-{
-    CXXBLAS_DEBUG_OUT("ccopy_intrinsics [ complex, " INTRINSIC_NAME "]");
-
-    typedef Intrinsics<T, IntrinsicsLevel::SSE> IntrinsicType;
-    const int numElements = IntrinsicType::numElements;
-
-    if (incX==1 && incY==1) {
-        
-        IndexType i=0;
-
-        int n_rest = n%numElements;
-
-        if (n_rest>=2) {
-            (*y++) = conj(*x++); 
-            (*y++) = conj(*x++);
-            n_rest-=2;
-        }
-        if (n_rest==1) { 
-	    (*y++) = conj(*x++);
-        }
-
-        ccopy_unroller<IndexType, T>(n-n%numElements, x, y);
-        
-
+    if (incY==1) {
+        asum(2*n, reinterpret_cast<const T*>(y), 1, absSum);
     } else {
-
-        cxxblas::ccopy<IndexType, T, T>(n, x, incX, y, incY);
-
+        cxxblas::asum<IndexType, std::complex<T>, T>(n, y, incY, absSum);
     }
 }
 
@@ -167,4 +175,4 @@ ccopy(IndexType n, const T *x, IndexType incX, T *y, IndexType incY)
 
 } // namespace cxxblas
 
-#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_CCOPY_TCC
+#endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_ASUM_TCC

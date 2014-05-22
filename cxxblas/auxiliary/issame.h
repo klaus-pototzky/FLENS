@@ -59,6 +59,30 @@ struct IsSame<T, T, Args...>
     static const bool value = IsSame<T,Args...>::value;
 };
 
+template <int ...Args>
+struct IsSameInt
+{
+    static const bool value = false;
+};
+
+template <int T>
+struct IsSameInt<T>
+{
+    static const bool value = true;
+};
+
+template <int T>
+struct IsSameInt<T, T>
+{
+    static const bool value = true;
+};
+
+template <int T, int ...Args>
+struct IsSameInt<T, T, Args...>
+{
+    static const bool value = IsSameInt<T,Args...>::value;
+};
+
 } // namespace cxxblas
 
 #endif // CXXBLAS_AUXILIARY_ISSAME_H

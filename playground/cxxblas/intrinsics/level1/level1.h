@@ -33,9 +33,11 @@
 #ifndef PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_H
 #define PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_H 1
 
+#include <playground/cxxblas/intrinsics/level1/asum.h>
 #include <playground/cxxblas/intrinsics/level1/axpy.h>
 #include <playground/cxxblas/intrinsics/level1/copy.h>
 #include <playground/cxxblas/intrinsics/level1/dot.h>
+#include <playground/cxxblas/intrinsics/level1/nrm2.h>
 #include <playground/cxxblas/intrinsics/level1/scal.h>
 
 #endif // PLAYGROUND_CXXBLAS_INTRINSICS_LEVEL1_H
